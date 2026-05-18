@@ -95,6 +95,14 @@
   }
   .slot.multi-room { background: #fffaf0; border-left-color: #f5a623; }
   .slot.multi-room .info { color: #b8860b; font-size: 11px; font-weight: 600; margin-top: 4px; }
+  .slot .timeline { margin-top: 8px; }
+  .slot .hop {
+    margin: 6px 0; padding: 4px 10px; font-size: 11px; border-radius: 4px;
+    background: #f0f0f0; color: #555; font-weight: 500;
+  }
+  .slot .hop.ok        { background: #e5f1e5; color: #2d6b2d; }
+  .slot .hop.ok-tight  { background: #fff3d6; color: #8a6d00; }
+  .slot .hop.tight     { background: #fde2e2; color: #b32424; font-weight: 600; }
 
   .panel { background: #fff; border: 1px solid #e3e3e3; border-radius: 6px; padding: 14px; }
   .panel h2 { margin: 0 0 10px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #666; }
@@ -148,6 +156,11 @@
   .paper-title { font-size: 13px; line-height: 1.4; }
   .paper-authors { font-size: 11px; color: #666; margin-top: 2px; }
   .paper-no { font-size: 10px; color: #999; font-family: monospace; }
+  .paper-time {
+    display: inline-block; font-size: 10px; font-family: monospace; color: #1d4e89;
+    background: #eaf2fb; padding: 1px 5px; border-radius: 3px; margin-right: 4px;
+    vertical-align: 1px;
+  }
 
   /* Right panel: itinerary */
   /* (Itinerary is now a tab inside .main, not a sticky side panel.) */
@@ -479,6 +492,7 @@ function saveNotes() {
 // Swap to a different conference DATA loaded by the user:
 function switchConference(newData) {
   DATA = newData;
+  invalidatePaperCache();
   currentConfId = confIdFor(newData);
   state.selected = new Set(JSON.parse(localStorage.getItem(kSelected()) || '[]'));
   state.notes    = new Map(Object.entries(JSON.parse(localStorage.getItem(kNotes()) || '{}')));
@@ -513,6 +527,70 @@ function timeToMin(t) {
 }
 
 function sessionFor(paper) { return DATA.sessions.find(s => s.id === paper.session_id); }
+
+// Convert minutes-since-midnight back to "h:mm" using the same 12-hour-no-AM/PM
+// convention as the input (e.g., 13:30 internal → "1:30").
+function minToTime(min) {
+  const h24 = Math.floor(min / 60);
+  const m   = Math.round(min % 60);
+  const h12 = h24 > 12 ? h24 - 12 : h24;
+  return `${h12}:${String(m).padStart(2,'0')}`;
+}
+
+// Resolve a paper's exact time within its session.
+//   - Elsevier-style "3:30-3:50" paper_no  → use that range explicitly.
+//   - Poster/Panel/Special sessions        → full session range (parallel format).
+//   - Normal sessions                      → fixed PAPER_MINUTES per paper (Q&A inclusive).
+//     Sessions with fewer papers simply end earlier than the official session end.
+// Returns { start, end, durationMin, kind: 'explicit' | 'shared' | 'sliced' }.
+const PAPER_MINUTES = 15;
+const SHARED_TIME_TRACKS = /Poster|Panel|Special/i;
+function paperTime(session, paper, paperIndex, totalPapers) {
+  const m = String(paper.paper_no).match(/^(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})$/);
+  if (m) {
+    const startMin = timeToMin(m[1]), endMin = timeToMin(m[2]);
+    return { start: m[1], end: m[2], startMin, endMin, durationMin: endMin - startMin, kind: 'explicit' };
+  }
+  if (SHARED_TIME_TRACKS.test(session.track_title || '')) {
+    return {
+      start: session.start, end: session.end,
+      startMin: timeToMin(session.start), endMin: timeToMin(session.end),
+      durationMin: timeToMin(session.end) - timeToMin(session.start),
+      kind: 'shared',
+    };
+  }
+  const startMin = timeToMin(session.start);
+  const pStart   = startMin + paperIndex * PAPER_MINUTES;
+  const pEnd     = pStart + PAPER_MINUTES;
+  return {
+    start: minToTime(pStart), end: minToTime(pEnd),
+    startMin: pStart, endMin: pEnd, durationMin: PAPER_MINUTES,
+    kind: 'sliced',
+  };
+}
+
+// Cache of papers grouped by session, in PDF order (= presentation order).
+let _papersBySession = null;
+function papersForSession(sessionId) {
+  if (!_papersBySession) {
+    _papersBySession = new Map();
+    for (const p of DATA.papers) {
+      if (!_papersBySession.has(p.session_id)) _papersBySession.set(p.session_id, []);
+      _papersBySession.get(p.session_id).push(p);
+    }
+  }
+  return _papersBySession.get(sessionId) || [];
+}
+function invalidatePaperCache() { _papersBySession = null; }
+
+// One-shot lookup: given a paper, return its time block + ordinal within session.
+function timeOfPaper(paper) {
+  const s = sessionFor(paper);
+  if (!s) return null;
+  const list = papersForSession(s.id);
+  const idx = list.findIndex(p => p.paper_no === paper.paper_no);
+  return paperTime(s, paper, idx, list.length);
+}
 
 // ====== Render: filters ======
 // Day count threshold above which we switch from buttons to a select element,
@@ -664,6 +742,7 @@ function renderSessions() {
     if (matchingPapers.length === 0) {
       pl.innerHTML = '<div class="empty">발표 정보 없음</div>';
     }
+    const sPapersOrdered = papersForSession(s.id);
     for (const p of matchingPapers) {
       const key = p.session_id + '#' + p.paper_no;
       const row = document.createElement('div');
@@ -672,10 +751,13 @@ function renderSessions() {
       const noteBadge = (n.rating || n.note)
         ? `<span class="note-indicator" title="${n.rating?n.rating+'★ ':''}${n.note?'· 메모 있음':''}">${n.rating?'★'.repeat(n.rating):''}${n.note?' 📝':''}</span>`
         : '';
+      const idx = sPapersOrdered.findIndex(x => x.paper_no === p.paper_no);
+      const pt  = paperTime(s, p, idx, sPapersOrdered.length);
+      const timeBadge = `<span class="paper-time">${pt.start}–${pt.end}</span>`;
       row.innerHTML = `
         <input type="checkbox" data-key="${key}" ${state.selected.has(key)?'checked':''}>
         <div class="paper-body">
-          <div class="paper-title">${hi(p.title)}${noteBadge}</div>
+          <div class="paper-title">${timeBadge} ${hi(p.title)}${noteBadge}</div>
           <div class="paper-authors">${hi(p.authors)} <span class="paper-no">· #${hi(p.paper_no)}${p.is_sponsored?' ⭐':''}</span></div>
         </div>
       `;
@@ -738,16 +820,17 @@ function renderItinerary() {
       slots.get(tkey).push(it);
     }
 
-    // Render a single pick card (reused across rooms in a multi-room slot)
-    const renderPick = (it) => {
+    // Render a single pick card. `pt` is the paper-level time block.
+    const renderPick = (it, pt) => {
       const n = getNote(it.key);
       const stars = [1,2,3,4,5].map(v =>
         `<span class="star ${v<=n.rating?'on':''}" data-key="${it.key}" data-val="${v}">★</span>`
       ).join('');
+      const timeBadge = pt ? `<span class="paper-time">${pt.start}–${pt.end}</span> ` : '';
       return `<div class="pick">
-        <div class="ptitle">${escapeHtml(it.p.title)}</div>
+        <div class="ptitle">${timeBadge}${escapeHtml(it.p.title)}</div>
         <div class="pauthors">${escapeHtml(it.p.authors)}</div>
-        <div class="pmeta">${escapeHtml(it.s.track_title)} · #${escapeHtml(it.p.paper_no)}
+        <div class="pmeta">${escapeHtml(it.s.building)} ${escapeHtml(it.s.room)} · ${escapeHtml(it.s.track_title)} · #${escapeHtml(it.p.paper_no)}
           <a href="#" data-key="${it.key}" class="rm" style="margin-left:6px;color:#d0021b;">제거</a></div>
         <div class="rating" data-key="${it.key}">${stars}
           <span class="star clear-star" data-key="${it.key}" data-val="0" title="평점 지우기" style="color:#ccc;font-size:13px;margin-left:6px;">✕</span>
@@ -756,10 +839,16 @@ function renderItinerary() {
       </div>`;
     };
 
+    // Augment each pick with its paper-level time block (start, end, indexed by paper order)
+    for (const it of list) {
+      const ordered = papersForSession(it.s.id);
+      const idx = ordered.findIndex(p => p.paper_no === it.p.paper_no);
+      it.pt = paperTime(it.s, it.p, idx, ordered.length);
+    }
+
     let prev = null;
     for (const [tkey, picks] of [...slots.entries()].sort((a,b) => timeToMin(a[0].split('-')[0]) - timeToMin(b[0].split('-')[0]))) {
-      // Walk-time hint between consecutive slots. With multi-room picks, take the
-      // first room of the next slot as the destination (user's exact choice unknown).
+      // Walk-time hint between consecutive slots
       if (prev) {
         const gap = timeToMin(picks[0].s.start) - timeToMin(prev.s.end);
         const w = walkMinutes(prev.s, picks[0].s);
@@ -767,7 +856,6 @@ function renderItinerary() {
         html += `<div class="walk ${tight?'tight':''}">↓ 이동 ${prev.s.building} ${prev.s.room} → ${picks[0].s.building} ${picks[0].s.room} · 도보 ~${w}분 · 여유 ${gap}분${tight?'  ⚠️ 시간 부족':''}</div>`;
       }
 
-      // Group same-slot picks by room → render as horizontal columns
       const byRoom = new Map();
       for (const it of picks) {
         const r = `${it.s.building} ${it.s.room}`;
@@ -778,17 +866,38 @@ function renderItinerary() {
 
       html += `<div class="slot ${isMulti?'multi-room':''}">`;
       html += `<div class="time">${picks[0].s.start}–${picks[0].s.end}${isMulti ? ` · 병행 ${byRoom.size}개 방` : ''}</div>`;
+
       if (isMulti) {
-        html += `<div class="info">↔ 같은 시간대에 ${byRoom.size}개 방을 선택하셨습니다. 한 곳을 정하시거나, 발표 일부씩 들으실 수 있도록 비교해 보세요.</div>`;
-      }
-      html += `<div class="rooms">`;
-      for (const [room, roomPicks] of byRoom) {
-        html += `<div class="room-col">
+        // ----- TIMELINE VIEW: sort picks by detailed paper time, insert walk hints between consecutive picks
+        html += `<div class="info">↔ 발표별 시작 시각 순서로 정리했습니다. 방 사이 이동시간과 여유를 보고 hop 가능 여부를 판단하세요.</div>`;
+        const sortedPicks = [...picks].sort((a,b) => a.pt.startMin - b.pt.startMin || a.s.id.localeCompare(b.s.id));
+        html += `<div class="timeline">`;
+        let prevPick = null;
+        for (const it of sortedPicks) {
+          if (prevPick && (prevPick.s.building !== it.s.building || prevPick.s.room !== it.s.room)) {
+            const gap = it.pt.startMin - prevPick.pt.endMin;
+            const w   = walkMinutes(prevPick.s, it.s);
+            const tight = gap < w;
+            const cls = tight ? 'tight' : (gap < w + 3 ? 'ok-tight' : 'ok');
+            const note = tight
+              ? `⚠️ 시간 부족 (도보 ${w}분, 여유 ${gap}분)`
+              : `도보 ~${w}분 · 여유 ${gap}분`;
+            html += `<div class="hop ${cls}">↻ ${prevPick.s.building} ${prevPick.s.room} → ${it.s.building} ${it.s.room} · ${note}</div>`;
+          }
+          html += renderPick(it, it.pt);
+          prevPick = it;
+        }
+        html += `</div>`;
+      } else {
+        // ----- SINGLE-ROOM SLOT: simple time-ordered list inside one room column
+        const [room, roomPicks] = [...byRoom.entries()][0];
+        roomPicks.sort((a,b) => a.pt.startMin - b.pt.startMin);
+        html += `<div class="rooms"><div class="room-col">
           <div class="room-head"><span>${escapeHtml(room)}</span><span style="font-weight:400;color:#888;">${roomPicks.length}개</span></div>
-          ${roomPicks.map(renderPick).join('')}
-        </div>`;
+          ${roomPicks.map(it => renderPick(it, it.pt)).join('')}
+        </div></div>`;
       }
-      html += `</div></div>`;
+      html += `</div>`;
 
       prev = picks[picks.length - 1];
     }
@@ -950,11 +1059,14 @@ document.getElementById('btn-export-ics').onclick = () => {
     if (!p) continue;
     const s = sessionFor(p);
     const n = getNote(key);
+    // Use the paper-level time block, not the session-wide range.
+    const ordered = papersForSession(s.id);
+    const pt = paperTime(s, p, ordered.findIndex(x => x.paper_no === pno), ordered.length);
     const dt = dateToIso(s.date);
-    const [sh,sm] = s.start.split(':').map(Number);
-    const [eh,em] = s.end.split(':').map(Number);
-    const fmt = (h,m) => `${dt}T${String(h<8?h+12:h).padStart(2,'0')}${String(m).padStart(2,'0')}00`;
-    // Build description with optional rating + notes
+    const fmtMin = (totalMin) => {
+      const hh = Math.floor(totalMin / 60), mm = Math.round(totalMin % 60);
+      return `${dt}T${String(hh).padStart(2,'0')}${String(mm).padStart(2,'0')}00`;
+    };
     const descParts = [
       'Authors: ' + p.authors,
       'Session ' + s.id + ' · ' + s.track_title,
@@ -967,8 +1079,8 @@ document.getElementById('btn-export-ics').onclick = () => {
     lines.push('SUMMARY:' + icsEscape(p.title));
     lines.push('LOCATION:' + icsEscape(s.building + ' ' + s.room));
     lines.push('DESCRIPTION:' + icsEscape(descParts.join('\n')));
-    lines.push('DTSTART:' + fmt(sh,sm));
-    lines.push('DTEND:'   + fmt(eh,em));
+    lines.push('DTSTART:' + fmtMin(pt.startMin));
+    lines.push('DTEND:'   + fmtMin(pt.endMin));
     lines.push('END:VEVENT');
   }
   lines.push('END:VCALENDAR');
@@ -992,10 +1104,10 @@ document.getElementById('btn-export-csv').onclick = () => {
   const keys = new Set([...state.selected, ...state.notes.keys()]);
   if (keys.size === 0) { alert('내보낼 항목이 없습니다 (선택·평점·메모 중 하나 이상 필요).'); return; }
 
-  const header = ['Day','Date','Start','End','Building','Room','SessionID','Track','PaperNo','Title','Authors','Selected','Rating','Notes'];
+  const header = ['Day','Date','PaperStart','PaperEnd','SessionStart','SessionEnd','Building','Room','SessionID','Track','PaperNo','Title','Authors','Selected','Rating','Notes'];
   const rows = [header.map(csvCell).join(',')];
 
-  // Sort by day → start → session id
+  // Sort by day → paper start time
   const items = [];
   for (const key of keys) {
     const [sid, pno] = key.split('#');
@@ -1003,18 +1115,22 @@ document.getElementById('btn-export-csv').onclick = () => {
     if (!p) continue;
     const s = sessionFor(p);
     if (!s) continue;
-    items.push({ key, p, s });
+    const ordered = papersForSession(s.id);
+    const pt = paperTime(s, p, ordered.findIndex(x => x.paper_no === pno), ordered.length);
+    items.push({ key, p, s, pt });
   }
   items.sort((a,b) =>
     (a.s.day - b.s.day) ||
-    (timeToMin(a.s.start) - timeToMin(b.s.start)) ||
+    (a.pt.startMin - b.pt.startMin) ||
     a.s.id.localeCompare(b.s.id)
   );
 
   for (const it of items) {
     const n = getNote(it.key);
     rows.push([
-      it.s.day, it.s.date, it.s.start, it.s.end,
+      it.s.day, it.s.date,
+      it.pt.start, it.pt.end,
+      it.s.start, it.s.end,
       it.s.building, it.s.room, it.s.id, it.s.track_title,
       it.p.paper_no, it.p.title, it.p.authors,
       state.selected.has(it.key) ? 'Y' : 'N',
