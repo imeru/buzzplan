@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="학회 스케줄 계획 및 동선 도구">
+<title>Conference Schedule Planner</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #1f1f1f; background: #fafafa; font-size: 14px;
+  }
+  header {
+    background: #1f1f1f; color: #fff; padding: 12px 20px;
+    display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+  }
+  header h1 { margin: 0; font-size: 16px; font-weight: 600; }
+  header .stats { font-size: 12px; opacity: 0.7; }
+  header .conf-chip {
+    background: rgba(255,255,255,0.12); padding: 4px 10px; border-radius: 14px;
+    font-size: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  header .conf-name { font-weight: 600; cursor: pointer; }
+  header .conf-name:hover { text-decoration: underline; }
+  header .conf-edit {
+    background: transparent; border: none; color: #fff; cursor: pointer; font-size: 11px;
+    opacity: 0.7; padding: 0; line-height: 1;
+  }
+  header .conf-edit:hover { opacity: 1; }
+  header .conf-rename-input {
+    background: #fff; color: #1f1f1f; border: none; padding: 2px 6px; border-radius: 3px;
+    font-size: 12px; font-weight: 600; width: 220px;
+  }
+  header .conf-chip select {
+    background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 4px; padding: 2px 4px; font-size: 11px;
+  }
+  header .conf-chip select option { color: #1f1f1f; }
+  header .actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+  header button {
+    background: #fff; color: #1f1f1f; border: none; padding: 6px 12px;
+    border-radius: 4px; font-size: 12px; cursor: pointer;
+  }
+  header button:hover { background: #ddd; }
+
+  /* Mobile: compact header, full-width actions row, larger tap targets */
+  @media (max-width: 720px) {
+    header { padding: 10px 12px; gap: 8px; align-items: center; }
+    header h1 { font-size: 14px; flex: 1 1 100%; }
+    header .stats { flex: 1 1 100%; order: 4; font-size: 11px; }
+    header .conf-chip { flex: 1 1 100%; justify-content: space-between; }
+    header .conf-rename-input { width: 100%; font-size: 14px; }
+    header .actions { margin-left: 0; width: 100%; }
+    header button { flex: 1 1 auto; min-width: 0; font-size: 11px; padding: 8px 6px; }
+  }
+
+  /* Two-column layout: filters | main (with tabs inside) */
+  .layout { display: grid; grid-template-columns: 280px 1fr; gap: 16px; padding: 16px; align-items: start; }
+
+  /* Mobile: single column */
+  @media (max-width: 720px) {
+    .layout { grid-template-columns: 1fr; gap: 12px; padding: 10px; }
+    .panel { padding: 12px; }
+    .session { padding: 10px; }
+  }
+
+  /* View tabs */
+  .view-tabs { display: flex; gap: 4px; margin-bottom: 12px; border-bottom: 1px solid #e3e3e3; }
+  .view-tab {
+    background: transparent; border: none; padding: 8px 14px; cursor: pointer;
+    font-size: 13px; color: #666; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .view-tab:hover { color: #1f1f1f; }
+  .view-tab.active { color: #1f1f1f; font-weight: 600; border-bottom-color: #1f1f1f; }
+  .view-tab .badge {
+    display: inline-block; background: #4a90e2; color: #fff; border-radius: 10px;
+    padding: 0 6px; font-size: 10px; font-weight: 600; margin-left: 4px; min-width: 16px;
+    text-align: center;
+  }
+  .view-tab .badge:empty,
+  .view-tab .badge[data-count="0"] { display: none; }
+
+  /* Room columns inside an itinerary slot */
+  .slot .rooms {
+    display: grid; gap: 8px; margin-top: 6px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  .slot .room-col {
+    background: #fff; border: 1px solid #e6e6e6; border-radius: 4px; padding: 8px;
+  }
+  .slot .room-head {
+    font-weight: 600; font-size: 11px; margin-bottom: 4px; color: #1f1f1f;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .slot.multi-room { background: #fffaf0; border-left-color: #f5a623; }
+  .slot.multi-room .info { color: #b8860b; font-size: 11px; font-weight: 600; margin-top: 4px; }
+
+  .panel { background: #fff; border: 1px solid #e3e3e3; border-radius: 6px; padding: 14px; }
+  .panel h2 { margin: 0 0 10px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #666; }
+
+  /* Filters */
+  .filter-group { margin-bottom: 14px; }
+  .filter-group label { display: block; font-size: 12px; margin: 4px 0; cursor: pointer; }
+  .filter-group input[type="text"] { width: 100%; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+  .filter-head { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 6px; }
+  .filter-head label { font-weight: 600; font-size: 11px; color: #444; margin: 0; }
+  .filter-toggles { font-size: 11px; }
+  .filter-toggles a { color: #4a90e2; text-decoration: none; }
+  .filter-toggles a:hover { text-decoration: underline; }
+  .day-tabs { display: flex; gap: 4px; margin-bottom: 10px; flex-wrap: wrap; }
+  .day-select {
+    width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px;
+    font-size: 13px; background: #fff; cursor: pointer;
+  }
+  .day-tabs button {
+    flex: 1 1 0; min-width: 0; padding: 4px 2px; border: 1px solid #ccc; background: #fff;
+    cursor: pointer; border-radius: 4px; font-size: 11px; line-height: 1.25;
+  }
+  .day-tabs button .d-main { display: block; font-weight: 600; }
+  .day-tabs button .d-sub  { display: block; font-size: 10px; color: #888; }
+  .day-tabs button.active { background: #1f1f1f; color: #fff; border-color: #1f1f1f; }
+  .day-tabs button.active .d-sub { color: #ccc; }
+
+  /* Sessions */
+  .session {
+    margin-bottom: 14px; padding: 10px 12px; border: 1px solid #e6e6e6; border-radius: 6px; background: #fff;
+  }
+  .session-header {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
+    padding-bottom: 6px; border-bottom: 1px dashed #eee; margin-bottom: 8px;
+  }
+  .session-id { font-weight: 600; color: #555; font-size: 12px; }
+  .session-title { font-weight: 600; }
+  .session-meta { font-size: 11px; color: #888; }
+  .building-tag {
+    display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 600;
+    margin-left: 4px;
+  }
+  .tag-SGM { background: #e7f1ff; color: #1d4e89; }
+  .tag-GFS { background: #fff1e0; color: #8a4b00; }
+  .tag-VHE { background: #efe7ff; color: #553f8a; }
+
+  .paper { display: flex; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f5f5f5; align-items: flex-start; }
+  .paper:last-child { border-bottom: none; }
+  .paper input[type="checkbox"] { margin-top: 3px; flex-shrink: 0; }
+  .paper-body { flex: 1; }
+  .paper-title { font-size: 13px; line-height: 1.4; }
+  .paper-authors { font-size: 11px; color: #666; margin-top: 2px; }
+  .paper-no { font-size: 10px; color: #999; font-family: monospace; }
+
+  /* Right panel: itinerary */
+  /* (Itinerary is now a tab inside .main, not a sticky side panel.) */
+  .day-block { margin-bottom: 16px; }
+  .day-block h3 { font-size: 12px; margin: 0 0 8px 0; color: #1f1f1f; }
+  .slot {
+    padding: 8px 10px; margin-bottom: 6px; border-left: 3px solid #4a90e2; background: #f7faff; border-radius: 0 4px 4px 0;
+    font-size: 12px;
+  }
+  .slot.conflict { border-left-color: #d0021b; background: #fff5f5; }
+  .slot .time { font-weight: 600; }
+  .slot .pick { margin-top: 4px; padding-left: 8px; }
+  .slot .pick .ptitle { font-size: 12px; }
+  .slot .pick .pauthors { font-size: 11px; color: #555; margin-top: 2px; font-style: italic; }
+  .slot .pick .pmeta { font-size: 10px; color: #888; margin-top: 2px; }
+  .warn { color: #d0021b; font-weight: 600; font-size: 11px; margin-top: 4px; }
+  .walk { font-size: 10px; color: #888; padding: 4px 12px; }
+  .walk.tight { color: #d0021b; font-weight: 600; }
+
+  .empty { color: #999; font-size: 12px; font-style: italic; }
+
+  .toggle-collapse { background: none; border: none; cursor: pointer; font-size: 11px; color: #4a90e2; padding: 2px 6px; }
+  .session.collapsed .paper-list { display: none; }
+
+  .hidden { display: none !important; }
+
+  mark { background: #fff59d; color: inherit; padding: 0 1px; border-radius: 2px; }
+
+  /* Rating + notes */
+  .rating { display: inline-flex; gap: 1px; margin-top: 4px; }
+  .rating .star {
+    cursor: pointer; font-size: 16px; line-height: 1; color: #d0d0d0;
+    user-select: none; transition: color 0.1s;
+  }
+  .rating .star.on { color: #f5a623; }
+  .rating .star:hover { color: #f5a623; }
+  .note-input {
+    width: 100%; margin-top: 4px; padding: 4px 6px; font-size: 11px;
+    border: 1px solid #ddd; border-radius: 3px; resize: vertical;
+    min-height: 22px; font-family: inherit;
+  }
+  .note-input:focus { outline: none; border-color: #4a90e2; }
+  .note-indicator {
+    display: inline-block; margin-left: 4px; font-size: 10px; color: #f5a623;
+  }
+
+  /* Mobile: bigger tap targets and font-size ≥16px on inputs to prevent iOS auto-zoom */
+  @media (max-width: 720px) {
+    body { font-size: 15px; }
+    .paper { padding: 10px 0; }
+    .paper input[type="checkbox"] { transform: scale(1.4); margin-top: 6px; margin-left: 4px; margin-right: 4px; }
+    .paper-title { font-size: 14px; }
+    .paper-authors { font-size: 12px; }
+    .filter-group input[type="text"] { font-size: 16px; padding: 8px 10px; }
+    .filter-group label { padding: 6px 0; font-size: 13px; }
+    .rating .star { font-size: 22px; padding: 2px 3px; }
+    .note-input { font-size: 16px; padding: 8px; }
+    .slot { padding: 10px; }
+    .slot .pick .ptitle { font-size: 13px; }
+    .slot .pick .pauthors { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📅 Conference Schedule Planner</h1>
+  <div class="conf-chip" id="conf-chip" title="현재 학회 (학회명 클릭하여 수정)">
+    <span class="conf-name" id="conf-name" title="클릭하여 학회명 수정"></span>
+    <button class="conf-edit" id="conf-edit" title="학회명 수정">✏️</button>
+    <select id="conf-switch" title="이전에 사용한 학회로 전환"></select>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div class="actions">
+    <button id="btn-clear">선택 초기화</button>
+    <button id="btn-export-ics">캘린더(.ics) 내보내기</button>
+    <button id="btn-export-csv">CSV 내보내기</button>
+    <button id="btn-load-json">다른 학회 JSON 불러오기</button>
+    <input type="file" id="file-json" accept=".json" style="display:none">
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT: filters -->
+  <div class="panel">
+    <h2>필터</h2>
+    <div class="filter-group">
+      <input type="text" id="search" placeholder="🔍 제목·저자·키워드 검색">
+    </div>
+    <div class="filter-group">
+      <div class="day-tabs" id="day-tabs"></div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-head">
+        <label>트랙</label>
+        <span class="filter-toggles">
+          <a href="#" data-act="all"  data-target="tracks">전체</a> ·
+          <a href="#" data-act="none" data-target="tracks">해제</a>
+        </span>
+      </div>
+      <div id="track-filter"></div>
+    </div>
+    <div class="filter-group">
+      <div class="filter-head">
+        <label>건물</label>
+        <span class="filter-toggles">
+          <a href="#" data-act="all"  data-target="buildings">전체</a> ·
+          <a href="#" data-act="none" data-target="buildings">해제</a>
+        </span>
+      </div>
+      <div id="building-filter"></div>
+    </div>
+  </div>
+
+  <!-- MAIN: tabbed (둘러보기 | 내 일정) -->
+  <div class="main">
+    <div class="view-tabs" id="view-tabs">
+      <button class="view-tab" data-view="browse">📋 둘러보기</button>
+      <button class="view-tab" data-view="itinerary">📅 내 일정 <span class="badge" id="view-badge">0</span></button>
+    </div>
+
+    <div id="view-browse">
+      <div id="session-list"></div>
+    </div>
+
+    <div id="view-itinerary" class="panel" style="display:none;">
+      <div id="itinerary"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ====== Data (auto-generated, embedded) ======
+let DATA = {"conference":{"id":"iaqvec-2026","name":"IAQVEC 2026"},"sessions":[{"id":"1-1","block":1,"day":2,"date":"5/19/2026","track_title":"Indoor Air Quality","start":"11:00","end":"12:30","building":"SGM","room":"123","floor":1,"chair":"Vincenzo Gentile"},{"id":"1-2","block":1,"day":2,"date":"5/19/2026","track_title":"Energy Efficiency, Conservation, Renewable Energy, and Embodied Carbon","start":"11:00","end":"12:30","building":"SGM","room":"124","floor":1,"chair":"Huijeong Kim"},{"id":"1-3","block":1,"day":2,"date":"5/19/2026","track_title":"Building Technology and Performance","start":"11:00","end":"12:30","building":"SGM","room":"101","floor":1,"chair":"Miroslave Čekon"},{"id":"1-4","block":1,"day":2,"date":"5/19/2026","track_title":"Health, Wellbeing, and Human Behaviors in the Built Environment","start":"11:00","end":"12:30","building":"GFS","room":"116","floor":1,"chair":"Evandro Eduardo Broday"},{"id":"1-5","block":1,"day":2,"date":"5/19/2026","track_title":"Thermal Comfort","start":"11:00","end":"12:30","building":"GFS","room":"101","floor":1,"chair":"Yun-Shang Chiou"},{"id":"1-6","block":1,"day":2,"date":"5/19/2026","track_title":"Smart Cities and Green Infrastructure","start":"11:00","end":"12:30","building":"GFS","room":"118","floor":1,"chair":"Ryozo Ooka"},{"id":"1-7","block":1,"day":2,"date":"5/19/2026","track_title":"Generative AI in Sustainable Built Environment","start":"11:00","end":"12:30","building":"GFS","room":"207","floor":2,"chair":"Wooyoung Jung"},{"id":"2-1","block":2,"day":2,"date":"5/19/2026","track_title":"Sponsored session by KD Navien: Indoor Air Quality","start":"1:30","end":"3:00","building":"SGM","room":"123","floor":1,"chair":"Arezoo Shirazi"},{"id":"2-2","block":2,"day":2,"date":"5/19/2026","track_title":"Energy Efficiency, Conservation, Renewable Energy, and Embodied Carbon","start":"1:30","end":"3:00","building":"SGM","room":"124","floor":1,"chair":"Sharon Verghese"},{"id":"2-3","block":2,"day":2,"date":"5/19/2026","track_title":"Building Technology and Performance","start":"1:30","end":"3:00","building":"GFS","room":"116","floor":1,"chair":"Ying-Chieh Chan"},{"id":"2-4","block":2,"day":2,"date":"5/19/2026","track_title":"Health, Wellbeing, and Human Behaviors in the Built Environment","start":"1:30","end":"3:00","building":"GFS","room":"118","floor":1,"chair":"Hui Zhu"},{"id":"2-5","block":2,"day":2,"date":"5/19/2026","track_title":"Thermal Comfort","start":"1:30","end":"3:00","building":"GFS","room":"101","floor":1,"chair":"Yongxin Xie"},{"id":"2-6","block":2,"day":2,"date":"5/19/2026","track_title":"Visual (Lighting and Daylighting) Quality and Accustic Quality","start":"1:30","end":"3:00","building":"GFS","room":"207","floor":2,"chair":"Yun-Shang Chiou"},{"id":"2-7","block":2,"day":2,"date":"5/19/2026","track_title":"Panel Discussion","start":"1:30","end":"3:00","building":"SGM","room":"101","floor":1,"chair":"Maninder Thind"},{"id":"3-1","block":3,"day":2,"date":"5/19/2026","track_title":"Indoor Air Quality","start":"3:30","end":"5:00","building":"SGM","room":"123","floor":1,"chair":"Lu Li"},{"id":"3-2","block":3,"day":2,"date":"5/19/2026","track_title":"Energy Efficiency, Conservation, Renewable Energy, and Embodied Carbon","start":"3:30","end":"5:00","building":"SGM","room":"124","floor":1,"chair":"Qiuhua Duan"},{"id":"3-3","block":3,"day":2,"date":"5/19/2026","track_title":"Building Technology and Performance","start":"3:30","end":"5:00","building":"SGM","room":"101","floor":1,"chair":"Shayan Mirzabeigi"},{"id":"3-4","block":3,"day":2,"date":"5/19/2026","track_title":"Health, Wellbeing, and Human Behaviors in the Built Environment","start":"3:30","end":"5:00","building":"GFS","room":"116","floor":1,"chair":"Cristina Piselli"},{"id":"3-5","block":3,"day":2,"date":"5/19/2026","track_title":"Thermal Comfort","start":"3:30","end":"5:00","building":"GFS","room":"101","floor":1,"chair":"Yichen Yu"},{"id":"3-6","block":3,"day":2,"date":"5/19/2026","track_title":"Climate Change Adaptation, Resilience, and Environmental Policy","start":"3:30","end":"5:00","building":"GFS","room":"207","floor":2,"chair":"Mohamed Dardir"},{"id":"3-7","block":3,"day":2,"date":"5/19/2026","track_title":"Generative AI in Sustainable Built Environment","start":"3:30","end":"5:00","building":"GFS","room":"118","floor":1,"chair":"Soo Jeong Jo"},{"id":"3-8","block":3,"day":2,"date":"5/19/2026","track_title":"Online Session","start":"3:30","end":"5:00","building":"VHE","room":"206","floor":2,"chair":"Minyoung Kwon"},{"id":"4-1","block":4,"day":3,"date":"5/20/2026","track_title":"Sponsored Session by ERC (Engineering Research Center) at Chung-Ang University, Korea","start":"11:00","end":"12:30","building":"SGM","room":"101","floor":1,"chair":"Michael Youngsu Kim"},{"id":"4-2","block":4,"day":3,"date":"5/20/2026","track_title":"Indoor Air Quality","start":"11:00","end":"12:30","building":"SGM","room":"123","floor":1,"chair":"Gerrid Brockmann"},{"id":"4-3","block":4,"day":3,"date":"5/20/2026","track_title":"Energy Efficiency, Conservation, Renewable Energy, and Embodied Carbon","start":"11:00","end":"12:30","building":"SGM","room":"124","floor":1,"chair":"Qiuhua Duan"},{"id":"4-4","block":4,"day":3,"date":"5/20/2026","track_title":"Building Technology and Performance","start":"11:00","end":"12:30","building":"GFS","room":"116","floor":1,"chair":"Meng-Chieh Jeffrey Lee"},{"id":"4-5","block":4,"day":3,"date":"5/20/2026","track_title":"Health, Wellbeing, and Human Behaviors in the Built Environment","start":"11:00","end":"12:30","building":"GFS","room":"101","floor":1,"chair":"Enrico Fabrizio"},{"id":"4-6","block":4,"day":3,"date":"5/20/2026","track_title":"Smart Cities and Green Infrastructure","start":"11:00","end":"12:30","building":"GFS","room":"207","floor":2,"chair":"Xu Han"},{"id":"4-7","block":4,"day":3,"date":"5/20/2026","track_title":"Sustainable Building Materials and Circular Economy","start":"11:00","end":"12:30","building":"GFS","room":"118","floor":1,"chair":"Yumna Kurdi"},{"id":"5-1","block":5,"day":3,"date":"5/20/2026","track_title":"Poster Session","start":"1:30","end":"3:00","building":"VHE Courtyard","room":"","floor":null,"chair":""},{"id":"6-1","block":6,"day":3,"date":"5/20/2026","track_title":"Indoor Air Quality","start":"3:30","end":"5:00","building":"SGM","room":"123","floor":1,"chair":"Ayça Tokuç"},{"id":"6-2","block":6,"day":3,"date":"5/20/2026","track_title":"Energy Efficiency, Conservation, Renewable Energy, and Embodied Carbon","start":"3:30","end":"5:00","building":"SGM","room":"124","floor":1,"chair":"Ryozo Ooka"},{"id":"6-3","block":6,"day":3,"date":"5/20/2026","track_title":"Building Technology and Performance","start":"3:30","end":"5:00","building":"SGM","room":"101","floor":1,"chair":"Zheng Tan"},{"id":"6-4","block":6,"day":3,"date":"5/20/2026","track_title":"Health, Wellbeing, and Human Behaviors in the Built Environment","start":"3:30","end":"5:00","building":"GFS","room":"116","floor":1,"chair":"June Young Park"},{"id":"6-5","block":6,"day":3,"date":"5/20/2026","track_title":"Thermal Comfort","start":"3:30","end":"5:00","building":"GFS","room":"101","floor":1,"chair":"Ali Ghahramani"},{"id":"6-6","block":6,"day":3,"date":"5/20/2026","track_title":"Energy Efficiency, Conservation, Renewable Energy, and Embodied Carbon","start":"3:30","end":"5:00","building":"GFS","room":"118","floor":1,"chair":"Jinkyun Cho"},{"id":"6-7","block":6,"day":3,"date":"5/20/2026","track_title":"Climate Change Adaptation, Resilience, and Environmental Policy","start":"3:30","end":"5:00","building":"GFS","room":"207","floor":2,"chair":"Max Ruffo"},{"id":"6-8","block":6,"day":3,"date":"5/20/2026","track_title":"Online Session","start":"3:30","end":"5:00","building":"VHE","room":"206","floor":2,"chair":"Yihui Li"},{"id":"7-1","block":7,"day":4,"date":"5/21/2026","track_title":"Sponsored session by LG: Thermal Comfort","start":"11:00","end":"12:30","building":"SGM","room":"101","floor":1,"chair":"Moon Keun Kim"},{"id":"7-2","block":7,"day":4,"date":"5/21/2026","track_title":"Indoor Air Quality","start":"11:00","end":"12:30","building":"SGM","room":"123","floor":1,"chair":"Brett Singer"},{"id":"7-3","block":7,"day":4,"date":"5/21/2026","track_title":"Energy Efficiency, Conservation, Renewable Energy, and Embodied Carbon","start":"11:00","end":"12:30","building":"SGM","room":"124","floor":1,"chair":"Weibing Gong"},{"id":"7-4","block":7,"day":4,"date":"5/21/2026","track_title":"Building Technology and Performance","start":"11:00","end":"12:30","building":"GFS","room":"116","floor":1,"chair":"Lexuan Zhong"},{"id":"7-5","block":7,"day":4,"date":"5/21/2026","track_title":"Health, Wellbeing, and Human Behaviors in the Built Environment","start":"11:00","end":"12:30","building":"GFS","room":"101","floor":1,"chair":"Yumna Kurdi"},{"id":"7-6","block":7,"day":4,"date":"5/21/2026","track_title":"Smart Cities and Green Infrastructure","start":"11:00","end":"12:30","building":"GFS","room":"207","floor":2,"chair":"Soowon Chang"},{"id":"7-7","block":7,"day":4,"date":"5/21/2026","track_title":"Indoor Air Quality","start":"11:00","end":"12:30","building":"GFS","room":"118","floor":1,"chair":"Insung Kang"},{"id":"8-1","block":8,"day":4,"date":"5/21/2026","track_title":"Indoor Air Quality","start":"1:30","end":"3:00","building":"SGM","room":"123","floor":1,"chair":"Rahman Azari"},{"id":"8-2","block":8,"day":4,"date":"5/21/2026","track_title":"Energy Efficiency, Conservation, Renewable Energy, and Embodied Carbon","start":"1:30","end":"3:00","building":"SGM","room":"124","floor":1,"chair":"Takao Katsura"},{"id":"8-3","block":8,"day":4,"date":"5/21/2026","track_title":"Building Technology and Performance","start":"1:30","end":"3:00","building":"SGM","room":"101","floor":1,"chair":"Xiang (Jason) Zhang"},{"id":"8-4","block":8,"day":4,"date":"5/21/2026","track_title":"Health, Wellbeing, and Human Behaviors in the Built Environment","start":"1:30","end":"3:00","building":"GFS","room":"207","floor":2,"chair":"Josephine Lau"},{"id":"8-5","block":8,"day":4,"date":"5/21/2026","track_title":"Generative AI in Sustainable Built Environment","start":"1:30","end":"3:00","building":"GFS","room":"101","floor":1,"chair":"Mojtaba Parsaee"},{"id":"8-6","block":8,"day":4,"date":"5/21/2026","track_title":"Indoor Air Quality","start":"1:30","end":"3:00","building":"GFS","room":"118","floor":1,"chair":"Trond Thorgeir Harsem"},{"id":"8-7","block":8,"day":4,"date":"5/21/2026","track_title":"Panel Discussion","start":"1:30","end":"3:00","building":"GFS","room":"116","floor":1,"chair":"Dolaana Khovalyg"},{"id":"9-1","block":9,"day":4,"date":"5/21/2026","track_title":"Indoor Air Quality","start":"3:30","end":"5:00","building":"SGM","room":"123","floor":1,"chair":"Ali Alexander Nour Eddine"},{"id":"9-2","block":9,"day":4,"date":"5/21/2026","track_title":"Energy Efficiency, Conservation, Renewable Energy, and Embodied Carbon","start":"3:30","end":"5:00","building":"SGM","room":"124","floor":1,"chair":"Max Ruffo"},{"id":"9-3","block":9,"day":4,"date":"5/21/2026","track_title":"Building Technology and Performance","start":"3:30","end":"5:00","building":"SGM","room":"101","floor":1,"chair":"Vimal Preet"},{"id":"9-4","block":9,"day":4,"date":"5/21/2026","track_title":"Climate Change Adaptation, Resilience, and Environmental Policy","start":"3:30","end":"5:00","building":"GFS","room":"118","floor":1,"chair":"Wanyu Rengie Chan"},{"id":"9-5","block":9,"day":4,"date":"5/21/2026","track_title":"Visual (Lighting and Daylighting) Quality and Accustic Quality","start":"3:30","end":"5:00","building":"GFS","room":"207","floor":2,"chair":"Azaeh Sawyer"},{"id":"9-6","block":9,"day":4,"date":"5/21/2026","track_title":"Indoor Air Quality","start":"3:30","end":"5:00","building":"GFS","room":"101","floor":1,"chair":"Michael Sohn"},{"id":"9-7","block":9,"day":4,"date":"5/21/2026","track_title":"Special session: Elsevier","start":"3:30","end":"5:00","building":"GFS","room":"116","floor":1,"chair":""},{"id":"9-8","block":9,"day":4,"date":"5/21/2026","track_title":"Online Session","start":"3:30","end":"5:00","building":"VHE","room":"206","floor":2,"chair":"Seonghyuk Son"}],"papers":[{"paper_no":"26","is_sponsored":false,"session_id":"1-1","authors":"Bahadır Erman Yuce, Yunus Emre Cetin and Martin Kriegel","title":"Comparison of Particle Deposition under Air Curtain and Mixing Ventilation in a Negative-Pressure Two-Bed Ward"},{"paper_no":"41","is_sponsored":false,"session_id":"1-1","authors":"Gerrid Brockmann and Martin Kriegel","title":"A numerical investigation about the influence of combined exhaust positions on ventilation effectiveness"},{"paper_no":"134","is_sponsored":false,"session_id":"1-1","authors":"Chaimin Hong, Inseo Jeong, Sanghoon Park","title":"Performance Evaluation of Window-Type Ventilation Systems: A Comprehensive Methodology and Experimental Validation"},{"paper_no":"427","is_sponsored":false,"session_id":"1-1","authors":"Saeid Chahardoli, Avijit Sarker, Mina Lesan, Yi Xiao, Andrew Z Johannsen and Arup Bhattacharya","title":"SIMOC-Inspired Mesh Sensing and Combinatorial Bayesian Optimization of Classroom Air-Purifier Placement"},{"paper_no":"558","is_sponsored":false,"session_id":"1-1","authors":"Vincenzo Gentile and Marco Perino","title":"Low-cost & fast response multi-tracer multi-point gas sensing network for ventilation and interzonal flows measurements"},{"paper_no":"71","is_sponsored":false,"session_id":"1-2","authors":"Weiyu Shih, Kyosuke Hiyama, Yuya Baba and Ryosuke Kinoshita","title":"Energy Conservation and Performance Verification of Air-Conditioning Systems in a University Building with a Large-Scale Learning Commons"},{"paper_no":"72","is_sponsored":false,"session_id":"1-2","authors":"Wei Jing, Akihito Ozaki, Yusuke Arima, Younhee Choi and Sungjun Yoo","title":"Evaluation of a Peak Cooling Load Estimation Model for Radiant Systems in Large Indoor Spaces: Validation with BES and Energy Saving Analysis"},{"paper_no":"174","is_sponsored":false,"session_id":"1-2","authors":"Beom-Jun Kim, Sang-Hwan Park, Ye-Weon Kim, Ye-Eun Jang, Hansol Lim and Ki-Hyung Yu","title":"Post-Retrofit Performance Evaluation of Heat Pump Systems Using Regression-Based Benchmarking"},{"paper_no":"290","is_sponsored":false,"session_id":"1-2","authors":"Minyoung Choi, Soo-Jin Lee, Min-Geon Park, Suyeon Hong and Jae-Weon Jeong","title":"Performance of a Hybrid Ground Source Heat Pump System with Open-Loop and Closed-Loop Ground Heat Exchangers"},{"paper_no":"358","is_sponsored":false,"session_id":"1-2","authors":"Mohammad Hamid, Mohammed Assad, Walid Chakroun and Nesreen Ghaddar","title":"Pulsating Impinging Jet Ventilation with floor cooling to improve thermal comfort at enhanced system performance"},{"paper_no":"45","is_sponsored":false,"session_id":"1-3","authors":"Rossella Cottone, Stefano Fantucci, Giorgia Autretto and Miroslav Čekon","title":"High - Performance Phase Change Material - Integrated Systems for Summer Climate Optimization"},{"paper_no":"303","is_sponsored":false,"session_id":"1-3","authors":"Yujin Kang, Ji Hun Park, Seong Taek Kang and Sumin Kim","title":"Exploring cross-laminated timber (CLT) applications for sustainable façade design in Korea"},{"paper_no":"311","is_sponsored":false,"session_id":"1-3","authors":"Young Uk Kim, Dongchan Jin and Sumin Kim","title":"Effect of carbon material dispersion in PCM on thermal properties of cementitious building materials"},{"paper_no":"349","is_sponsored":false,"session_id":"1-3","authors":"Minyoung Kwon, Jubyung Lee, Yongsik Jeong, Youngjae Lee, Juseok Kim, Shinjae Lee and Sangeun Han","title":"Plug-and-Play Cartridge Facades: Assessing Energy, Carbon, and Cost in Office Renovations"},{"paper_no":"355","is_sponsored":false,"session_id":"1-3","authors":"Yonca Yaman, Ayça Tokuç, Mehmet Akif Ezan, Gülden Köktürk, Zeliha Demirel and İrem Deniz","title":"Bioreactive Skins: Evaluating Microalgae Façade Systems for Thermal and Daylighting Performance in Los Angeles"},{"paper_no":"482","is_sponsored":false,"session_id":"1-3","authors":"Soyoen An, Minseong Kim, Taeyeon Kim, Hyokung Sung and Jae-Weon Jeong","title":"Retrofit of Thermoelectric Moule-Based Thermally Activated Insulation Panel for Apartment Buildings"},{"paper_no":"25","is_sponsored":false,"session_id":"1-4","authors":"Mar Hernandez and Roberto Alonso González Lezcano","title":"Methodology for determining Indoor Environmental Quality (IEQ) in residential buildings for the elderly by monitoring key environmental parameters."},{"paper_no":"98","is_sponsored":false,"session_id":"1-4","authors":"Koga Nakamura and Tatsuya Hayashi","title":"Impact of Office Environmental Performance on Corporate Value: An Objective Data Analysis in Human Capital Management"},{"paper_no":"106","is_sponsored":false,"session_id":"1-4","authors":"Mateus Pedrosa Braga, Iasmin Lourenço Niza and Evandro Eduardo Broday","title":"The Influence of Seasonality on Indoor Environmental Quality Parameters in Brazilian University Classrooms"},{"paper_no":"111","is_sponsored":false,"session_id":"1-4","authors":"Clara Peretti, Alberto Lodovico Ghiberti and Enrico Fabrizio","title":"Analysis and monitoring of environmental conditions and well-being in remote working environments in northern Italy"},{"paper_no":"230","is_sponsored":false,"session_id":"1-4","authors":"Shunsaku Uozumi, Koga Nakamura and Tatsuya Hayashi","title":"Wellness Offices in Japan: An Empirical Analysis Based on CASBEE-Wellness Office"},{"paper_no":"397","is_sponsored":false,"session_id":"1-4","authors":"Shundong Li and Nan Ma","title":"Large Language Models for Investigating Co-Occurrences in Multi-Domain Indoor Environmental Quality"},{"paper_no":"68","is_sponsored":false,"session_id":"1-5","authors":"Vincenzo Costanzo, Gianpiero Evola and Michele Torrisi","title":"Selecting and testing Personal Comfort Systems (PCS) in office spaces in a Mediterranean climate: first insights from in-situ surveys"},{"paper_no":"109","is_sponsored":false,"session_id":"1-5","authors":"Kyoungmin Lim, Jihyun Yoo, Junseok Park, Chungyoon Chun, Sanghun Kim, Seokwon Seo and Namshin Kim","title":"Determining Optimal Local Thermal Environment for a Vehicle Passenger Using Thermal Comfort Model"},{"paper_no":"128","is_sponsored":false,"session_id":"1-5","authors":"Wen-Hsuan Hsu and Yun-Shang Chiou","title":"Fishbone vs. Peripheral-Ring Air-Conditioning Layouts: Spatial Thermal Variation and Occupant Comfort in Office Environments"},{"paper_no":"176","is_sponsored":false,"session_id":"1-5","authors":"Tazia Rahman, Mohamed Ouf, Joyce Kim and Kehinde Bayode","title":"Comparative cooling efficiency of wearable and non-wearable personal comfort systems in office settings"},{"paper_no":"223","is_sponsored":false,"session_id":"1-5","authors":"Shiying Li, Yifan Wu and Borong Lin","title":"Thermal comfort benefits using a convective–radiative Personalized Environmental Control System for intermittent heating"},{"paper_no":"491","is_sponsored":false,"session_id":"1-5","authors":"Rosa Seo, Chul Kim and Kyu-Nam Rhee","title":"Impact of Thermally Activated Internal Louvers on Occupants’ Thermal Comfort"},{"paper_no":"51","is_sponsored":false,"session_id":"1-6","authors":"Chao Lin, Hideki Kikumoto, Yasutomo Takakuwa and Ryozo Ooka","title":"Optimizing Parapets for Rooftop Wind Safety Using CFD Simulations and Sensitivity Analysis"},{"paper_no":"91","is_sponsored":false,"session_id":"1-6","authors":"Hongyuan Jia, Chao Lin, Karine Sartelet and Hideki Kikumoto","title":"Bayesian inference for sources of reactive gases in urban canyons based on the adjoint method"},{"paper_no":"119","is_sponsored":false,"session_id":"1-6","authors":"Haruka Nishiyama and Yasuyuki Ishida","title":"Effects of Crown Shape, Leaf Area Index , and Tree-Planting"},{"paper_no":"211","is_sponsored":false,"session_id":"1-6","authors":"Youmin Xu, Xu Han, Shaoxiang Qin and Liangzhu Leon Wang","title":"High Resolution Urban Microclimate Reconstruction with Generative Diffusion-Based AI"},{"paper_no":"275","is_sponsored":false,"session_id":"1-6","authors":"Yu-Cian Lin and Ying-Chieh Chan","title":"Pareto Based Performance Framework for Urban Greening: Visualizing Trade offs between Cost, Carbon Sequestration, and Shading"},{"paper_no":"553","is_sponsored":false,"session_id":"1-6","authors":"Esra Tepeli","title":"Towards Sustainable Building Delivery: Synergizing LEED and Lean Approaches for Energy-Efficient, Healthy Passive House Design"},{"paper_no":"17","is_sponsored":false,"session_id":"1-7","authors":"Wooyoung Jung, Prosper Babon-Ayeng and Kahyun Jeon","title":"Human-AI Interaction in Large Language Model-Integrated Building Energy Management Systems: User Prompt Strategy"},{"paper_no":"252","is_sponsored":false,"session_id":"1-7","authors":"Simona Semeraro, Francesca Vecchi, Roberto Stasi and Umberto Berardi","title":"A Two-Phase Physics-informed Machine Learning Framework for Predicting Indoor Temperature and Cooling Energy in Present and Future Climates"},{"paper_no":"279","is_sponsored":false,"session_id":"1-7","authors":"Mahdi Bonyani, Maryam Soleymani and Chao Wang","title":"Transformer-based Generative AI for HVAC Control with Fragmented Data Center Histories of IT Workload and Cooling Infrastructure"},{"paper_no":"506","is_sponsored":false,"session_id":"1-7","authors":"Xinyue Xu, Julian Wang and Xingjian Liu","title":"ResStock-LLM: A Multi-Agent Framework for Climate-Adaptive Residential Retrofit Decisions"},{"paper_no":"519","is_sponsored":false,"session_id":"1-7","authors":"Muhammad Ihza Febriyan Pagri, Dongho Lee, Junhwa Hwang and Dongjun Suh","title":"A Comparative Analysis of Fine-Tuning and Prompt Engineering for LLM-Based Automation of Building Energy Models for Rooftop Photovoltaics"},{"paper_no":"180","is_sponsored":true,"session_id":"2-1","authors":"Insoo Hwang, Junwoo Kim and Hyunbae Park","title":"A Study on Indoor Air Quality Using a Hybrid Dehumidification Ventilation Unit"},{"paper_no":"85","is_sponsored":false,"session_id":"2-1","authors":"Danbi Kwon, Donghyun Kim and Taeyeon Kim","title":"CFD-based Surrogate Model for Predicting CO2 Concentration Distribution in Classrooms"},{"paper_no":"86","is_sponsored":false,"session_id":"2-1","authors":"Yubin Cho, Donghyun Kim, Sihyeon Kim and Taeyeon Kim","title":"CFD–ML Approach for Predicting Breathing-Zone PM2.5 in Indoor Cooking Environments."},{"paper_no":"401","is_sponsored":false,"session_id":"2-1","authors":"Avijit Sarker, Mina Lesan, Saeid Chahardoli, Yi Xiao, and Arup Bhattacharya","title":"Real-Time Indoor CO2 Distribution Prediction Using CFD and Physics-Regularized Kolmogorov-Arnold Network"},{"paper_no":"442","is_sponsored":false,"session_id":"2-1","authors":"Yi Xiao, Saeid Chahardoli, Mina Lesan, Avijit Sarker, Andrew Z Johanssen and Arup Bhattacharya","title":"Optimizing Ventilation Inlet and Outlet Configurations using a UQ-Informed Robotic Sensing Platform"},{"paper_no":"456","is_sponsored":false,"session_id":"2-1","authors":"Tang Lee and Anthony Santini","title":"Preventing the spread of airborne infectious pathogens in the next pandemic"},{"paper_no":"36","is_sponsored":false,"session_id":"2-2","authors":"Yi Zhu, Junyu Chen, Junjie Fu, Kan Chen and Peng Xu","title":"An Efficient PSO-Based Approach for Optimizing Internal Gain Schedules in Building Energy Simulation"},{"paper_no":"90","is_sponsored":false,"session_id":"2-2","authors":"Yusuke Nagaoka, Keiichiro Taniguchi and Yasunori Akashi","title":"Preemptive HVAC setpoint scheduling enabled by large language model-based occupancy prediction: a lecture hall case study"},{"paper_no":"241","is_sponsored":false,"session_id":"2-2","authors":"Sharon Verghese and Mike Jaeger","title":"Enhanced Deterministic Occupant Behavior Modeling Framework for Energy Efficient Conceptual Design"},{"paper_no":"249","is_sponsored":false,"session_id":"2-2","authors":"Jeongyun Hwang and Hyunwoo Lim","title":"Improving urban building energy modeling (UBEM) accuracy through shape and energy use pattern calibration factors based on representative buildings"},{"paper_no":"477","is_sponsored":false,"session_id":"2-2","authors":"Joshua Wiens","title":"IES: New trends in building performance modeling"},{"paper_no":"576","is_sponsored":false,"session_id":"2-2","authors":"Sooyoun Cho and Gi Seok Kim","title":"Development of Hierarchical Classification System for University Building Energy Influential Factors and Construction of Prediction Matrix"},{"paper_no":"75","is_sponsored":false,"session_id":"2-3","authors":"Miyu Matsunobu, Kyosuke Hiyama and Yutaka Oura","title":"Quantifying the Trade-off between Upfront and Operational Carbon in High-Performance Building Envelopes"},{"paper_no":"322","is_sponsored":false,"session_id":"2-3","authors":"Hyeonseong Yuk, Seong Taek Kang and Sumin Kim","title":"Balancing energy efficiency and conservation in historic building retrofits"},{"paper_no":"496","is_sponsored":false,"session_id":"2-3","authors":"Oi-Man Hip, Simeon N. Ingabo and Ying-Chieh Chan","title":"Evaluating the Impact of Reflective Painting on Building HVAC Performance"},{"paper_no":"532","is_sponsored":false,"session_id":"2-3","authors":"Kisa Fujiwara","title":"Thermal and Daylighting Performance of Representative Spatial Configurations in Contemporary Japanese Municipal Office Buildings"},{"paper_no":"645","is_sponsored":false,"session_id":"2-3","authors":"In-Hwan Lee, Beom Yeol Yun, Sang Joon Lee, Chul-Ki Kim, and Hyung Woo Lee","title":"Strategies for zero energy building certification of timber house"},{"paper_no":"50","is_sponsored":false,"session_id":"2-4","authors":"Seonghyuk Son and Dongwoo Jason Yeom Yanwei Jin, Yunyi Zeng, Juan Yu and","title":"Lighting and Spatial Proportions in Virtual Reality: Patterns of Comfort and Task Performance Health impact assessment of light and thermal environments:"},{"paper_no":"204","is_sponsored":false,"session_id":"2-4","authors":"Borong Lin Quanna Liao, Duo Yang, Le Ma, Hui","title":"field research in offices with wearable monitoring Cognitive performance evaluation based on physiological"},{"paper_no":"226","is_sponsored":false,"session_id":"2-4","authors":"Zhu, Hua Su, Masanari Ukai and Songtao Hu Wan-Tai Au-Yeung, Josephine Lau, Joel Steele, Nora Mattek, Zachary Beattie,","title":"indicators in different sleep restrictions Associations between night-time bedroom environmental"},{"paper_no":"270","is_sponsored":false,"session_id":"2-4","authors":"Lyndsey Anderson, Allison Lindauer, Miranda Lim and Jeffrey Kaye Zhining Zhu, Ji Eun Choi, Xinbo Xu,","title":"factors and objective sleep metrics of older adults Environmental and Physiological Influences on Sleep Quality: A"},{"paper_no":"380","is_sponsored":false,"session_id":"2-4","authors":"Jiwon Park, Tobias Kramer, Hui Zhang and Stefano Schiavon","title":"Randomized Controlled Trial using Heating Pads in the Bay Area"},{"paper_no":"571","is_sponsored":false,"session_id":"2-4","authors":"Eun Ji Choi and Joon-Ho Choi","title":"Improving metabolic rate estimation in buildings through diffusion-based occluded pose reconstruction"},{"paper_no":"42","is_sponsored":false,"session_id":"2-5","authors":"Maha Basha and Jim Uttley","title":"Adaptive thermal comfort and healthy home metrics among minority households in the United Kingdom."},{"paper_no":"202","is_sponsored":false,"session_id":"2-5","authors":"Raimo Simson, Renate Jaanus, Martin Kiil, Karl-Villem Võsa, Endrik Arumägi, Alo Mikola and Jarek Kurnitski","title":"Balancing Cooling and Comfort: Lessons from Fan Coil Units in Estonia"},{"paper_no":"346","is_sponsored":false,"session_id":"2-5","authors":"Ryuichiro Yoshie","title":"Field Measurements in a Renovated Apartment with Underfloor Air Distribution Using a Single Mini-Split Heat Pump"},{"paper_no":"567","is_sponsored":false,"session_id":"2-5","authors":"Ying Jiang, Yongxin Xie and Jianlei Niu","title":"Developing a physiological-parameter-based thermal sensation model for warm-biased outdoor settings: the dynamic part"},{"paper_no":"579","is_sponsored":false,"session_id":"2-5","authors":"Andrea Martinez-Arias, Marco Morales, Valentina Gonzalez, Maria José Peña, Daniel Canto and Isaias Navarrete","title":"Prototypes and on-field testing of eco-insulated modules for retrofitting building facades in public schools in Chile."},{"paper_no":"35","is_sponsored":false,"session_id":"2-6","authors":"Kuniaki Mihara, Daniel Jun Chung Hii, Hiroyuki Takasuna and Katsuhiko Sakata","title":"From Simulation to Space: Impacts of Green Coverage Ratio and Spaciousness on Occupant Well-being in a Semi-outdoor Atrium"},{"paper_no":"153","is_sponsored":false,"session_id":"2-6","authors":"Haerin Yang, Minwoo Kim and Jeehwan Lee","title":"Comparative EEG Neural Pattern Analysis of Occupant Responses to Window Configurations in Educational Environments"},{"paper_no":"198","is_sponsored":false,"session_id":"2-6","authors":"Yun-Shang Chiou and Wan-Hsin Cheng","title":"Between ClimateStudio simulations and reality – a study of glare in complex lighting workplace environments"},{"paper_no":"217","is_sponsored":false,"session_id":"2-6","authors":"Chung-Luen Cheng and Ying-Chieh Chan","title":"Interactive Lighting Design and Simulation Interface Based on BIM and Game Engines for Smart Indoor Environments"},{"paper_no":"396","is_sponsored":false,"session_id":"2-6","authors":"Zahra Najafi and Mehdi Ashayeri","title":"A Framework for Designing Kinetic Fabric Shading Systems Optimizing Integrated Energy, Daylight, and View Clarity Metrics"},{"paper_no":"601","is_sponsored":false,"session_id":"2-7","authors":"Maninder Thind, Rebecca Martinez, Anushka Raut, Yu Hou","title":"Advancing Healthy, Equitable Buildings: Integrating Research, Standards, and Decarbonization Practice"},{"paper_no":"15","is_sponsored":false,"session_id":"3-1","authors":"Hanin Othman and Rahman Azari","title":"Enhancing the Granularity of Spatial Sensing using a Low-Cost IoT-based Sensing Network"},{"paper_no":"261","is_sponsored":false,"session_id":"3-1","authors":"Lu Li, Jiawei Wang, and Katie E. Angarano","title":"Long-Term Indoor Air Quality Exposure Assessment in Academic Buildings"},{"paper_no":"317","is_sponsored":false,"session_id":"3-1","authors":"Jehyun Kim and Minki Sung","title":"Estimation of the Number of Occupants Using Carbon Dioxide Concentration and Differential Pressure Data Based Machine Learning Model"},{"paper_no":"324","is_sponsored":false,"session_id":"3-1","authors":"Arezoo Shirazi, Artur Grigorev, Payam Keshavarz Mirzamohammadi, Dikaia Xenaki, Brian Oliver and Adriana-Simona Mihaita","title":"Indoor and Outdoor Air Quality Monitoring in a Sydney Medical Research Center Using IoT and Toxicological Assessment"},{"paper_no":"549","is_sponsored":false,"session_id":"3-1","authors":"Aaron Collins, Joseph Stam and Rob Caldow","title":"Evaluating and Mitigating Residential Fine and Ultrafine Particle Exposure via an Open-Source Condensation Particle Counter and Low-Cost Sensor Suite"},{"paper_no":"334","is_sponsored":false,"session_id":"3-2","authors":"Heon-Min Lee, Youngsub An, Jongkyu Kim, Jae-Won Jeong and Min-Hwi Kim","title":"Experimental and Theoretical Performance Analysis of a Building-Integrated Photovoltaic and Thermal (BIPVT) System"},{"paper_no":"338","is_sponsored":false,"session_id":"3-2","authors":"Ye-Bin Shin, Jae-Won Jeong and Min-Hwi Kim","title":"Experimental Analysis of a Building-Integrated Photovoltaic and thermal (BIPVT) Module with Detachable Phase Change Material (PCM) for Curtain Wall Applications"},{"paper_no":"475","is_sponsored":false,"session_id":"3-2","authors":"Shun Okihara, Hideki Sato and Katsunori Nagano","title":"A study on optimal energy management with forecasting PV power generation and energy consumption for ZEB provided by GWHP and energy storage."},{"paper_no":"563","is_sponsored":false,"session_id":"3-2","authors":"Yong You and Qiuhua Duan","title":"Multi-objective performance assessment of rear-ventilated BIPV double facade using CFD"},{"paper_no":"560","is_sponsored":false,"session_id":"3-2","authors":"Mohammed Nazarpoor and Huijeong Kim","title":"Challenges and Drivers of Battery Second-Use Community Energy Storage Development: Integrating Social, Techno-Economic, and Behavioral Perspectives"},{"paper_no":"129","is_sponsored":false,"session_id":"3-3","authors":"Sameeraa Soltanian-Zadeh, Shayan Mirzabeigi, Bess Krietemeyer and Jianshun Zhang","title":"Integrated Evaluation of Energy Performance, Indoor Environmental Quality and Building Envelope Performance in Retrofitted Multifamily Residential Buildings"},{"paper_no":"178","is_sponsored":false,"session_id":"3-3","authors":"Yuchong Qian and Jiawei Leng","title":"How Digital Twin Platforms Empower the Decarbonization of Built Environments: A Case Study of a Vernacular Dwelling"},{"paper_no":"305","is_sponsored":false,"session_id":"3-3","authors":"Yun-Jin Hong, Jabin Goo, Dong Hee Choi and Dong Hwa Kang","title":"Prediction of Dehumidification Performance of a Window-Type Liquid Desiccant Ventilation System"},{"paper_no":"390","is_sponsored":false,"session_id":"3-3","authors":"Jiwon Park, Sangjoon Lee, Jiayu Li, Kian Wee Chen, Ippei Izuhara, and Stefano Schiavon","title":"A simulation study on condensation risk in radiant cooling panels with elevated air movement"},{"paper_no":"462","is_sponsored":false,"session_id":"3-3","authors":"Daisuke Ogura, Sora Nakaike, Makiko Nakajima and Masaru Abuku","title":"Investigation of Hygrothermal Control and Architectural Measures to Reduce Mold Risk in RC Detached Houses in Hot and Humid Regions"},{"paper_no":"540","is_sponsored":false,"session_id":"3-3","authors":"Enkh-Uchral Erdenebaatar, Taro Mori, Amarbayar Adiyabat and Hisato Osawa","title":"Field Evaluation of Winter Indoor Environmental Performance of a Passive House–Level Detached House in Mongolia"},{"paper_no":"49","is_sponsored":false,"session_id":"3-4","authors":"Seonghyuk Son, Jae Yong Suk, Kristina Knowles and Dongwoo Jason Yeom","title":"Light-Music Interaction: Modulating the Perception of Emotional Music Through Ambient Lighting"},{"paper_no":"193","is_sponsored":false,"session_id":"3-4","authors":"Shuja Rehman, Prabhjot Singh Chani, Rajasekar Elangovan and Omar Afroz","title":"Thermal-Only Physiological Sensing of Stress and Boredom Detection for Occupant-Centric Control"},{"paper_no":"466","is_sponsored":false,"session_id":"3-4","authors":"Yijin Zhao, Tsz Him Ian Chiu, Nan Wang, Jeffrey Mundinger and Julian Wang Shintaro Ando, Misaki Miyazaki, Wataru","title":"A pilot study of the interaction between heat stress and metameric white light on occupants’ cognitive performance Long-Term Risk of Chronic Disease from Cold Indoor"},{"paper_no":"489","is_sponsored":false,"session_id":"3-4","authors":"Umishio and Toshiharu Ikaga","title":"Environments: A 10-Year Cohort Study"},{"paper_no":"538","is_sponsored":false,"session_id":"3-4","authors":"Shevvaa Beiglary and Julian Wang","title":"Machine Learning-Based Prediction of Circadian Lighting Exposure: A Practical Framework for Nursing Homes"},{"paper_no":"48","is_sponsored":false,"session_id":"3-5","authors":"Senta Mill, Matija Cabadaj, Nicolas März, Nicholas Müller and Normen Langner","title":"How Accurate Is Low-Cost Comfort Monitoring? Validating the ComfortCube"},{"paper_no":"272","is_sponsored":false,"session_id":"3-5","authors":"Yukimasa Hirano, Masahiro Katoh, Saori Yumino and Tsubasa Okaze","title":"Validation of Turbulence Models used in CFD Analysis of Indoor Natural Convection with a Cold Window and a Thermal Manikin"},{"paper_no":"276","is_sponsored":false,"session_id":"3-5","authors":"Cheng Zhao, Yichen Yu and Jianlei Niu","title":"Development of a dynamic heat and moisture transfer model for sweat-soaked clothing in thermal comfort assessment"},{"paper_no":"320","is_sponsored":false,"session_id":"3-5","authors":"Jihee Nam, Yujin Kang and Sumin Kim","title":"Influence of the thermal behavior of building envelopes on urban microclimate"},{"paper_no":"510","is_sponsored":false,"session_id":"3-5","authors":"Meftah Uddin and Sanjeev Khanna","title":"3D Visualization and Spatiotemporal Analysis of Indoor Comfort Parameters"},{"paper_no":"136","is_sponsored":false,"session_id":"3-6","authors":"Yasir Ahmed","title":"Toward a Just Energy Transition in the GCC: Integrating Policy, Sustainability, and Climate Leadership"},{"paper_no":"175","is_sponsored":false,"session_id":"3-6","authors":"Zahra Khashei and Sandeep Langar","title":"Integrating Circular Strategies into Post-Disaster Rebuilding: Pathways to Resilient and Resource-Efficient Recovery"},{"paper_no":"237","is_sponsored":false,"session_id":"3-6","authors":"Min Zong","title":"From the source ensuring IAQVEC meet people's new expectations for a better life"},{"paper_no":"344","is_sponsored":false,"session_id":"3-6","authors":"Ryuta Tsurumi and Takahiro Yoshida","title":"Spatiotemporal analysis of major CO2 emission sources in the Japanese building sector"},{"paper_no":"357","is_sponsored":false,"session_id":"3-6","authors":"Max Ruffo","title":"Why Energy per Person Is the Metric the Future Demands"},{"paper_no":"546","is_sponsored":false,"session_id":"3-6","authors":"Caribay Godoy-Rangel, Emanuele Giorgi and Viviana Barquero","title":"Evaluating the Thermal Resilience of PCM-Retrofitted Housing under Heat Waves and Climate Change in Mexico"},{"paper_no":"82","is_sponsored":false,"session_id":"3-7","authors":"Jung Min Han","title":"Quantum Computing for Wind Pressure Data Prediction"},{"paper_no":"181","is_sponsored":false,"session_id":"3-7","authors":"Po-Yen Lai, Xinyu Yang, Jian Cheng Wong, Derrick Low and Huizhe Liu","title":"Agentic AI-Enabled Framework for Thermal Comfort and Building Energy Assessment in Tropical Urban Neighborhoods"},{"paper_no":"565","is_sponsored":false,"session_id":"3-7","authors":"Saba Imani and Yun Kyu Yi","title":"GenAI for Human–Building Interaction: Consistency, Reproducibility, and Automation in Post-Occupancy Evaluation"},{"paper_no":"572","is_sponsored":false,"session_id":"3-7","authors":"Le Sun, Xinyue Xu and Julian Wang","title":"Bridging Construction and AI: Computer Vision-Based Floor Plan Analysis for Real-Time Cost Estimation"},{"paper_no":"573","is_sponsored":false,"session_id":"3-7","authors":"Ana Sofia Graça and Xiang Zhang","title":"Early-stage shading design evaluation for buildings: A workflow accessing energy performance on AI-generated 3D geometry"},{"paper_no":"574","is_sponsored":false,"session_id":"3-7","authors":"Soo Jeong Jo","title":"Application of AI and Building Performance Simulations to the Early Stages of Building Design"},{"paper_no":"67","is_sponsored":false,"session_id":"3-8","authors":"Mahdieh Adib, Fariborz Haghighat and Fuzhan Nasiri","title":"Continuous-Time Neural Surrogate Models for Simulation and Scheduling of Compressed Air Energy Storage Systems"},{"paper_no":"287","is_sponsored":false,"session_id":"3-8","authors":"Zhao Dong, Jian Ge, Jiaqi Wang, Kang Zhao and Isabelle Y.S. Chan","title":"The impact of tangible and intangible factors on occupants’ satisfaction with the indoor environment: A machine learning-driven analysis"},{"paper_no":"471","is_sponsored":false,"session_id":"3-8","authors":"Zeinab Deldoost Fattahi, Fariborz Haghighat and Fuzhan Nasiri","title":"A Superposition-Based Method for Rapid Estimation of Indoor Airflow Fields Under Occupant Movement"},{"paper_no":"500","is_sponsored":false,"session_id":"3-8","authors":"Maria Isabel Rivera, Tamara Ugarte-Aviles, Patricia A. Huerta and Marcela Palma-Troncoso","title":"The Effect of Air Purifier Use in Classrooms on the Pulmonary Function of School-Aged Children: A Pragmatic Controlled Trial in Primary Schools in Central-Southern Chile"},{"paper_no":"47","is_sponsored":true,"session_id":"4-1","authors":"Seungwon Seo, Dajeong Choi, Yujin Choi, Seongkyun Ahn and Choongwan Koo","title":"Toward Carbon-Neutral Construction: Clustering-Based Analysis of Site Electricity and Abnormal Use"},{"paper_no":"101","is_sponsored":true,"session_id":"4-1","authors":"Hae Won Lee, Ji Young Yun and Jin Woo Moon","title":"Development and Applicability Evaluation of an Image-Based BMI Estimation Model for Occupant-Centric Thermal Environment Control"},{"paper_no":"161","is_sponsored":true,"session_id":"4-1","authors":"Sarath Raj, Da-Eun Jung, Ji Hwan Jeong, Kanghee Lee and Geun Young Yun","title":"Machine-Learning Based Downscaling of GK-2A Land Surface Temperature: A study of Seoul, South Korea"},{"paper_no":"194","is_sponsored":true,"session_id":"4-1","authors":"Jun Kyu Kim, Se Hyeon Lim and Jin Chul Park","title":"Analysis of the Lifecycle Carbon Reduction Effects of Public Daycare Centers through Green Remodeling"},{"paper_no":"242","is_sponsored":true,"session_id":"4-1","authors":"Jiwoo Jang, Taejune Song, Hansol Kim, Chaewon Lee, and Hanseung Lee","title":"An Experimental Study on a Paper-Based Sensor for Chloride Ion Measurement in Fresh Concrete"},{"paper_no":"132","is_sponsored":true,"session_id":"4-2","authors":"Hye In Kim, Kang Woo Bae, Ji Yeon Hyun and Jin Woo Moon","title":"Evaluating the Scalability of a PM2.5 Indoor Concentration Prediction Model using Transfer Learning"},{"paper_no":"260","is_sponsored":false,"session_id":"4-2","authors":"Renate Jaanus, Kristin Taru, Alo Mikola and Jarek Kurnitski","title":"Experimental Evaluation of CO₂ Tracer Gas Dosing Methods for Reliable Ventilation Effectiveness Measurements with a Point Source"},{"paper_no":"415","is_sponsored":false,"session_id":"4-2","authors":"Neelima Geetha Archana Madasu, Sanand Maddipati and Elham Fini","title":"The Role of Bio-Based Wall Insulation in Enhancing Indoor Air Quality and Human Performance"},{"paper_no":"521","is_sponsored":false,"session_id":"4-2","authors":"Yunus Emre Cetin, Zihao Wang, Gerrid Brockmann and Martin Kriegel","title":"Ventilation Effectiveness in a Test Room: Experiments and CFD Validation"},{"paper_no":"130","is_sponsored":false,"session_id":"4-3","authors":"Akihiro Imaizumi, Hideki Tanaka, Hideharu Komoda and Takeshi Watanabe","title":"Cooperative control method for Distributed Energy Resources using air conditioning heat source systems in multiple buildings"},{"paper_no":"148","is_sponsored":false,"session_id":"4-3","authors":"Mao Serikawa, Seiichi Kashihara, Junta Nakano, Takashi Akimoto, Toshiharu Ikaga and Shuzo Murakami","title":"Economic and environmental benefits of using batteries and heat pump water heaters to effectively utilize daytime electricity"},{"paper_no":"222","is_sponsored":false,"session_id":"4-3","authors":"Junlang Zhu, Hao Tang, Xiangzhe Xi, Yang Geng and Borong Lin","title":"Planning High-PV Penetration Park: Enhancing Local PV Utilization and Economic Efficiency through Multi-Energy Storage"},{"paper_no":"564","is_sponsored":false,"session_id":"4-3","authors":"Qiuhua Duan and Christy Ponnan","title":"Closed-Loop Digital Twins for Building-Integrated Photovoltaics: A Focused Review"},{"paper_no":"578","is_sponsored":false,"session_id":"4-3","authors":"Wooyoung Jung","title":"Chain-of-Thought Prompting for Human-Centered Home Energy Management"},{"paper_no":"244","is_sponsored":false,"session_id":"4-4","authors":"Sim-Cheon Yuk, Seo-Yeon Jo, In-Beom Jo and Han-Seung Lee","title":"Evaluation of Resistance to Chloride Attack of Concrete Repair Method Using a Combined Application of Silicone-Based Water Repellent"},{"paper_no":"37","is_sponsored":false,"session_id":"4-4","authors":"Indra Permana, Alya Penta Agharid, Fu Jen Wang, Zulvi Alfiqri Hidayatulloh and Chu-Cheng Wei","title":"Enhancing Biotechnology Cleanroom Performance through Field Recovery Testing and CFD-based Airflow Optimization"},{"paper_no":"113","is_sponsored":false,"session_id":"4-4","authors":"Kätriin Onemar, Raimo Simson and Jarek Kurnitski","title":"Dynamic Modeling and Experimental Validation of Floor Cooling Systems for Overheating Assessment and Condensation Risk Considerations in Residential Buildings"},{"paper_no":"155","is_sponsored":false,"session_id":"4-4","authors":"Minzhi Ye, Masashi Momota, Aoto Kumagai, Hajime Ogata and Hyo Ogawa","title":"Post-construction evaluation of building envelope thermal performance using neural networks"},{"paper_no":"457","is_sponsored":false,"session_id":"4-4","authors":"Nasim Ildiri and Mark Hernandez","title":"Effects of HVAC Duct Cleaning on Indoor Air Quality Parameters: A Multi Season Demonstration of Exposure Assessment in Occupied Public School Classrooms"},{"paper_no":"646","is_sponsored":false,"session_id":"4-4","authors":"Beom Yeol Yun, In-Hwan Lee, Sang-Joon Lee, Chul-Ki Kim, Hyung Woo Lee and Tae-Ik Hwang","title":"Field Application of EMC-Based Temperature–Humidity Monitoring for Durability Risk Assessment in Timber Buildings"},{"paper_no":"78","is_sponsored":false,"session_id":"4-5","authors":"Kensuke Watanabe, U Yanagi, Yoshiki Shiraishi and Koichiro Asano","title":"Mycobiome of air purifier filters in allergic bronchopulmonary mycosis patients' homes"},{"paper_no":"105","is_sponsored":false,"session_id":"4-5","authors":"Iasmin Lourenço Niza, Mateus Pedrosa Braga and Evandro Eduardo Broday","title":"Assessment of Indoor Environmental Quality (IEQ) in university classrooms by periods of the day through discriminant analysis"},{"paper_no":"139","is_sponsored":false,"session_id":"4-5","authors":"Toby Cheung and Eikichi Ono","title":"Occupant Environmental Satisfaction in a Semi-Outdoor Workspace versus Air-Conditioned Offices in Singapore"},{"paper_no":"146","is_sponsored":false,"session_id":"4-5","authors":"He Wu, Hisato Osawa and Taro Mori","title":"Investigation of Legionella Transmission Using CFD Simulation Coupled with GIS"},{"paper_no":"187","is_sponsored":false,"session_id":"4-5","authors":"Amanda Quarshie and Cristina Poleacovschi","title":"Residential Cooking and Kitchen Ventilation Behaviors in Alaska Native Households: Foundations for Indoor Air Quality Assessment"},{"paper_no":"239","is_sponsored":false,"session_id":"4-5","authors":"Houda Er-Retby, Myriam Bahrar, Mohamed Oualid Mghazli, Mostafa Benzaazoua and Mohamed El Mankibi","title":"Experimental Assessment of Indoor Air Quality and Thermal Comfort Performance Using Fuzzy Logic Control for Natural and Mechanical Ventilation Systems"},{"paper_no":"150","is_sponsored":false,"session_id":"4-6","authors":"Ryoma Okuda, Hideki Tanaka, Hiroaki Tanaka and Fuminori Nishiyama","title":"Optimal control method for HVAC heat source system based on operational data utilizing machine learning"},{"paper_no":"163","is_sponsored":false,"session_id":"4-6","authors":"Doyun Lee, Young Jik Youn and Wonseok Oh","title":"Microclimate heterogeneity and operational strategies in indoor vertical farm"},{"paper_no":"177","is_sponsored":false,"session_id":"4-6","authors":"Jeonghoon Choi, Muhammad Ihza Febriyan Pagri and Dongjun Suh","title":"Sensor-Only Occupant-Centric Ventilation Control with LLM-Augmented Decision Support for Human–Building Interactions"},{"paper_no":"364","is_sponsored":false,"session_id":"4-6","authors":"Chanuk Lee and June Young Park","title":"Deep reinforcement learning for citizen-centric building retrofit decision making under behavioral uncertainty of a series game scenario"},{"paper_no":"431","is_sponsored":false,"session_id":"4-6","authors":"Hongzhi Liu, Takumi Tanabe, Bozhou Dang and Katsunori Nagano","title":"Implementation of an Optimized Control Strategy for Energy Storage Systems in HEMS (Home Energy Management System) in Cold Climate"},{"paper_no":"551","is_sponsored":false,"session_id":"4-6","authors":"Nan Wang and Giorgia Chinazzo","title":"An Immersive VR-Based Workflow for Evaluating Automated Shading Control and Visual Aging Effects within Smart Cities"},{"paper_no":"210","is_sponsored":false,"session_id":"4-7","authors":"Todd Walsh, Yumna Kurdi, Tharique De Silva and Bruce Haglund","title":"Overcoming Construction Barriers to Mass Timber Adoption in the Inland Northwest: A Case Study of the ICCU Arena"},{"paper_no":"299","is_sponsored":false,"session_id":"4-7","authors":"Dongchan Jin, Young Uk Kim and Sumin Kim","title":"Development and performance evaluation of recycled insulation materials from waste firefighting suits for fire-resistant building pipes"},{"paper_no":"302","is_sponsored":false,"session_id":"4-7","authors":"Won Duk Suh, Jihee Nam and Sumin Kim","title":"Aging of indoor finishing materials under long-term temperature exposure: Focus on surface degradation and chemical oxidation"},{"paper_no":"326","is_sponsored":false,"session_id":"4-7","authors":"Jae Hyuck Jung, Young Uk Kim and Sumin Kim","title":"Thermal performance of lightweight concrete with a novel aggregate from cement-coated recycled polyurethane foam impregnated with phase change material"},{"paper_no":"421","is_sponsored":false,"session_id":"4-7","authors":"Najah Majouri, Mohamed El Mankibi and Jalila Sghaier","title":"Sustainable Fired Clay Composites with Root Palm and Diss Fibers for Energy-Efficient and Healthy Indoor Environments"},{"paper_no":"536","is_sponsored":false,"session_id":"4-7","authors":"Tannaz Afshar Bakeshloo, Azadeh Sawyer and Joshua Lee","title":"Life Cycle Assessment of Building Deconstruction: Insights from Ten Projects"},{"paper_no":"570","is_sponsored":true,"session_id":"5-1","authors":"Chan Hyeok Kang, Bo Kyung Jung, Tae Kyu Lee, Young Cheol Kwon, and Chang Ho Choi","title":"Automated IFC Generation and Machine Learning-Based λ- Correction for Embodied Carbon Estimation of Buildings"},{"paper_no":"19","is_sponsored":false,"session_id":"5-1","authors":"Jong-Il Bang and Minki Sung","title":"Disinfection Effectiveness of UR-UVGI for Airborne Bacteria Based on Equivalent Air Change Rate in a Multi-bed Patient Room"},{"paper_no":"27","is_sponsored":false,"session_id":"5-1","authors":"Jaekyoung Kim, Donghyun Koo, Taeyoon Kim, Dasom Hur and Seungkwon Jung","title":"Development and Application of a Spatiotemporal Validation Method for CFD-based Analysis of Urban Heat Island and Thermal Comfort"},{"paper_no":"46","is_sponsored":false,"session_id":"5-1","authors":"Chun Han Li","title":"Evaluation of Membrane-Based Dehumidification Systems: Pressure Permeance of Dry Air in Commercial and Composite Membranes"},{"paper_no":"52","is_sponsored":false,"session_id":"5-1","authors":"Jaekyoung Kim, Donghyun Koo, Taeyoon Kim, Samuel Park and Soonchul Kwon","title":"Development of a predictive Model for Urban Cooling Blue Infrastructure using Integrated CFD and U-Net CNN"},{"paper_no":"53","is_sponsored":false,"session_id":"5-1","authors":"Suji Choi and Jaehun Jo","title":"Operational Performance Indicators Based on Temporal Energy Use Patterns for Enhancing EUI"},{"paper_no":"57","is_sponsored":false,"session_id":"5-1","authors":"Ali Moazzeni Khorasgani , Ghazal Asadi Eskandar","title":"Sustainable Mycéliums Composites for Building Construction"},{"paper_no":"58","is_sponsored":false,"session_id":"5-1","authors":"Milad Jafari and Ehsan Mousavi","title":"Data-driven approach for studying MRI units’ energy consumption"},{"paper_no":"77","is_sponsored":false,"session_id":"5-1","authors":"Chih-Hao Chen","title":"New Ionic Liquid for Liquid Desiccant Air Conditioning system"},{"paper_no":"112","is_sponsored":false,"session_id":"5-1","authors":"Maciej Danielak and Patrick Warzecha","title":"Natural Convection Cooling for Indoor Thermal Regulation in Buildings"},{"paper_no":"142","is_sponsored":false,"session_id":"5-1","authors":"Jinkyun Cho, Jongwoon Song, Wonseok Oh, Sangwoo Byun, Jihyuk Ahn and Haram Kim","title":"Engineering resilient ventilation systems for rapid-deployment medical isolation units"},{"paper_no":"151","is_sponsored":false,"session_id":"5-1","authors":"Jyun-De Liang and Cheng-Kai Hung","title":"Design and Study of a Vapor Compression Cycle Household Dehumidifier Using Ionic Liquid Solution"},{"paper_no":"188","is_sponsored":false,"session_id":"5-1","authors":"Yan Lu, Xinyi Zhang, Soroush Neyestani, Ling Jin, Lu Zhang, Rima Habre and Jiachen Zhang","title":"Assessing Indoor Versus Outdoor PM2.5 Concentrations During the 2025 Los Angeles Fires Using the PurpleAir Sensor Network"},{"paper_no":"200","is_sponsored":false,"session_id":"5-1","authors":"Yi Chun Chu, Jia Kun Chen, Yan Cheng Chiang and Tzu I Tseng","title":"Impact of Inlet Flaps on Ammonia Distribution in a Water-Pad Layer House: A Case Study in Yunlin, Taiwan"},{"paper_no":"234","is_sponsored":false,"session_id":"5-1","authors":"Shunsuke Fujitsubo, Yasuyuki Shiraishi, Yoshiaki Ushifusa and Masayuki Watanabe","title":"Optimization of Annual Operation of a PV-HPWH-BT Cooperative System in an All-Electric House to Achieve Maximum Electricity Self-Sufficiency"},{"paper_no":"127","is_sponsored":false,"session_id":"6-1","authors":"Kiriti Sahoo, E V S Kiran Kumar Donthu and Siva Rama Krishna Evani","title":"Role of portable-mechanical air ionisers on indoor air quality in Indian office buildings"},{"paper_no":"159","is_sponsored":false,"session_id":"6-1","authors":"Elham Hasani Alavy and Clifford B. Fedler","title":"Safety Evaluation of Air Cleaner Technologies in the Building Sector"},{"paper_no":"354","is_sponsored":false,"session_id":"6-1","authors":"Yonca Yaman, Ayça Tokuç, Seda Nur Apdik, İrem Deniz, Azize Ayol, Gizem Tuna Tuygun, Tunahan Akış and Mehmet Akif Ezan","title":"Beyond Filters: Evaluating Biotechnological Indoor Air Purification with Microalgae Systems"},{"paper_no":"408","is_sponsored":false,"session_id":"6-1","authors":"Semi Park and Insung Kang","title":"A state-of-the-air review and laboratory experiments of do-it-yourself (DIY) air cleaners"},{"paper_no":"424","is_sponsored":false,"session_id":"6-1","authors":"Wenfeng Huang, Tong Lin and Jianshun Zhang","title":"Modeling and Simulation of Indoor Aerosol Particle Behavior under Bipolar Ionization-Based Air Cleaning"},{"paper_no":"649","is_sponsored":false,"session_id":"6-1","authors":"Kuan-Lun Pan, Pei-Yun Shih, Zhen-Shuen Choo and Jo-Chen Hsu","title":"Removal of isopropyl alcohol (IPA) in a semiconductor facility using ozone catalytic oxidation"},{"paper_no":"38","is_sponsored":false,"session_id":"6-2","authors":"Alya Penta Agharid, Indra Permana, Fujen Wang and Chu-Cheng Wei","title":"Energy Audit and Modeling for a Bank Management Office under Hot-Humid Climate"},{"paper_no":"218","is_sponsored":false,"session_id":"6-2","authors":"Hyun-A Ko and Jongwon Lee","title":"Building Energy Performance Evaluation of Public Institutions Using the Korean Green Button System"},{"paper_no":"251","is_sponsored":false,"session_id":"6-2","authors":"Youssef Benmoussa, Joud Al Dakheel, Nassim Sebaibi and Mohamed El Mankibi","title":"Enhancing Building Energy Flexibility Through Demand Response-Enabled Heating and Ventilation for Flexible IEQ Management"},{"paper_no":"288","is_sponsored":false,"session_id":"6-2","authors":"Kentaro Suga and Ryozo Ooka","title":"A Study on the Comfort and Energy Effectiveness of Passive Design Method - Case Studies using Detached House Model"},{"paper_no":"562","is_sponsored":false,"session_id":"6-2","authors":"Yizhou Yang and Qiuhua Duan","title":"Predictive Control of Kinetic BIPV Fins for Comfort-Efficient Building Operation"},{"paper_no":"145","is_sponsored":false,"session_id":"6-3","authors":"Meng-Chieh Jeffrey Lee, Yi-Chun Kuo, Liu Shu Han and Tien-Chun Cheng","title":"Impact of CO2 concentration on Elderly residential by EEG& ECG"},{"paper_no":"258","is_sponsored":false,"session_id":"6-3","authors":"Jialiang Guo, Ngoc Dung Ngo Hoang and Hilde Breesch","title":"Outdoor Microclimate Variations and Indoor Thermal Stress: Summer Field Measurements in an Elderly Care Facility"},{"paper_no":"499","is_sponsored":false,"session_id":"6-3","authors":"Mohammad Saleh Nikoopayan Tak and Yanxiao Feng","title":"The Naturalness Effect: Open-Database Analysis of Ventilated and Mechanically Cooled Spaces"},{"paper_no":"502","is_sponsored":false,"session_id":"6-3","authors":"Tsz Him Ian Chiu, Yijin Zhao and Julian Wang","title":"Thermal Sensitivity and Biomarkers as Predictors of Individual Heat-Stress Vulnerability in Indoor Environments"},{"paper_no":"525","is_sponsored":false,"session_id":"6-3","authors":"Guancong Ren and Zheng Tan","title":"Evaluating Walking Thermal Comfort in Urban Spaces Using Machine Learning: The Role of Physiological and Microclimate Factors"},{"paper_no":"164","is_sponsored":false,"session_id":"6-4","authors":"Dongwoo Jason Yeom, Kamil Kaloush and Elham Fini","title":"Performance in Office Settings"},{"paper_no":"173","is_sponsored":false,"session_id":"6-4","authors":"Mehmet Furkan Özbey, Dolaana Khovalyg, Neşe Alkan and Cihan Turhan","title":"Effect of Mood States on Thermal Sensation: Cultural and Gender Differences in Türkiye and Switzerland"},{"paper_no":"248","is_sponsored":false,"session_id":"6-4","authors":"Taketo Suzuki and Tatsuya Hayashi","title":"The relationship between worker's work style and wellness in activity-based working (ABW) offices"},{"paper_no":"360","is_sponsored":false,"session_id":"6-4","authors":"Negar Salahi and June Young Park","title":"Investigating personal thermal comfort for wheelSession chair users using a non-intrusive wheelSession chair-based sensing"},{"paper_no":"439","is_sponsored":false,"session_id":"6-4","authors":"Xin Guo, Emanuel Boutros, Bing Guo, Sameeraa Soltanian-Zadeh and Jianshun Zhang","title":"Occupant Interactions and Perceptions of Personal Environmental Control Systems under Different Ambient Temperatures in Summer Conditions"},{"paper_no":"534","is_sponsored":false,"session_id":"6-4","authors":"Neda Ghaeili Ardabili and Julian Wang","title":"Spectral Drivers of Circadian Daylight Performance in Architectural Glazing as a Function of Gaze Direction"},{"paper_no":"33","is_sponsored":false,"session_id":"6-5","authors":"Anwar Ibrahim, Ahmed Freewan and Majd Momani","title":"Exploring Factors Influencing Occupant Behavior and Thermal Perception in Apartment Buildings: Irbid/Jordan as a case study"},{"paper_no":"44","is_sponsored":false,"session_id":"6-5","authors":"Wataru Umishio, Naoki Kagi, Isao Yamada, Lisa Yumae and Tomohiro Konda","title":"Thermal Comfort and Productivity under Air Conditioning Control Based on Metabolic Rate Estimation from Thermal Images"},{"paper_no":"348","is_sponsored":false,"session_id":"6-5","authors":"Taeyeon Kim, Seheon Kim, Yingdao Nan and Jae-Weon Jeong","title":"Data-Driven Estimation of Occupant Thermal Preferences from Air Conditioner Control Behavior in Residential Units"},{"paper_no":"447","is_sponsored":false,"session_id":"6-5","authors":"Kai Chen and Ali Ghahramani","title":"Demonstrating Challenges in Predicting Occupant Temperature Setpoints: A Comparative Evaluation of Traditional and Transformer-Based Machine Learning Models"},{"paper_no":"469","is_sponsored":false,"session_id":"6-5","authors":"Yijin Zhao and Julian Wang","title":"How heat stress impairs cognition: A review of cognitive performance in indoor passive hyperthermal environments"},{"paper_no":"88","is_sponsored":false,"session_id":"6-6","authors":"Keisuke Kurobe and Hideki Tanaka","title":"Simulation Analysis of District Heat Source Water Supply System Configuration for Urban Areas in Warm Climates"},{"paper_no":"108","is_sponsored":false,"session_id":"6-6","authors":"Soowon Chae, Yeonju Kang, Hyunmoon Cho, Kwonye Kim and Yujin Nam","title":"Study on Reinforcement Learning-Based Control for PVT-Heat Pump Integrated Thermal Storage"},{"paper_no":"143","is_sponsored":false,"session_id":"6-6","authors":"Jinkyun Cho, Joo Hyun Moon, Sangwoo Byun and Jikyum Kim","title":"Sustainable cooling solutions for high-density data centers: A numerical analysis of liquid cooling optimization"},{"paper_no":"166","is_sponsored":false,"session_id":"6-6","authors":"Chi Ling Liu and Yaw-Shyan Tsay","title":"Development of an Integrated Decision-Support Platform for WBLCA in Early-Design Stage"},{"paper_no":"267","is_sponsored":false,"session_id":"6-6","authors":"Mohamed Dardir and Ali Khorasgani","title":"Integrated Phase Change Materials and Solar Energy Generation for High-Performance Buildings in Extreme Weather"},{"paper_no":"547","is_sponsored":false,"session_id":"6-6","authors":"Wanyu Rengie Chan, Bijay Sharma, Brandon Bilzman, William Delp and Brett Singer","title":"Methane Emission Measurements and Occupant Survey of Gas Appliances in California Homes"},{"paper_no":"63","is_sponsored":false,"session_id":"6-7","authors":"Yasuyuki Ishida, Shuhei Fujita, Wang Zheng, Miguel Yamamoto, Yusuke Hiraga and Ryotaro Tahara","title":"Development of LCZ Mapping Method Combining GIS with Machine Learning"},{"paper_no":"104","is_sponsored":false,"session_id":"6-7","authors":"Subin Lin, Jason Leong, Boo Cheong Khoo and Hee Joo Poh","title":"Aerodynamic Response and Ventilation Enhancement in Urban Street Canyons through Building Porosity: A Comparative Numerical and Experimental Study"},{"paper_no":"263","is_sponsored":false,"session_id":"6-7","authors":"Mana Nemati Aghdam and Manish Dixit","title":"Empirical Fragility-Based Adjustment of Embodied Carbon Using Machine-Learning-Derived Post-Hurricane Fragility Data"},{"paper_no":"291","is_sponsored":false,"session_id":"6-7","authors":"Kanxuan He and Hongshan Guo","title":"Data-driven cross-national climate zone classification for building codes: a future-compatible framework"},{"paper_no":"325","is_sponsored":false,"session_id":"6-7","authors":"Ilaria Pigliautile, Douaa Al-Assaad, Ongun Berk Kazanci, Joon-Ho Choi, Yanghao Cui, Yu Dong, Wooyoung Jung, Dolaana Khovalyg, Joyce Kim, Bjarne Olesen, Mariya Petrova Bivolarova, and Jun Shinoda","title":"A classification scheme for exploring the role of wearable personalized environmental control systems (PECS) in a changing climate"},{"paper_no":"61","is_sponsored":false,"session_id":"6-8","authors":"Enlian Zhang, Jin-Bin Im, Lijing Xu, Seo-Young Park and Ju-Hyung Kim","title":"The Influence of Window Characteristics on Occupant Well-Being and Perception in Indoor Environments: A Review"},{"paper_no":"220","is_sponsored":false,"session_id":"6-8","authors":"Fahad Iqbal and Shayan Mirzabeigi","title":"Comprehensive IoT-based Monitoring of Air Quality and Thermal Comfort: An Indoor-Outdoor University Campus Case Study"},{"paper_no":"227","is_sponsored":false,"session_id":"6-8","authors":"Naja Aqilah, Sheikh Ahmad Zaki, Noor Alam and Fitri Yakub","title":"Environmental, Physiological, and Subjective Assessments of Thermal Comfort in a School Classroom"},{"paper_no":"448","is_sponsored":false,"session_id":"6-8","authors":"Ashraf Ragheb","title":"Indoor Thermal Comfort Evaluation of an Office Space in the Southeastern United States."},{"paper_no":"480","is_sponsored":false,"session_id":"6-8","authors":"Sadia Israt Anam and Fan Zhang","title":"Heart Rate Variability as a Marker of Cognitive Workload: Influence of Temperature and Task Complexity in Office Settings"},{"paper_no":"651","is_sponsored":false,"session_id":"6-8","authors":"Shuyi Chen, Yihu Zhang, Jun Xiao, Ziliang Wei, Hao Zhou, Yang Geng and Borong Lin","title":"Seasonal and spatial differences of building occupancy profiles: Evidence from mobile data"},{"paper_no":"329","is_sponsored":true,"session_id":"7-1","authors":"Jae-Hee Lee, Peter Schild, Moon Keun Kim, Saikee Oh, Sanghun Lee, Donghan Kim, Beomsoo Seo, Eunjun Cho and Trygve Eikevik","title":"Field Evaluation of Multiple R290 Air-to-Water Heat Pumps in Cascade Operation Adapted to Nordic Climates"},{"paper_no":"29","is_sponsored":false,"session_id":"7-1","authors":"Kertu Kund, Raimo Simson, Alo Mikola, Kätriin Onemar and Jarek Kurnitski","title":"Analysis of Circuit Connections and Control Strategies for Residential Air-to-Water Heat Pump Systems"},{"paper_no":"64","is_sponsored":false,"session_id":"7-1","authors":"Lorenzo Croci, Francesco D'Oria and Maria Francesca Talamo","title":"Hybrid Heat Pump: Enabling Efficient Decarbonization of Existing Buildings"},{"paper_no":"297","is_sponsored":false,"session_id":"7-1","authors":"Sangmin Lee and Hyunwoo Lim","title":"Optimal Load Shift Control Strategy for CHPWH system Based on Load Separation Method"},{"paper_no":"335","is_sponsored":false,"session_id":"7-1","authors":"Yujin Lee and Dae Uk Shin","title":"System configuration and control process of a combined convective cooling and radiant floor heating system"},{"paper_no":"504","is_sponsored":false,"session_id":"7-1","authors":"Won-Jong Choi, Jae-Won Jeong and Min-Hwi Kim","title":"Operational optimization of fifth-generation district heating and cooling systems with thermal energy storage for energy autonomy"},{"paper_no":"107","is_sponsored":false,"session_id":"7-2","authors":"Chai Yoon Um, William Delp, Rowan Blacklock, Stefano Schiavon and Brett Singer","title":"Measured influence of supply airflow rate and supply air temperature on air mixing time in a room with overhead mixed system"},{"paper_no":"201","is_sponsored":false,"session_id":"7-2","authors":"Karl-Villem Võsa, Martin Kiil, Raimo Simson, Alo Mikola and Jarek Kurnitski","title":"Evaluating perceived stuffy air complaints through tracer gas experiments in a modern educational building in Estonia"},{"paper_no":"215","is_sponsored":false,"session_id":"7-2","authors":"Wenhao Chen, David Moore, Rosemary Castorina, McKenna Thompson, Kyle Peerless and Kazukiyo Kumagai","title":"Comparison of Field Approaches for Characterizing Classroom Ventilation Rates (VRs) and Equivalent VRs for PM2.5 – A Case Analysis"},{"paper_no":"402","is_sponsored":false,"session_id":"7-2","authors":"Aysha Siddika and Aysegul Demir Dilsiz","title":"Linking Global IAQ and Thermal Comfort Trends in Educational Spaces to LEED and AASHE STARS Ratings"},{"paper_no":"513","is_sponsored":false,"session_id":"7-2","authors":"Yi Fang, Haoran Zhao, Tim Tyner, Stephanie M. Holm, Brett C. Singer, Marion L. Russell, Anabelle Garza, Arlette Garcia-Ramirez, Briseida Vasquez, Debra Manzo Garcia, Jesus Rivera, John R. Balmes and Amy Dryden","title":"Measured Indoor Nitrogen Oxides in Homes with a Child with Asthma and Gas or Induction Electric Cooking"},{"paper_no":"195","is_sponsored":false,"session_id":"7-3","authors":"Alex Nwosu and James Hunter","title":"“Standard Retrofit First: Scalable Energy Efficiency Strategies for Legacy Row Homes”"},{"paper_no":"203","is_sponsored":false,"session_id":"7-3","authors":"Yi-Ting Lai and Yaw-Shyan Tsay","title":"Embodied Carbon Benchmarks for Residential Buildings in Taiwan"},{"paper_no":"293","is_sponsored":false,"session_id":"7-3","authors":"Muhammad Asim, Muhammad Furqan Siddiqui and Farooq Riaz Siddiqui","title":"Retrofit Pathways for HVAC Decarbonization: A sustainable solution for harnessing ultra-low-grade waste heat for energy efficiency and net-zero buildings"},{"paper_no":"389","is_sponsored":false,"session_id":"7-3","authors":"Fatemeh Yazdandoust, Siddhartha Sen and Kamalesh Panthi","title":"Energy Efficiency Solutions for Baltimore Housing"},{"paper_no":"394","is_sponsored":false,"session_id":"7-3","authors":"Mohammad Hamdan, Hamed Moradi, Paria Saadatjoo and Parham Mirzaei","title":"Microclimate Building Energy Retrofitting: Assessing Urban Morphology Impacts on Cooling Demand and Carbon Emissions"},{"paper_no":"446","is_sponsored":false,"session_id":"7-3","authors":"Min-Gyu Shin, Hye-Jin Kim, Soo-Hwan Park and Dong-Hyun Seo","title":"Development of Detailed EUI Benchmarks for South Korea’s Residential Building Stock"},{"paper_no":"83","is_sponsored":false,"session_id":"7-4","authors":"Tatsuya Miyata, Tatsu Kishida, Hiroki Ikeda, Yasuaki Kaneko, Shohei Miyata and Yasunori Akashi","title":"Development of a High-Resolution Dynamic Emulator for a Chiller Plant and Its Application to Control Improvement"},{"paper_no":"84","is_sponsored":false,"session_id":"7-4","authors":"Myeongwon Chae, You-Jeong Kim and Yun Kyu Yi","title":"Data-Driven Assessment of Air-Conditioning System Sizing Using Runtime and Indoor Humidity Performance"},{"paper_no":"95","is_sponsored":false,"session_id":"7-4","authors":"Flavia Barone, Loubna Ait Lahsen, Myriam Bahrar and Mohamed El Mankibi","title":"Hybrid control strategies for energy efficiency, thermal comfort and indoor air quality in residential compact HVAC–DHW systems"},{"paper_no":"461","is_sponsored":false,"session_id":"7-4","authors":"Darwish Darwazeh, Narges Zaeri and Farzeen Rizvi","title":"Operational Control and Air Mixing Fault Detection and Diagnostics in Rooftop Units"},{"paper_no":"490","is_sponsored":false,"session_id":"7-4","authors":"Haruka Kitagawa, Takuji Nakamura, Ko Shigemori, Sei Ito and Daisuke Sumiyoshi","title":"Optimum Operation of a Heat Source System considering Bidirectional Heat Interchange among Multiple Buildings"},{"paper_no":"20","is_sponsored":false,"session_id":"7-5","authors":"Wooyoung Jung, Prosper Babon-Ayeng, Kevin Keene, Sophia Witt and Jessica Baweja","title":"Do Common Performance Metrics in Indoor Environmental Quality Research Represent Actual Office Work? A Survey-Based Assessment"},{"paper_no":"102","is_sponsored":false,"session_id":"7-5","authors":"Fariza Sabit, Christian Rodriguez, Eric Ravussin and Dolaana Khovalyg","title":"Modeling the circadian dynamics of resting energy expenditure for the built environment"},{"paper_no":"162","is_sponsored":false,"session_id":"7-5","authors":"Shaymaa Hussain Al Marzouqi, Dongwoo Jason Yeom, Kamil Kaloush and Elham Fini","title":"Daylight Timing and Natural Scent on Cognitive Performance in Office Settings without Outdoor View"},{"paper_no":"412","is_sponsored":false,"session_id":"7-5","authors":"Hernan Rosas, Ming Hu and Edward Bernat","title":"Advancing Pathways To Occupant Mental Wellbeing: Mapping Attention Restoration and Stress Reduction in Biophilic Design to a Validated Mental Health Framework"},{"paper_no":"413","is_sponsored":false,"session_id":"7-5","authors":"Andrew Cook and Yumna Kurdi","title":"Applying Technology to Learning: Visualizing Environmental Data Through Augmented Reality"},{"paper_no":"526","is_sponsored":false,"session_id":"7-5","authors":"Jinmog Han and Yunjeong Mo","title":"A design-oriented framework for smart home energy management system interfaces to support energy-saving occupant behavior"},{"paper_no":"209","is_sponsored":false,"session_id":"7-6","authors":"Dahyun Oh and Soowon Chang","title":"Transportation Infrastructure Innovation through Optimal Solar PV Deployment Planning in DOT Facilities and Right-of-Way using a Geographic Information System-based Multi-Criteria Decision Making"},{"paper_no":"388","is_sponsored":false,"session_id":"7-6","authors":"Vimal Preet, Dr. P.S. Chani and Dr. Sandeep Agarwal","title":"The Role of Urban Form and Green Cover in Residential Energy Consumption: A Pilot Study of Sector 22, Chandigarh"},{"paper_no":"460","is_sponsored":false,"session_id":"7-6","authors":"Cosimo Damiano Carpentiere, Riccardo Carnevale and Umberto Berardi","title":"Enhancing Transparency and Sustainability in Urban Ventilation Systems through Blockchain, IoT, and AI: Case Studies from Seoul, Tokyo, Beijing, Dubai, São Paulo, and Sydney"},{"paper_no":"470","is_sponsored":false,"session_id":"7-6","authors":"Hayoung Kim and Soowon Chang","title":"Integrated Building-Grid Modeling: A Co-Simulation Framework for Dynamic Reliability Assessment"},{"paper_no":"505","is_sponsored":false,"session_id":"7-6","authors":"Chenshun Chen, Mohammad Elmi and Julian Wang","title":"Glazing Façade Design for Energy-Efficient Buildings, Improved Thermal Comfort and UHI Mitigation in Dense Urban Center"},{"paper_no":"653","is_sponsored":false,"session_id":"7-6","authors":"Xindan Kang, Karen M. Kensek, John Wilson, Joon-Ho Choi","title":"Tree Shading, Solar Radiation, and GIS-Examining the effect of tree shading on sidewalk heat reduction"},{"paper_no":"190","is_sponsored":false,"session_id":"7-7","authors":"Loubna Ait Lahsen, Flavia Barone, Myriam Bahrar and Mohamed El Mankibi","title":"In-situ assessment of a multifunctional compact system (MCS) in a low energy residential test facility: A comparative study"},{"paper_no":"309","is_sponsored":false,"session_id":"7-7","authors":"Jeong-Min Oh, Ju-Hyun Lee, Seheon Kim and Jae-Weon Jeong","title":"Application of Hollow Fiber Membrane Humidifier in Residential EHP Systems for Indoor Air Quality in Winter"},{"paper_no":"398","is_sponsored":false,"session_id":"7-7","authors":"Sudharshan Anandan, Andres Barrio-Zhang, Akshay Deolia, Tyler Hughes, Sohum Sodhi, Jae Hong Park, Ryan Wagner, Arezoo Ardekani and David Warsinger","title":"Acoustically assisted fibrous filtration for enhanced particle capture"},{"paper_no":"404","is_sponsored":false,"session_id":"7-7","authors":"Semi Park and Insung Kang","title":"Low- and no-cost ventilation strategies to reduce indoor cooking emissions: a case study of natural ventilation, window fans and kitchen hoods"},{"paper_no":"555","is_sponsored":false,"session_id":"7-7","authors":"Wanyu Rengie Chan, Marion Russell, Jiayu Li and Pradeep Prathibha","title":"Measurements of Volatile Organic Compounds and Polycyclic Aromatic Hydrocarbons in 10 Commercial Kitchens"},{"paper_no":"206","is_sponsored":false,"session_id":"8-1","authors":"Rosemary Castorina, Karla Vargas, Flavia Wong, Zhong-Min Wang, Aditya Simha, Elizabeth Noth, Asa Bradman and Kazukiyo Kumagai","title":"Residential Volatile Organic Compounds (VOC) Measurements in the San Joaquin Valley: Findings from the SPHERE Study"},{"paper_no":"207","is_sponsored":false,"session_id":"8-1","authors":"Hemakshat Sharma, Rosemary Castorina, Charles Perrino, Tanmayi Amanchi, Kazukiyo Kumagai, Asa Bradman and Elizabeth Noth","title":"Stockton school-aged children’s exposures to polycyclic aromatic hydrocarbons (PAHs)"},{"paper_no":"367","is_sponsored":false,"session_id":"8-1","authors":"Dong Kyu Lee, Ji Hyeok Son, Sukumar Natarajan and Woong June Chung","title":"Analysis of the correlation between particulate matter and microplastics according to particle size"},{"paper_no":"495","is_sponsored":false,"session_id":"8-1","authors":"Shuo-Hsuan Chang, Yuto Morishita, Ji Yoon Bae, Dorit Aviv, William Braham and Jihun Kim","title":"CALM (Clay-based Air-treating Living wall Module): Passive Cooling and VOC Removal"},{"paper_no":"39","is_sponsored":false,"session_id":"8-2","authors":"Kiho Tanaka, Makiko Ukai and Sihwan Lee","title":"Performance evaluation of an office-integrated cultivation room utilizing human-emitted CO2 for sustainable building-integrated agriculture"},{"paper_no":"92","is_sponsored":false,"session_id":"8-2","authors":"Arianna Peduzzi, Roberta Jacoby Cureau, Claudia Fabiani, Adriana Ciardiello, Maria Francesca Talamo, Veronica Lucia Castaldo and Anna Laura Pisello","title":"Passive energy retrofit strategies for historic buildings: A systematic review of innovative and non-invasive solutions"},{"paper_no":"189","is_sponsored":false,"session_id":"8-2","authors":"Zahra Salehi","title":"Agrivoltaics as a Renewable Energy and Green Infrastructure Strategy for Enhancing Thermal Comfort, Energy Efficiency, and Climate Resilience"},{"paper_no":"508","is_sponsored":false,"session_id":"8-2","authors":"Xu Liu and Julian Wang","title":"Spectral-Selective Glazing Strategies for Energy-Efficient and Adaptive Building Envelopes"},{"paper_no":"517","is_sponsored":false,"session_id":"8-2","authors":"Takao Katsura, Erkki Hirvonen, Kanato Kimura, Takaharu Matsui, Kentaro Sekine, Kazuyoshi Harimoto, Miyuki Watanabe and Katsunori Nagano","title":"Improvement of thermal insulation performance of transparent vacuum insulation panels and in-situ performance test"},{"paper_no":"544","is_sponsored":false,"session_id":"8-2","authors":"Mohammad Elmi, Siddharth Jayakrishnan Jayakrishnan, Adam Muhammad and Julian Wang","title":"An Experimental Analysis of Photothermal Nanocoatings for Greenhouse Energy Efficiency"},{"paper_no":"122","is_sponsored":false,"session_id":"8-3","authors":"Xue Cui, Minhyun Lee, Xuange Zhang, Mohammad Nyme Uddin and Junjiang Luo","title":"Time-series forecasting of indoor temperature: Toward sensor-free occupant-centric HVAC control"},{"paper_no":"179","is_sponsored":false,"session_id":"8-3","authors":"Jincheng Dai, Ryozo Ooka, Chao Lin, Ken Takahashi and Shintaro Ikeda","title":"Developing a surrogate RC Model for Optimal HVAC Control Applications in Modelica-Based Building Digital Twin"},{"paper_no":"205","is_sponsored":false,"session_id":"8-3","authors":"Eunwan Kim, Jeonghoon Choi and Dongjun Suh","title":"Camera-Only Unsupervised Visual Anomaly Detection for IEQ-Oriented Building Operations"},{"paper_no":"278","is_sponsored":false,"session_id":"8-3","authors":"Mahdi Bonyani, Maryam Soleymani and Chao Wang","title":"A Physics-Informed Modeling of Data Center Cooling and Self-Supervised Learning-Based Autoencoder for Fault Detection and Diagnosis"},{"paper_no":"518","is_sponsored":false,"session_id":"8-3","authors":"Yihui Li, Zhexuan Yu, Jun Xiao, Hao Zhou and Borong Lin","title":"Physics-Embedded Transfer Learning Graph Neural Network for Building Energy Prediction"},{"paper_no":"316","is_sponsored":false,"session_id":"8-4","authors":"Jongwon Lee","title":"Does Building Retrofit Program for Low-Income Households Really Create Healthy Homes?"},{"paper_no":"450","is_sponsored":false,"session_id":"8-4","authors":"Xianzhun Zhong, Yongxin Xie and Jianlei Niu","title":"Calibration of the sweating function in a multi-node thermoregulation model based on chamber experiment"},{"paper_no":"474","is_sponsored":false,"session_id":"8-4","authors":"Shaofang Xu, Giovanni Calzolari, Jilong Wang, Jianlin Ren, Fei Liu, Bin Lu, Qiang Li, Wei Liu, Junjie Liu and Tengfei Zhang","title":"Efficient reconstruction of the atmospheric boundary layer in spatially constrained wind tunnels"},{"paper_no":"524","is_sponsored":false,"session_id":"8-4","authors":"Sreelakshmi Kavuthimadathil and Satish Bk","title":"Towards Adaptive, human-centric lighting: Limitations of Subjective Measures and a multimodal framework"},{"paper_no":"652","is_sponsored":false,"session_id":"8-4","authors":"Zhilong Liu, Yifan Zhang, Tsz Him Ian Chiu, Ghazal Chizarian, Joon-Ho Choi","title":"Modern Workplace Environment Pre- and Post-Occupant Satisfaction in Modern Office Hot-Desking Systems: A Comparative Study of Workplace Environments"},{"paper_no":"114","is_sponsored":false,"session_id":"8-5","authors":"Mojtaba Parsaee, Tarlan Abazari and Soroush Samareh Abolhassani","title":"Towards AI-driven Digital Twins and Cyber-Physical-Social Systems for Circular Disaster Management: Developing A Multi-Agent Debris Life Cycle Simulation Framework"},{"paper_no":"184","is_sponsored":false,"session_id":"8-5","authors":"Carlos Faubel, Derian Mowen, Marjan Miri, Ursula Demarquet Alban, Antonio Martinez-Molina and Miltiadis Alamaniotis","title":"Fusing visual and sensor data with multimodal transformers for indoor environmental quality assessment in educational settings"},{"paper_no":"485","is_sponsored":false,"session_id":"8-5","authors":"Xinyue Zhang and Weirong Zhang","title":"Augmentation Framework for HVAC Fault Diagnosis Based on Denoising Diffusion Models"},{"paper_no":"503","is_sponsored":false,"session_id":"8-5","authors":"Wooyoung Jung and Namgyun Kim","title":"Multi-Agent AI Learning Assistant for Human Building Interaction: System Architecture and Preliminary Performance"},{"paper_no":"116","is_sponsored":false,"session_id":"8-6","authors":"Emmanuel I. Aghimien, Ajla Aksamija and Timothy O. Adekunle","title":"Indoor Environmental Quality in a Mid-Century Research Laboratory Building"},{"paper_no":"147","is_sponsored":false,"session_id":"8-6","authors":"Youngbo Won, Wenhao Chen, Zhong-Min Wang, Jeff Wagner and Kazukiyo Kumagai","title":"How Ventilation and Air Cleaning Strategies Affect Classroom PM₂.₅ and CO₂ under Normal and Wildfire Conditions? – A CONTAM Simulation Study"},{"paper_no":"158","is_sponsored":false,"session_id":"8-6","authors":"Shikang Wen and Qingyan Chen","title":"Field investigation of the impact of different terminal devices on thermal comfort and ventilation uniformity"},{"paper_no":"353","is_sponsored":false,"session_id":"8-6","authors":"Trond Thorgeir Harsem, Bente Hellum, Haakon Flaaronning, Marie Heistad and Mina Andrea Torvanger","title":"Influence of Surgical Staff Movement on Airborne Particle Concentrations in Operating Rooms with Laminar and Mixing Ventilation"},{"paper_no":"417","is_sponsored":false,"session_id":"8-6","authors":"Hassan Kotb Ali, Yunus Emre Cetin and Martin Kriegel","title":"Air Curtain Intervention to Reduce Air Exchange Between Operating Rooms and Anterooms"},{"paper_no":"596","is_sponsored":false,"session_id":"8-7","authors":"Dolaana Khovalyg, Minyoung Kwon, Matteo Bilardo, Cristina Piselli, Wooyoung Jung","title":"Personalized Environmental Control Systems (PECS): Multi-Dimensional Trade-Offs in New and Existing Buildings"},{"paper_no":"12","is_sponsored":false,"session_id":"9-1","authors":"Abdollah Baghaei Daemei, Zhenan Feng and Daniel Paes","title":"Assessing the Effectiveness of Game-Based Learning Versus Video-Based Learning for Mold Prevention Education"},{"paper_no":"32","is_sponsored":false,"session_id":"9-1","authors":"Zohreh Kiani, Kátia Cordeiro Mendonça, Ali Alexandre Nour Eddine and Marc Abadie","title":"Does numerical simulation reproduce reality? A comparative assessment of indoor environmental quality in multifamily buildings"},{"paper_no":"240","is_sponsored":false,"session_id":"9-1","authors":"Soo-Min Jeong, Bon Seo and Su-Gwang Jeong","title":"Controlled sustained release of natural volatile organic compounds from phytoncide emulsion-zeolite composites via surfactant hydrophilic-lipophilic balance adjustment"},{"paper_no":"370","is_sponsored":false,"session_id":"9-1","authors":"Divine Agbobli, Yunjeong Mo and Cristina Poleacovschi","title":"A Review of the Factors Influencing Adoption and Abandonment of Indoor Air Quality Improvement Strategies"},{"paper_no":"425","is_sponsored":false,"session_id":"9-1","authors":"Mina Lesan, Avijit Sarker, Saeid Chahardoli, Yi Xiao and Arup Bhattacharya","title":"Adaptive Placement of Portable Air Cleaners under Changing Contaminant Sources"},{"paper_no":"453","is_sponsored":false,"session_id":"9-1","authors":"Kumar Naddunuri and Shankha Pratim Bhattacharya","title":"Assessing the energy saving potential of personalized ventilation system"},{"paper_no":"231","is_sponsored":false,"session_id":"9-2","authors":"Francesca Vecchi, Simona Semeraro, Roberto Stasi and Umberto Berardi","title":"Modelling the Adoption of Renewable Energy Communities in Urban Districts: An Agent-Based Approach"},{"paper_no":"238","is_sponsored":false,"session_id":"9-2","authors":"Bon Seo, Soo-Min Jeong and Su-Gwang Jeong","title":"Analysis of determinants of building energy use in Seoul through clustering and regression, and proposal of tailored energy policies"},{"paper_no":"289","is_sponsored":false,"session_id":"9-2","authors":"Hisato Osawa and Taro Mori","title":"Development of a WebGIS for Visualizing Building Energy Consumption and Renewable Energy Potential: Automated Generation of 3D Building Models Using GIS Data"},{"paper_no":"486","is_sponsored":false,"session_id":"9-2","authors":"Zhiyan Jin and Weirong Zhang","title":"System Performances Comparative Analysis of PV-Battery Systems for Rural Buildings Between Electrochemical and Mathematical Aging Battery Models"},{"paper_no":"512","is_sponsored":false,"session_id":"9-2","authors":"Nida Batool Sheikh, Muhammad Mashhood Arif, Jelle Laverge and Marc Delghust","title":"Residential Energy and Transport Coupling for Neighbourhood Decarbonization in Transit-Oriented Development"},{"paper_no":"582","is_sponsored":false,"session_id":"9-2","authors":"Dongwoo Kim, Tae Kon Kim, Seung Hoon Choi, Dagyeong Jeong, Kwangho Lee, Min Hwi Kim and Deuk Won Kim","title":"Development and Performance Evaluation of a Thermal Energy Prosumer System Using EnergyPlus-Based Simulation During the Cooling"},{"paper_no":"80","is_sponsored":false,"session_id":"9-3","authors":"Xianzhe Yang, Akihito Ozaki, Seonghwan Yoon, Sung-Jun Yoo, Younhee Choi and Yusuke Arima","title":"Thermal environment prediction in a large open office space with complex air-conditioning system using dynamic coupled BES–CFD"},{"paper_no":"167","is_sponsored":false,"session_id":"9-3","authors":"Ayane Fujiwara, Hideki Tanaka, Shusaku Mizuta, Terutake Furuta and Fumiharu Oba","title":"Operational Performance of a Small-Scale NZEB Office and Effective Utilization of Photovoltaic Surplus Power on Non-Business Days using Base Air-Conditioning"},{"paper_no":"386","is_sponsored":false,"session_id":"9-3","authors":"Chengbo Du, Bess Krietemeyer, Bing Dong, Nina Wilson, Peng Gao, Tong Lin and Jianshun Zhang","title":"Green Design Studio: A Modular Interface for Multi-Scale Building Performance Simulation in Architectural Practice"},{"paper_no":"410","is_sponsored":false,"session_id":"9-3","authors":"Jun-Sub Kim, Seong Woo Park, Jeong Won Kim and Hyeun Jun Moon","title":"Building Genome Analysis for Integrated Indoor Environmental Quality and Energy Performance in a Commercial Building"},{"paper_no":"420","is_sponsored":false,"session_id":"9-3","authors":"Lindsay Li Chen Hu, Sicheng Zhan and Leslie Keith Norford","title":"Towards cost-effective energy savings: Learnings from non-invasive occupant-centric control implementation in an office building"},{"paper_no":"654","is_sponsored":false,"session_id":"9-3","authors":"Xuewen Quan, Karen M. Kensek, Sathyanaraya Raghavachary, Haonan Wang","title":"Toward AI in AECO: Integrating BIM Facility Data with an LLM-RAG Framework"},{"paper_no":"208","is_sponsored":false,"session_id":"9-4","authors":"Quang Van Tran, Farzad Hashemi, Parisa Najafian and Esteban Ochoa Lopez","title":"Roof Retrofit Scenarios for Thermally Vulnerable Homes: A CFD-Based Evaluation of Indoor Comfort and Air Quality in San Antonio, Texas"},{"paper_no":"264","is_sponsored":false,"session_id":"9-4","authors":"Mana Nemati Aghdam and Manish Dixit","title":"Integrated LCA and Energy Simulation for Envelope Decisions: Climate-Dependent Results"},{"paper_no":"266","is_sponsored":false,"session_id":"9-4","authors":"Mohamed Dardir, Jeffrey Wilson and Umberto Berardi","title":"Natural Infrastructure for Health and Environmental Risk Mitigation"},{"paper_no":"372","is_sponsored":false,"session_id":"9-4","authors":"Maryam Meshkinkiya and Farzad Hashemi","title":"Beyond Numerical Features: Mixed-Type Clustering of Urban Building Archetypes Using Hierarchical and K-prototypes Methods"},{"paper_no":"414","is_sponsored":false,"session_id":"9-4","authors":"Maryam Abbasi Kamazani and Manish K. Dixit","title":"AI-driven and simulation-based multi-objective building envelope optimization: strengths, limitations, and gaps"},{"paper_no":"152","is_sponsored":false,"session_id":"9-5","authors":"Haerin Yang, Minwoo Kim and Jeehwan Lee","title":"A Multi-Layered Daylighting Assessment of LEED Certified Buildings"},{"paper_no":"172","is_sponsored":false,"session_id":"9-5","authors":"Bahereh Vojdani, Deok-Oh Woo and Andressa Martinez","title":"Assessing Architect-Friendly Daylighting Feedback from LLaMA: A Zero- and Few-Shot Evaluation of an LLM Approach"},{"paper_no":"255","is_sponsored":false,"session_id":"9-5","authors":"Dongwoo Lee, Manal Anis, Donghyeok Choi, Hyungsub Kim and Yun Kyu Yi","title":"Developing an Outdoor View Evaluation Method for Complex Shading Systems"},{"paper_no":"409","is_sponsored":false,"session_id":"9-5","authors":"Won Hee Ko, Luis Santos, Michael Kent, Hanwook Kim and Nehal Nagarjun","title":"How View Content Determine Minimum Window Size and Energy Implications: Evidence from Virtual Reality Experiments"},{"paper_no":"34","is_sponsored":false,"session_id":"9-6","authors":"Jing Wu, Dahai Qi and Lexuan Zhong","title":"Wildfire Smoke Alters Particle Size Distributions Indoors and Outdoors in an Urban Office Building"},{"paper_no":"319","is_sponsored":false,"session_id":"9-6","authors":"Ruoyu Lan, David Lorenzetti, Marion Russell and Michael Sohn","title":"Ventilation and Filtration Tradeoffs for Increasing Building Protection from Outdoor Aerosols"},{"paper_no":"514","is_sponsored":false,"session_id":"9-6","authors":"Yi Fang, Haoran Zhao, Tim Tyner, Stephanie M. Holm, Brett C. Singer, Anabelle Garza, Arlette Garcia-Ramirez, Briseida Vasquez, Debra Manzo Garcia, Jesus Rivera, John R. Balmes and Amy Dryden","title":"Range Hood Use and Effectiveness in Reducing Indoor Air Pollution During Gas and Induction Cooking"},{"paper_no":"580","is_sponsored":false,"session_id":"9-6","authors":"Elham Hasani Alavy, Mahsa Khanpoor Siahdarka, Zahra Qavidelfardi and Faeghe Rahnama","title":"Lessons from the Post Occupancy Evaluation of the Indoor Learning Environments: A Review"},{"paper_no":"3:30-3:50","is_sponsored":false,"session_id":"9-7","authors":"Natalie Lee","title":"Introduction about Elsevier and AI-related policy by Natalia (In-Person)"},{"paper_no":"3:50-4:30","is_sponsored":false,"session_id":"9-7","authors":"Angelica Kerr","title":"Research integrity & Publishing ethics by Angelica Kerr (Online Webinar)"},{"paper_no":"4:30-5:00","is_sponsored":false,"session_id":"9-7","authors":"Open Q&A","title":"Fariborz Haghighat"},{"paper_no":"368","is_sponsored":false,"session_id":"9-8","authors":"Yasaman Norouzi and Manish Kumar Dixit","title":"Forecasting the U.S. Residential Renewable Electricity Mix: A Time-Series Approach for 50-Year Building GWP Projections (1949–2080)"},{"paper_no":"527","is_sponsored":false,"session_id":"9-8","authors":"Kátia Fugazza, Pedro Braga and Sylvia Meimaridou Rola","title":"Architectural Retrofit and HVAC Modernization in Existing Hospitals: A Case Study of the Municipal Hospital Carlos Tortelly"},{"paper_no":"528","is_sponsored":false,"session_id":"9-8","authors":"Zhongqing Yang and Hikaru Kobayashi","title":"Occupant-Distribution-Based CO2 Measurement to Optimize Demand-Controlled Ventilation in Office Spaces"},{"paper_no":"531","is_sponsored":false,"session_id":"9-8","authors":"Niloofar Nikookar and Azadeh O. Sawyer","title":"An AI-Driven Affective Lighting System for Stress Reduction and Satisfaction in Office Environments."},{"paper_no":"535","is_sponsored":false,"session_id":"9-8","authors":"Kátia Fugazza, Marcos Marques and Sylvia Meimaridou Rola","title":"Architectural Retrofit and Multidisciplinary HVAC Modernization with BIM Methodology in Existing Hospitals: A Case Study of the Carlos Tortelly Municipal Hospital"},{"paper_no":"537","is_sponsored":false,"session_id":"9-8","authors":"Deok-Oh Woo, Rocky Alazazi, Karen Ternes, Rajul Patel and Sarah Beatty","title":"High-Intensity UVC Irradiation of Air Handling Units for Enhanced Energy Efficiency Under Varying Biofouling Risks"}]};
+// ====== Walking time matrix (minutes), simple building/floor model ======
+// Conventions:
+//   sameRoom: 0 ; sameFloor: 2 ; sameBuildingDiffFloor: 4 ; SGM<->GFS: 7 ;
+//   VHE: 10 (different building / online courtyard)
+function walkMinutes(a, b) {
+  if (!a || !b) return 0;
+  if (a.building === b.building && a.room === b.room) return 0;
+  if (a.building === b.building && a.floor === b.floor) return 2;
+  if (a.building === b.building) return 4;
+  const set = [a.building, b.building].sort().join('-');
+  if (set === 'GFS-SGM') return 7;
+  if (a.building === 'VHE' || b.building === 'VHE') return 10;
+  return 8;
+}
+
+// ====== Per-conference storage ======
+// Keys are namespaced as "cs:<confId>:<field>". Conference identity comes from
+// DATA.conference (preferred) or a deterministic content hash if older JSON
+// without that metadata is loaded.
+
+function contentHash(d) {
+  const s = d.sessions || [];
+  const seed = `${s.length}|${(s[0]||{}).date||''}|${(s[0]||{}).id||''}|${(s.at(-1)||{}).date||''}|${(s.at(-1)||{}).id||''}`;
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = ((h << 5) - h + seed.charCodeAt(i)) | 0;
+  return 'auto-' + (h >>> 0).toString(16);
+}
+function confIdFor(d)   { return (d.conference && d.conference.id)   || contentHash(d); }
+
+// User-edited display names live in cs:names. They override DATA.conference.name
+// so renaming doesn't require re-running the parser or touching the JSON.
+function loadNameOverrides() { return JSON.parse(localStorage.getItem('cs:names') || '{}'); }
+function saveNameOverride(id, name) {
+  const o = loadNameOverrides();
+  if (name) o[id] = name; else delete o[id];
+  localStorage.setItem('cs:names', JSON.stringify(o));
+  // Keep the registry in sync so the dropdown shows the new label too.
+  const reg = JSON.parse(localStorage.getItem('cs:registry') || '{}');
+  if (reg[id]) { reg[id].name = name || reg[id].name; localStorage.setItem('cs:registry', JSON.stringify(reg)); }
+}
+function confNameFor(d) {
+  const id = confIdFor(d);
+  const o = loadNameOverrides();
+  return o[id] || (d.conference && d.conference.name) || 'Untitled conference';
+}
+
+let currentConfId = confIdFor(DATA);
+const kSelected = () => `cs:${currentConfId}:selected`;
+const kNotes    = () => `cs:${currentConfId}:notes`;
+
+// Registry of conferences this browser has seen — drives the quick-switch dropdown.
+function rememberConference(d) {
+  const id = confIdFor(d);
+  const reg = JSON.parse(localStorage.getItem('cs:registry') || '{}');
+  reg[id] = { name: confNameFor(d), lastUsed: new Date().toISOString() };
+  localStorage.setItem('cs:registry', JSON.stringify(reg));
+}
+
+// One-time migration: move legacy flat keys into the current conference namespace.
+(function migrateLegacyKeys() {
+  const legacySel = localStorage.getItem('cs_selected');
+  const legacyNot = localStorage.getItem('cs_notes');
+  if (legacySel && !localStorage.getItem(kSelected())) localStorage.setItem(kSelected(), legacySel);
+  if (legacyNot && !localStorage.getItem(kNotes()))    localStorage.setItem(kNotes(), legacyNot);
+  if (legacySel) localStorage.removeItem('cs_selected');
+  if (legacyNot) localStorage.removeItem('cs_notes');
+})();
+
+// One-time rename: this conference's id changed from "ibpsa-bs-2026" → "iaqvec-2026".
+// Move any data accumulated under the old id to the new namespace if the new one is empty.
+(function renameConference() {
+  const FROM = 'ibpsa-bs-2026', TO = 'iaqvec-2026';
+  if (currentConfId !== TO) return;
+  for (const field of ['selected', 'notes']) {
+    const oldK = `cs:${FROM}:${field}`, newK = `cs:${TO}:${field}`;
+    const v = localStorage.getItem(oldK);
+    if (v && !localStorage.getItem(newK)) localStorage.setItem(newK, v);
+    if (v) localStorage.removeItem(oldK);
+  }
+  // Drop the old name from the registry too
+  const reg = JSON.parse(localStorage.getItem('cs:registry') || '{}');
+  if (reg[FROM]) { delete reg[FROM]; localStorage.setItem('cs:registry', JSON.stringify(reg)); }
+})();
+
+// ====== State ======
+// Track/building filters use explicit "set contains = visible" semantics. Both sets
+// start pre-populated with every value so the user sees everything until they choose
+// to narrow. "전체 해제" empties the set → nothing of that dimension shows.
+function allTracksOf(d)    { return new Set(d.sessions.map(s => s.track_title)); }
+function allBuildingsOf(d) { return new Set(d.sessions.map(s => s.building));    }
+
+const state = {
+  selected: new Set(JSON.parse(localStorage.getItem(kSelected()) || '[]')),
+  // notes: { "session_id#paper_no": { rating: 0..5, note: "..." } }
+  notes: new Map(Object.entries(JSON.parse(localStorage.getItem(kNotes()) || '{}'))),
+  search: '',
+  dayFilter: 'all',
+  tracks:    allTracksOf(DATA),
+  buildings: allBuildingsOf(DATA),
+  // Active view tab: 'browse' or 'itinerary'. Persists across reloads.
+  view: localStorage.getItem('cs:view') || 'browse',
+};
+rememberConference(DATA);
+
+function setView(v) {
+  state.view = v;
+  localStorage.setItem('cs:view', v);
+  renderView();
+}
+
+function renderView() {
+  const onBrowse = state.view === 'browse';
+  document.getElementById('view-browse').style.display    = onBrowse ? '' : 'none';
+  document.getElementById('view-itinerary').style.display = onBrowse ? 'none' : '';
+  document.querySelectorAll('.view-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === state.view);
+  });
+  document.getElementById('view-badge').textContent = state.selected.size;
+  document.getElementById('view-badge').dataset.count = state.selected.size;
+}
+
+function saveSelection() {
+  localStorage.setItem(kSelected(), JSON.stringify([...state.selected]));
+  // Keep the tab badge count in sync after any toggle
+  const badge = document.getElementById('view-badge');
+  if (badge) { badge.textContent = state.selected.size; badge.dataset.count = state.selected.size; }
+}
+
+function saveNotes() {
+  localStorage.setItem(kNotes(), JSON.stringify(Object.fromEntries(state.notes)));
+}
+
+// Swap to a different conference DATA loaded by the user:
+function switchConference(newData) {
+  DATA = newData;
+  currentConfId = confIdFor(newData);
+  state.selected = new Set(JSON.parse(localStorage.getItem(kSelected()) || '[]'));
+  state.notes    = new Map(Object.entries(JSON.parse(localStorage.getItem(kNotes()) || '{}')));
+  state.tracks    = allTracksOf(newData);
+  state.buildings = allBuildingsOf(newData);
+  state.dayFilter = 'all'; state.search = '';
+  rememberConference(newData);
+  renderConfChip();
+  renderAll();
+}
+
+function getNote(key) {
+  return state.notes.get(key) || { rating: 0, note: '' };
+}
+
+function setNote(key, patch) {
+  const cur = getNote(key);
+  const next = { ...cur, ...patch };
+  // If both empty, remove the entry to keep storage compact
+  if (!next.rating && !next.note) state.notes.delete(key);
+  else state.notes.set(key, next);
+  saveNotes();
+}
+
+// ====== Helpers ======
+function timeToMin(t) {
+  // PDF uses both "11:00" (24h) and "3:30" (PM, no AM/PM marker).
+  // Heuristic: hours < 8 are PM (afternoon) → add 12.
+  const [h, m] = t.split(':').map(Number);
+  const hh = h < 8 ? h + 12 : h;
+  return hh * 60 + m;
+}
+
+function sessionFor(paper) { return DATA.sessions.find(s => s.id === paper.session_id); }
+
+// ====== Render: filters ======
+// Day count threshold above which we switch from buttons to a select element,
+// because 5+ tabs don't fit comfortably in the sidebar.
+const DAY_TABS_AS_SELECT = 5;
+
+function renderFilters() {
+  // Day filter
+  const days = [...new Set(DATA.sessions.map(s => s.day))].sort();
+  const dt = document.getElementById('day-tabs');
+  dt.innerHTML = '';
+  // Strip the year from "5/19/2026" → "5/19" so the tab fits.
+  const shortDate = (mdY) => mdY.split('/').slice(0, 2).join('/');
+
+  if (days.length >= DAY_TABS_AS_SELECT) {
+    // Compact dropdown for many-day conferences
+    const sel = document.createElement('select');
+    sel.className = 'day-select';
+    const optAll = document.createElement('option');
+    optAll.value = 'all'; optAll.textContent = '전체 일정';
+    sel.appendChild(optAll);
+    days.forEach(d => {
+      const s = DATA.sessions.find(x => x.day === d);
+      const o = document.createElement('option');
+      o.value = String(d);
+      o.textContent = `Day ${d} · ${shortDate(s.date)}`;
+      sel.appendChild(o);
+    });
+    sel.value = String(state.dayFilter);
+    sel.onchange = () => {
+      state.dayFilter = sel.value === 'all' ? 'all' : Number(sel.value);
+      renderAll();
+    };
+    dt.appendChild(sel);
+  } else {
+    // Tab buttons for short conferences (≤ 4 days)
+    const mkBtn = (key, main, sub) => {
+      const b = document.createElement('button');
+      b.innerHTML = `<span class="d-main">${escapeHtml(main)}</span>` +
+                    (sub ? `<span class="d-sub">${escapeHtml(sub)}</span>` : '');
+      if (state.dayFilter == key) b.className = 'active';
+      b.onclick = () => { state.dayFilter = key; renderAll(); };
+      return b;
+    };
+    dt.appendChild(mkBtn('all', '전체'));
+    days.forEach(d => {
+      const s = DATA.sessions.find(x => x.day === d);
+      dt.appendChild(mkBtn(d, `Day ${d}`, shortDate(s.date)));
+    });
+  }
+
+  // Tracks
+  const tracks = [...new Set(DATA.sessions.map(s => s.track_title))].sort();
+  const tf = document.getElementById('track-filter');
+  tf.innerHTML = '';
+  tracks.forEach(t => {
+    const id = 'tr_' + t.replace(/[^a-z0-9]/gi, '_');
+    const row = document.createElement('label');
+    row.innerHTML = `<input type="checkbox" id="${id}" ${state.tracks.has(t) ? 'checked' : ''}> ${t}`;
+    row.querySelector('input').onchange = (e) => {
+      if (e.target.checked) state.tracks.add(t);
+      else state.tracks.delete(t);
+      renderSessions();
+    };
+    tf.appendChild(row);
+  });
+
+  // Buildings
+  const blds = [...new Set(DATA.sessions.map(s => s.building))].sort();
+  const bf = document.getElementById('building-filter');
+  bf.innerHTML = '';
+  blds.forEach(b => {
+    const row = document.createElement('label');
+    row.innerHTML = `<input type="checkbox" ${state.buildings.has(b) ? 'checked' : ''}> ${b}`;
+    row.querySelector('input').onchange = (e) => {
+      if (e.target.checked) state.buildings.add(b);
+      else state.buildings.delete(b);
+      renderSessions();
+    };
+    bf.appendChild(row);
+  });
+
+  // 전체 / 해제 toggle links for both track and building filters
+  document.querySelectorAll('.filter-toggles a').forEach(a => {
+    a.onclick = (e) => {
+      e.preventDefault();
+      const target = a.dataset.target;  // "tracks" or "buildings"
+      const act = a.dataset.act;        // "all" or "none"
+      if (target === 'tracks') {
+        if (act === 'all') state.tracks = new Set(tracks);
+        else state.tracks.clear();
+      } else {
+        if (act === 'all') state.buildings = new Set(blds);
+        else state.buildings.clear();
+      }
+      renderAll();
+    };
+  });
+}
+
+// ====== Render: session list ======
+function renderSessions() {
+  const list = document.getElementById('session-list');
+  list.innerHTML = '';
+  const q = state.search.toLowerCase();
+
+  // Group sessions by (day, start) for orderly display
+  const sorted = [...DATA.sessions].sort((a,b) =>
+    (a.day - b.day) || (timeToMin(a.start) - timeToMin(b.start)) || a.id.localeCompare(b.id)
+  );
+
+  for (const s of sorted) {
+    if (state.dayFilter !== 'all' && s.day != state.dayFilter) continue;
+    // Track/building filters: a session must be in BOTH selected sets to show.
+    // Empty set = "전체 해제" → nothing of that dimension is included.
+    if (!state.tracks.has(s.track_title)) continue;
+    if (!state.buildings.has(s.building)) continue;
+
+    const sPapers = DATA.papers.filter(p => p.session_id === s.id);
+    // Session-level haystack: id, track, building, room, chair — so user can find
+    // "1-3", "Indoor Air Quality", "SGM 101", "Vincenzo Gentile" etc.
+    const sessionHay = `${s.id} ${s.track_title} ${s.building} ${s.room} ${s.chair || ''}`.toLowerCase();
+    const sessionMatches = q && sessionHay.includes(q);
+    const matchingPapers = q
+      ? (sessionMatches
+          ? sPapers
+          : sPapers.filter(p => (p.title + ' ' + p.authors + ' ' + p.paper_no).toLowerCase().includes(q)))
+      : sPapers;
+    if (q && matchingPapers.length === 0) continue;
+
+    const div = document.createElement('div');
+    div.className = 'session';
+    const bldgTag = `<span class="building-tag tag-${s.building}">${hi(s.building + ' ' + s.room)}</span>`;
+    const chair = s.chair ? `Chair: ${hi(s.chair)}` : '';
+    div.innerHTML = `
+      <div class="session-header">
+        <div>
+          <div class="session-id">Session ${hi(s.id)} · Day ${s.day} ${s.start}–${s.end} ${bldgTag}</div>
+          <div class="session-title">${hi(s.track_title)}</div>
+          <div class="session-meta">${chair}</div>
+        </div>
+        <button class="toggle-collapse">접기/펴기</button>
+      </div>
+      <div class="paper-list"></div>
+    `;
+    div.querySelector('.toggle-collapse').onclick = () => div.classList.toggle('collapsed');
+
+    const pl = div.querySelector('.paper-list');
+    if (matchingPapers.length === 0) {
+      pl.innerHTML = '<div class="empty">발표 정보 없음</div>';
+    }
+    for (const p of matchingPapers) {
+      const key = p.session_id + '#' + p.paper_no;
+      const row = document.createElement('div');
+      row.className = 'paper';
+      const n = getNote(key);
+      const noteBadge = (n.rating || n.note)
+        ? `<span class="note-indicator" title="${n.rating?n.rating+'★ ':''}${n.note?'· 메모 있음':''}">${n.rating?'★'.repeat(n.rating):''}${n.note?' 📝':''}</span>`
+        : '';
+      row.innerHTML = `
+        <input type="checkbox" data-key="${key}" ${state.selected.has(key)?'checked':''}>
+        <div class="paper-body">
+          <div class="paper-title">${hi(p.title)}${noteBadge}</div>
+          <div class="paper-authors">${hi(p.authors)} <span class="paper-no">· #${hi(p.paper_no)}${p.is_sponsored?' ⭐':''}</span></div>
+        </div>
+      `;
+      row.querySelector('input').onchange = (e) => {
+        if (e.target.checked) state.selected.add(key);
+        else state.selected.delete(key);
+        saveSelection();
+        renderItinerary();
+      };
+      pl.appendChild(row);
+    }
+    list.appendChild(div);
+  }
+
+  document.getElementById('stats').textContent =
+    `${DATA.sessions.length} sessions · ${DATA.papers.length} papers · 선택: ${state.selected.size}`;
+}
+
+// ====== Render: itinerary ======
+function renderItinerary() {
+  const root = document.getElementById('itinerary');
+  if (state.selected.size === 0) {
+    root.innerHTML = '<div class="empty">발표를 선택하면 여기에 일정과 동선이 표시됩니다.</div>';
+    document.getElementById('stats').textContent =
+      `${DATA.sessions.length} sessions · ${DATA.papers.length} papers · 선택: 0`;
+    return;
+  }
+
+  // Build list of {session, paper} for selected items
+  const items = [];
+  for (const key of state.selected) {
+    const [sid, pno] = key.split('#');
+    const p = DATA.papers.find(x => x.session_id===sid && x.paper_no===pno);
+    if (!p) continue;
+    const s = sessionFor(p);
+    if (!s) continue;
+    items.push({ s, p, key });
+  }
+  items.sort((a,b) =>
+    (a.s.day - b.s.day) || (timeToMin(a.s.start) - timeToMin(b.s.start)) || a.s.id.localeCompare(b.s.id)
+  );
+
+  // Group by day
+  const byDay = new Map();
+  for (const it of items) {
+    if (!byDay.has(it.s.day)) byDay.set(it.s.day, []);
+    byDay.get(it.s.day).push(it);
+  }
+
+  let html = '';
+  for (const [day, list] of byDay) {
+    const date = list[0].s.date;
+    html += `<div class="day-block"><h3>Day ${day} — ${date}</h3>`;
+
+    // Group same time-slot picks together (conflict if room differs)
+    const slots = new Map();
+    for (const it of list) {
+      const tkey = it.s.start + '-' + it.s.end;
+      if (!slots.has(tkey)) slots.set(tkey, []);
+      slots.get(tkey).push(it);
+    }
+
+    // Render a single pick card (reused across rooms in a multi-room slot)
+    const renderPick = (it) => {
+      const n = getNote(it.key);
+      const stars = [1,2,3,4,5].map(v =>
+        `<span class="star ${v<=n.rating?'on':''}" data-key="${it.key}" data-val="${v}">★</span>`
+      ).join('');
+      return `<div class="pick">
+        <div class="ptitle">${escapeHtml(it.p.title)}</div>
+        <div class="pauthors">${escapeHtml(it.p.authors)}</div>
+        <div class="pmeta">${escapeHtml(it.s.track_title)} · #${escapeHtml(it.p.paper_no)}
+          <a href="#" data-key="${it.key}" class="rm" style="margin-left:6px;color:#d0021b;">제거</a></div>
+        <div class="rating" data-key="${it.key}">${stars}
+          <span class="star clear-star" data-key="${it.key}" data-val="0" title="평점 지우기" style="color:#ccc;font-size:13px;margin-left:6px;">✕</span>
+        </div>
+        <textarea class="note-input" data-key="${it.key}" placeholder="메모..." rows="1">${escapeHtml(n.note)}</textarea>
+      </div>`;
+    };
+
+    let prev = null;
+    for (const [tkey, picks] of [...slots.entries()].sort((a,b) => timeToMin(a[0].split('-')[0]) - timeToMin(b[0].split('-')[0]))) {
+      // Walk-time hint between consecutive slots. With multi-room picks, take the
+      // first room of the next slot as the destination (user's exact choice unknown).
+      if (prev) {
+        const gap = timeToMin(picks[0].s.start) - timeToMin(prev.s.end);
+        const w = walkMinutes(prev.s, picks[0].s);
+        const tight = gap < w;
+        html += `<div class="walk ${tight?'tight':''}">↓ 이동 ${prev.s.building} ${prev.s.room} → ${picks[0].s.building} ${picks[0].s.room} · 도보 ~${w}분 · 여유 ${gap}분${tight?'  ⚠️ 시간 부족':''}</div>`;
+      }
+
+      // Group same-slot picks by room → render as horizontal columns
+      const byRoom = new Map();
+      for (const it of picks) {
+        const r = `${it.s.building} ${it.s.room}`;
+        if (!byRoom.has(r)) byRoom.set(r, []);
+        byRoom.get(r).push(it);
+      }
+      const isMulti = byRoom.size > 1;
+
+      html += `<div class="slot ${isMulti?'multi-room':''}">`;
+      html += `<div class="time">${picks[0].s.start}–${picks[0].s.end}${isMulti ? ` · 병행 ${byRoom.size}개 방` : ''}</div>`;
+      if (isMulti) {
+        html += `<div class="info">↔ 같은 시간대에 ${byRoom.size}개 방을 선택하셨습니다. 한 곳을 정하시거나, 발표 일부씩 들으실 수 있도록 비교해 보세요.</div>`;
+      }
+      html += `<div class="rooms">`;
+      for (const [room, roomPicks] of byRoom) {
+        html += `<div class="room-col">
+          <div class="room-head"><span>${escapeHtml(room)}</span><span style="font-weight:400;color:#888;">${roomPicks.length}개</span></div>
+          ${roomPicks.map(renderPick).join('')}
+        </div>`;
+      }
+      html += `</div></div>`;
+
+      prev = picks[picks.length - 1];
+    }
+    html += `</div>`;
+  }
+
+  root.innerHTML = html;
+  root.querySelectorAll('.rm').forEach(a => {
+    a.onclick = (e) => {
+      e.preventDefault();
+      state.selected.delete(a.dataset.key);
+      saveSelection();
+      renderAll();
+    };
+  });
+
+  // Star rating click → set/clear rating; only refresh the star group (don't re-render whole panel
+  // or the textarea would lose focus while user is typing).
+  root.querySelectorAll('.rating .star').forEach(star => {
+    star.onclick = () => {
+      const key = star.dataset.key;
+      const v = parseInt(star.dataset.val, 10);
+      setNote(key, { rating: v });
+      // Refresh only the parent .rating element
+      const group = star.parentElement;
+      const newR = getNote(key).rating;
+      group.querySelectorAll('.star').forEach(s => {
+        const sv = parseInt(s.dataset.val, 10);
+        if (s.classList.contains('clear-star')) return;
+        s.classList.toggle('on', sv <= newR);
+      });
+    };
+  });
+
+  // Note textarea → debounced auto-save
+  root.querySelectorAll('.note-input').forEach(ta => {
+    let t = null;
+    ta.addEventListener('input', () => {
+      clearTimeout(t);
+      t = setTimeout(() => {
+        setNote(ta.dataset.key, { note: ta.value });
+      }, 250);
+    });
+  });
+
+  document.getElementById('stats').textContent =
+    `${DATA.sessions.length} sessions · ${DATA.papers.length} papers · 선택: ${state.selected.size}`;
+}
+
+function renderConfChip() {
+  const nameEl = document.getElementById('conf-name');
+  nameEl.textContent = confNameFor(DATA);
+  nameEl.onclick = enterRenameMode;
+  document.getElementById('conf-edit').onclick = enterRenameMode;
+
+  // Build dropdown from registry, excluding the current one
+  const reg = JSON.parse(localStorage.getItem('cs:registry') || '{}');
+  const sel = document.getElementById('conf-switch');
+  const others = Object.entries(reg).filter(([id]) => id !== currentConfId);
+  if (others.length === 0) {
+    sel.style.display = 'none';
+  } else {
+    sel.style.display = '';
+    sel.innerHTML = '<option value="">↕ 이전 학회로 전환</option>' +
+      others.map(([id, meta]) => `<option value="${id}">${escapeHtml(meta.name)}</option>`).join('');
+    sel.onchange = () => {
+      const id = sel.value;
+      if (!id) return;
+      alert('이 학회의 JSON 파일을 다시 불러와 주세요. 평점·메모는 그대로 보존됩니다.');
+      sel.value = '';
+    };
+  }
+}
+
+// Swap conf-name span with an input; commit on blur/Enter, cancel on Escape.
+function enterRenameMode() {
+  const nameEl = document.getElementById('conf-name');
+  const current = nameEl.textContent;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = current;
+  input.className = 'conf-rename-input';
+  nameEl.replaceWith(input);
+  input.focus();
+  input.select();
+
+  let done = false;
+  const commit = (save) => {
+    if (done) return; done = true;
+    const newName = input.value.trim();
+    if (save && newName && newName !== current) {
+      saveNameOverride(currentConfId, newName);
+    }
+    // Rebuild the chip so its span and handlers are restored
+    const span = document.createElement('span');
+    span.className = 'conf-name';
+    span.id = 'conf-name';
+    span.title = '클릭하여 학회명 수정';
+    input.replaceWith(span);
+    renderConfChip();
+  };
+  input.addEventListener('blur', () => commit(true));
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter')  { e.preventDefault(); commit(true); }
+    if (e.key === 'Escape') { e.preventDefault(); commit(false); }
+  });
+}
+
+function renderAll() {
+  renderConfChip();
+  renderFilters();
+  renderSessions();
+  renderItinerary();
+  renderView();
+}
+
+function escapeHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Escape regex metacharacters in the user query so e.g. "C++" or "(IEQ)" works.
+function escapeRegExp(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Returns HTML-safe string with current search query wrapped in <mark>.
+// Always run AFTER escapeHtml: input is plain text, output is sanitized HTML.
+function hi(s) {
+  const safe = escapeHtml(s);
+  const q = (state.search || '').trim();
+  if (!q) return safe;
+  const re = new RegExp('(' + escapeRegExp(q) + ')', 'gi');
+  return safe.replace(re, '<mark>$1</mark>');
+}
+
+// ====== Buttons ======
+document.getElementById('btn-clear').onclick = () => {
+  if (!confirm('선택을 모두 해제할까요?')) return;
+  state.selected.clear();
+  saveSelection();
+  renderAll();
+};
+
+// Per RFC 5545: escape backslash, comma, semicolon, and newline in TEXT fields.
+function icsEscape(s) {
+  return (s || '').replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
+}
+
+document.getElementById('btn-export-ics').onclick = () => {
+  if (state.selected.size === 0) { alert('선택된 발표가 없습니다.'); return; }
+  const dateToIso = (mdY) => {
+    const [m,d,y] = mdY.split('/');
+    return `${y}${m.padStart(2,'0')}${d.padStart(2,'0')}`;
+  };
+  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Conference Planner//KO'];
+  for (const key of state.selected) {
+    const [sid, pno] = key.split('#');
+    const p = DATA.papers.find(x => x.session_id===sid && x.paper_no===pno);
+    if (!p) continue;
+    const s = sessionFor(p);
+    const n = getNote(key);
+    const dt = dateToIso(s.date);
+    const [sh,sm] = s.start.split(':').map(Number);
+    const [eh,em] = s.end.split(':').map(Number);
+    const fmt = (h,m) => `${dt}T${String(h<8?h+12:h).padStart(2,'0')}${String(m).padStart(2,'0')}00`;
+    // Build description with optional rating + notes
+    const descParts = [
+      'Authors: ' + p.authors,
+      'Session ' + s.id + ' · ' + s.track_title,
+    ];
+    if (n.rating) descParts.push('Rating: ' + '★'.repeat(n.rating) + '☆'.repeat(5 - n.rating) + ' (' + n.rating + '/5)');
+    if (n.note)   descParts.push('Notes: ' + n.note);
+
+    lines.push('BEGIN:VEVENT');
+    lines.push('UID:' + key + '@conf-planner');
+    lines.push('SUMMARY:' + icsEscape(p.title));
+    lines.push('LOCATION:' + icsEscape(s.building + ' ' + s.room));
+    lines.push('DESCRIPTION:' + icsEscape(descParts.join('\n')));
+    lines.push('DTSTART:' + fmt(sh,sm));
+    lines.push('DTEND:'   + fmt(eh,em));
+    lines.push('END:VEVENT');
+  }
+  lines.push('END:VCALENDAR');
+  const blob = new Blob([lines.join('\r\n')], {type:'text/calendar'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'my-conference-schedule.ics';
+  a.click();
+};
+
+// CSV export: every paper that is selected OR has rating OR has notes.
+// RFC 4180 quoting: wrap each field in quotes, escape internal quotes by doubling.
+function csvCell(v) {
+  const s = String(v ?? '');
+  if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+
+document.getElementById('btn-export-csv').onclick = () => {
+  // Collect candidate keys
+  const keys = new Set([...state.selected, ...state.notes.keys()]);
+  if (keys.size === 0) { alert('내보낼 항목이 없습니다 (선택·평점·메모 중 하나 이상 필요).'); return; }
+
+  const header = ['Day','Date','Start','End','Building','Room','SessionID','Track','PaperNo','Title','Authors','Selected','Rating','Notes'];
+  const rows = [header.map(csvCell).join(',')];
+
+  // Sort by day → start → session id
+  const items = [];
+  for (const key of keys) {
+    const [sid, pno] = key.split('#');
+    const p = DATA.papers.find(x => x.session_id===sid && x.paper_no===pno);
+    if (!p) continue;
+    const s = sessionFor(p);
+    if (!s) continue;
+    items.push({ key, p, s });
+  }
+  items.sort((a,b) =>
+    (a.s.day - b.s.day) ||
+    (timeToMin(a.s.start) - timeToMin(b.s.start)) ||
+    a.s.id.localeCompare(b.s.id)
+  );
+
+  for (const it of items) {
+    const n = getNote(it.key);
+    rows.push([
+      it.s.day, it.s.date, it.s.start, it.s.end,
+      it.s.building, it.s.room, it.s.id, it.s.track_title,
+      it.p.paper_no, it.p.title, it.p.authors,
+      state.selected.has(it.key) ? 'Y' : 'N',
+      n.rating || '',
+      n.note || '',
+    ].map(csvCell).join(','));
+  }
+
+  // BOM so Excel opens UTF-8 correctly
+  const blob = new Blob(['﻿' + rows.join('\r\n')], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'my-conference-notes.csv';
+  a.click();
+};
+
+document.getElementById('btn-load-json').onclick = () => document.getElementById('file-json').click();
+document.getElementById('file-json').onchange = (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const parsed = JSON.parse(r.result);
+      if (!parsed.sessions || !parsed.papers) {
+        alert('잘못된 JSON 구조: sessions / papers 필드가 필요합니다.'); return;
+      }
+      // switchConference loads any pre-existing notes/selection for this conf id
+      // from localStorage automatically.
+      switchConference(parsed);
+    } catch (err) { alert('JSON 파싱 실패: ' + err.message); }
+  };
+  r.readAsText(f);
+};
+
+// ====== Search input wiring ======
+const searchInput = document.getElementById('search');
+searchInput.addEventListener('input', (e) => {
+  state.search = e.target.value || '';
+  renderSessions();
+});
+
+// ====== View-tab wiring ======
+document.querySelectorAll('.view-tab').forEach(btn => {
+  btn.onclick = () => setView(btn.dataset.view);
+});
+
+// ====== Boot ======
+renderAll();
+</script>
+</body>
+</html>
