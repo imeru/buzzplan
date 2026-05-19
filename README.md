@@ -68,69 +68,97 @@
 
 ## 다음 학회로 재사용하기
 
-새로운 학회의 PDF가 생기면 다음과 같이 갱신합니다.
+새로운 학회 PDF가 생기면 한 줄로 빌드할 수 있습니다.
 
-### 1. 파서 실행 (로컬)
+### 사전 준비 (한 번만)
 
 ```bash
-# pdfplumber 설치
 pip install pdfplumber
-
-# PDF에서 schedule.json 생성
-python3 parser.py /path/to/new_conference.pdf \
-  --id      iaqvec-2028 \
-  --name    "IAQVEC 2028" \
-  --out     schedule.json
 ```
 
-`--id`는 학회마다 고유한 슬러그(소문자·하이픈). 이 ID를 기준으로 학생들의 평점·메모가 분리 저장됩니다.
-
-### 2. JSON을 index.html에 임베드
-
-도구는 단일 파일로 동작하도록 JSON을 HTML 안에 직접 임베드합니다.
-다음 Python 한 줄로 갱신할 수 있습니다.
+### 빌드 (매 학회마다)
 
 ```bash
-python3 -c "
-import json, re, pathlib
-data = json.load(open('schedule.json'))
-embedded = json.dumps(data, ensure_ascii=False, separators=(',', ':'))
-html = pathlib.Path('index.html').read_text()
-new_html, n = re.subn(r'let DATA = \{.*?\};\s*\n', f'let DATA = {embedded};\n', html, count=1, flags=re.DOTALL)
-assert n == 1
-pathlib.Path('index.html').write_text(new_html)
-print(f'Updated index.html with {len(data[\"sessions\"])} sessions, {len(data[\"papers\"])} papers')
-"
+python3 build.py /path/to/new_conference.pdf \
+  --id   iaqvec-2028 \
+  --name "IAQVEC 2028"
 ```
 
-### 3. GitHub에 다시 업로드
+`build.py`가 내부에서 세 단계를 자동으로 수행합니다.
+1. `parser.py`로 PDF를 파싱해 `schedule.json` 생성
+2. 세션 수·발표 수·orphan paper(파싱 누락) 검증
+3. JSON을 `index.html` 안에 임베드
 
-레포 페이지에서 **Add file → Upload files**로 새 `index.html`을 올리고 commit. Pages 사이트는 1~2분 안에 자동 갱신됩니다.
+성공하면 갱신된 `index.html` 한 파일만 GitHub 레포에 다시 업로드하시면 됩니다.
+
+**옵션**
+- `--dry-run`: HTML은 건드리지 않고 파싱 결과만 검증.
+- `--out-json`, `--html`: 산출 경로를 바꿀 때 사용.
+
+### 학회 ID 관리
+
+`--id`는 학회마다 고유한 슬러그(소문자·하이픈). 이 ID가 학생들의 평점·메모를 분리 저장하는 키가 됩니다.
+
+권장 명명 규칙:
+
+| 형식 | 예 |
+|---|---|
+| `<학회약어>-<년도>` | `iaqvec-2026`, `iaqvec-2028` |
+| `<학회약어>-<주최지>` | `ibpsa-bs-2027-glasgow` |
+
+같은 학회 ID로 재빌드하면(예: 스케줄 갱신 시), 그 ID로 저장된 학생들의 평점·메모는 그대로 유지됩니다. 발표 ID(`session-id#paper-no`)가 같으면 메모가 연결되고, 바뀐 발표 ID는 그냥 새 항목이 됩니다.
+
+### GitHub에 다시 업로드
+
+레포 페이지에서 **Add file → Upload files**로 갱신된 `index.html`을 끌어다 놓고 **Commit changes**. GitHub Pages는 1~2분 안에 자동 반영됩니다. 학생들에게는 같은 URL을 그대로 쓰시면 됩니다.
+
+브라우저 캐시 때문에 학생들에게 이전 버전이 보일 수 있습니다. 강제 새로고침(Cmd+Shift+R / Ctrl+Shift+R) 안내를 함께 전달하시면 좋습니다.
 
 ---
 
 ## 비표준 학회 PDF 대응
 
-본 파서는 표준적인 IAQVEC·IBPSA 학회 PDF 형식을 가정합니다. 다른 학회 PDF는 다음 케이스에서 부분 수정이 필요할 수 있습니다.
+본 파서는 표준적인 IAQVEC·IBPSA 학회 PDF 형식을 가정합니다. 다른 학회 PDF는 부분 수정이 필요할 수 있습니다. `build.py --dry-run`을 먼저 돌려 보고, 다음 신호를 확인하세요.
 
-- 표 컬럼 좌표가 다른 경우 → `parser.py`의 `AUTHOR_X`, `TITLE_X` 상수 조정
-- "Session N X-Y Title" 헤더 형식이 다른 경우 → `SESS_RE` 정규식 보강
-- 시간·장소 줄 형식이 다른 경우 → `TIME_LOC_RE` 보강
+### 진단
 
-파싱 결과 검증을 위해 다음 스크립트로 누락된 세션을 빠르게 확인할 수 있습니다.
+```bash
+python3 build.py /path/to/pdf.pdf --id test --name "Test" --dry-run
+```
+
+출력에서 다음을 확인:
+
+| 신호 | 의미 | 조치 |
+|---|---|---|
+| `sessions=0` 또는 `papers=0` | 세션 헤더를 전혀 인식하지 못함 | `parser.py`의 `SESS_RE` 보강 |
+| `[경고] orphan papers: N` | 일부 세션 헤더만 파싱 실패 | `TIME_LOC_RE` 등 보강 |
+| 발표 수가 PDF에 적힌 수보다 적음 | 표 컬럼 좌표가 다름 | `AUTHOR_X`, `TITLE_X` 상수 조정 |
+
+### parser.py 주요 수정 지점
+
+`parser.py` 상단의 상수와 정규식:
+
+```python
+AUTHOR_X = 190         # author 컬럼 시작 x 좌표
+TITLE_X  = 335         # title 컬럼 시작 x 좌표
+
+DAY_RE      = ...      # "Day 2: 5/19/2026 (Tue)" 패턴
+SESS_RE     = ...      # "Session 1 1-1 Indoor Air Quality" 패턴
+TIME_LOC_RE = ...      # "11:00 - 12:30 Location: SGM 123 / Session chair: ..." 패턴
+```
+
+PDF의 실제 좌표를 보려면 pdfplumber로 단어별 위치를 출력해 확인:
 
 ```bash
 python3 -c "
-import json
-d = json.load(open('schedule.json'))
-sess = {s['id'] for s in d['sessions']}
-orphan = [p['session_id'] for p in d['papers'] if p['session_id'] not in sess]
-print(f'Sessions: {len(sess)}, Papers: {len(d[\"papers\"])}, Orphan papers: {len(orphan)}')
-if orphan: print('Orphan session_ids:', sorted(set(orphan)))
+import pdfplumber
+with pdfplumber.open('/path/to/pdf.pdf') as pdf:
+    for w in pdf.pages[0].extract_words()[:40]:
+        print(f\"{w['top']:6.1f} {w['x0']:6.1f}  {w['text']}\")
 "
 ```
 
-`Orphan papers` 가 0이 아니면 해당 세션 헤더가 파싱되지 못한 것이므로, 파서를 보강합니다.
+이 출력을 보고 'Author', 'Title' 같은 헤더의 x 좌표를 파악해 조정합니다.
 
 ---
 
