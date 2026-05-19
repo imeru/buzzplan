@@ -104,6 +104,52 @@
   .slot .hop.ok-tight  { background: #fff3d6; color: #8a6d00; }
   .slot .hop.tight     { background: #fde2e2; color: #b32424; font-weight: 600; }
 
+  /* Itinerary sub-view toggle */
+  .iv-toggle {
+    display: inline-flex; gap: 4px; margin-bottom: 12px;
+    background: #f0f0f0; padding: 3px; border-radius: 6px;
+  }
+  .iv-toggle button {
+    background: transparent; border: none; padding: 5px 12px; cursor: pointer;
+    font-size: 12px; color: #666; border-radius: 4px;
+  }
+  .iv-toggle button.active { background: #fff; color: #1f1f1f; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+
+  /* Timetable (grid view) */
+  .tt-day { margin-bottom: 20px; }
+  .tt-day h3 { font-size: 12px; margin: 0 0 8px; color: #1f1f1f; }
+  .tt-wrap { overflow-x: auto; border: 1px solid #e3e3e3; border-radius: 6px; }
+  .timetable {
+    display: grid; background: #e8e8e8; gap: 1px;
+    min-width: 100%;
+  }
+  .tt-corner, .tt-room-head, .tt-time, .tt-cell {
+    background: #fff; padding: 4px 6px; font-size: 11px; box-sizing: border-box;
+  }
+  .tt-corner { background: #fafafa; }
+  .tt-room-head {
+    font-weight: 600; text-align: center; line-height: 1.2;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tt-time {
+    font-family: monospace; color: #888; text-align: right;
+    display: flex; align-items: flex-start; justify-content: flex-end;
+  }
+  .tt-cell {
+    overflow: hidden; cursor: default; line-height: 1.25;
+    border-left: 3px solid; padding: 5px 7px;
+  }
+  .tt-cell.tag-SGM { background: #eaf2fb; border-left-color: #1d4e89; color: #0f2a4d; }
+  .tt-cell.tag-GFS { background: #fff4e0; border-left-color: #8a4b00; color: #4a2700; }
+  .tt-cell.tag-VHE { background: #f1e9ff; border-left-color: #553f8a; color: #2c1f51; }
+  .tt-room-head.tag-SGM { background: #d6e6f7; color: #1d4e89; }
+  .tt-room-head.tag-GFS { background: #fae5c8; color: #8a4b00; }
+  .tt-room-head.tag-VHE { background: #e2d4ff; color: #553f8a; }
+  .tt-cell .tt-pno { font-weight: 600; font-size: 11px; }
+  .tt-cell .tt-author { font-size: 10px; opacity: 0.85; }
+  .tt-cell .tt-meta { font-size: 9px; opacity: 0.7; margin-top: 2px; font-family: monospace; }
+  .tt-cell .tt-rate { color: #f5a623; font-size: 10px; }
+
   .panel { background: #fff; border: 1px solid #e3e3e3; border-radius: 6px; padding: 14px; }
   .panel h2 { margin: 0 0 10px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #666; }
 
@@ -458,6 +504,8 @@ const state = {
   buildings: allBuildingsOf(DATA),
   // Active view tab: 'browse' or 'itinerary'. Persists across reloads.
   view: localStorage.getItem('cs:view') || 'browse',
+  // Itinerary sub-view: 'list' (cards + hop hints) or 'grid' (timetable: rooms × time)
+  itineraryView: localStorage.getItem('cs:itinview') || 'list',
 };
 rememberConference(DATA);
 
@@ -807,7 +855,30 @@ function renderItinerary() {
     byDay.get(it.s.day).push(it);
   }
 
-  let html = '';
+  // Attach paper-level time block to every item (used by both views)
+  for (const it of items) {
+    const ordered = papersForSession(it.s.id);
+    const idx = ordered.findIndex(p => p.paper_no === it.p.paper_no);
+    it.pt = paperTime(it.s, it.p, idx, ordered.length);
+  }
+
+  // ===== View toggle =====
+  let html = `<div class="iv-toggle">
+    <button class="${state.itineraryView==='list'?'active':''}" data-iv="list">📋 리스트</button>
+    <button class="${state.itineraryView==='grid'?'active':''}" data-iv="grid">🗓️ 시간표</button>
+  </div>`;
+
+  // ===== Timetable (grid) branch =====
+  if (state.itineraryView === 'grid') {
+    html += renderTimetable(byDay);
+    document.getElementById('itinerary').innerHTML = html;
+    wireItineraryToggle();
+    document.getElementById('stats').textContent =
+      `${DATA.sessions.length} sessions · ${DATA.papers.length} papers · 선택: ${state.selected.size}`;
+    return;
+  }
+
+  // ===== List (cards + hop hints) branch — existing rendering =====
   for (const [day, list] of byDay) {
     const date = list[0].s.date;
     html += `<div class="day-block"><h3>Day ${day} — ${date}</h3>`;
@@ -839,12 +910,7 @@ function renderItinerary() {
       </div>`;
     };
 
-    // Augment each pick with its paper-level time block (start, end, indexed by paper order)
-    for (const it of list) {
-      const ordered = papersForSession(it.s.id);
-      const idx = ordered.findIndex(p => p.paper_no === it.p.paper_no);
-      it.pt = paperTime(it.s, it.p, idx, ordered.length);
-    }
+    // it.pt is already attached above by the parent loop.
 
     let prev = null;
     for (const [tkey, picks] of [...slots.entries()].sort((a,b) => timeToMin(a[0].split('-')[0]) - timeToMin(b[0].split('-')[0]))) {
@@ -943,8 +1009,88 @@ function renderItinerary() {
     });
   });
 
+  // Toggle works in both views
+  wireItineraryToggle();
+
   document.getElementById('stats').textContent =
     `${DATA.sessions.length} sessions · ${DATA.papers.length} papers · 선택: ${state.selected.size}`;
+}
+
+// Wire the list/grid toggle inside the itinerary panel.
+function wireItineraryToggle() {
+  document.querySelectorAll('#itinerary .iv-toggle button').forEach(b => {
+    b.onclick = () => {
+      state.itineraryView = b.dataset.iv;
+      localStorage.setItem('cs:itinview', state.itineraryView);
+      renderItinerary();
+    };
+  });
+}
+
+// Compact author label for a grid cell: take last name of the first author.
+function firstAuthorLabel(authors) {
+  if (!authors) return '';
+  // Split on comma or " and ". Take first token.
+  const first = authors.split(/,\s*|\s+and\s+/i)[0].trim();
+  // Last word ≈ family name (works for the bulk of Western-format names; for CJK
+  // authors the full first token is also reasonable).
+  const tokens = first.split(/\s+/);
+  return tokens[tokens.length - 1] + (authors.match(/,|\sand\s/i) ? ' 외' : '');
+}
+
+// Build the timetable grid for all selected items. Each day is a separate grid.
+function renderTimetable(byDay) {
+  let html = '';
+  for (const [day, list] of [...byDay.entries()].sort((a,b) => a[0]-b[0])) {
+    const date = list[0].s.date;
+
+    // Columns: distinct rooms in this day, sorted by building then room
+    const roomKeys = [...new Set(list.map(it => `${it.s.building}|${it.s.room}`))].sort();
+
+    // Rows: 15-min slots from floor(min start) to ceil(max end)
+    const minStart = Math.min(...list.map(it => it.pt.startMin));
+    const maxEnd   = Math.max(...list.map(it => it.pt.endMin));
+    const startMin = Math.floor(minStart / 15) * 15;
+    const endMin   = Math.ceil (maxEnd   / 15) * 15;
+    const rowCount = (endMin - startMin) / 15;
+
+    const rowHeight = 36;  // px per 15-min row
+    const colMin    = 130; // px min width per room column
+    const tlCol     = 56;  // px width of time-label column
+
+    html += `<div class="tt-day"><h3>Day ${day} — ${date}</h3><div class="tt-wrap">`;
+    html += `<div class="timetable" style="grid-template-columns: ${tlCol}px repeat(${roomKeys.length}, minmax(${colMin}px, 1fr)); grid-template-rows: 30px repeat(${rowCount}, ${rowHeight}px);">`;
+
+    // Corner + room headers
+    html += `<div class="tt-corner" style="grid-column:1; grid-row:1;"></div>`;
+    roomKeys.forEach((rk, i) => {
+      const [b, ro] = rk.split('|');
+      html += `<div class="tt-room-head tag-${b}" style="grid-column:${i+2}; grid-row:1;">${escapeHtml(b)} ${escapeHtml(ro)}</div>`;
+    });
+
+    // Time labels
+    for (let i = 0; i < rowCount; i++) {
+      html += `<div class="tt-time" style="grid-column:1; grid-row:${i+2};">${minToTime(startMin + i*15)}</div>`;
+    }
+
+    // Paper cells
+    for (const it of list) {
+      const colIdx = roomKeys.indexOf(`${it.s.building}|${it.s.room}`);
+      const rowStart = Math.round((it.pt.startMin - startMin) / 15);
+      const rowSpan  = Math.max(1, Math.round((it.pt.endMin - it.pt.startMin) / 15));
+      const n = getNote(it.key);
+      const tooltip = `${it.p.title}\n${it.p.authors}`;
+      html += `<div class="tt-cell tag-${it.s.building}"
+        style="grid-column:${colIdx+2}; grid-row:${rowStart+2} / span ${rowSpan};"
+        title="${escapeHtml(tooltip)}">
+        <div class="tt-pno">#${escapeHtml(it.p.paper_no)} <span class="tt-author">${escapeHtml(firstAuthorLabel(it.p.authors))}</span></div>
+        <div class="tt-meta">${it.pt.start}–${it.pt.end}${n.rating?` <span class="tt-rate">${'★'.repeat(n.rating)}</span>`:''}</div>
+      </div>`;
+    }
+
+    html += `</div></div></div>`;
+  }
+  return html;
 }
 
 function renderConfChip() {
