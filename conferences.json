@@ -1,0 +1,15 @@
+{
+  "default": "iaqvec-2026",
+  "conferences": [
+    {
+      "id": "iaqvec-2026",
+      "name": "IAQVEC 2026",
+      "data": "data/iaqvec-2026.json"
+    },
+    {
+      "id": "sarek-2025-winter",
+      "name": "대한설비공학회 2025 동계학술발표대회",
+      "data": "data/sarek-2025-winter.json"
+    }
+  ]
+}
