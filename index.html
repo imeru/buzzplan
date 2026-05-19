@@ -1110,21 +1110,24 @@ function renderConfChip() {
   nameEl.onclick = enterRenameMode;
   document.getElementById('conf-edit').onclick = enterRenameMode;
 
-  // Build dropdown from registry, excluding the current one
-  const reg = JSON.parse(localStorage.getItem('cs:registry') || '{}');
+  // Build dropdown from conferences.json (the authoritative list), excluding current.
+  // Selecting an option navigates to ?conf=<id> so the URL stays shareable.
   const sel = document.getElementById('conf-switch');
-  const others = Object.entries(reg).filter(([id]) => id !== currentConfId);
+  const list = (CONFERENCES_REG && CONFERENCES_REG.conferences) || [];
+  const others = list.filter(c => c.id !== currentConfId);
   if (others.length === 0) {
     sel.style.display = 'none';
   } else {
     sel.style.display = '';
-    sel.innerHTML = '<option value="">↕ 이전 학회로 전환</option>' +
-      others.map(([id, meta]) => `<option value="${id}">${escapeHtml(meta.name)}</option>`).join('');
+    sel.innerHTML = '<option value="">↕ 다른 학회로 전환</option>' +
+      others.map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`).join('');
     sel.onchange = () => {
       const id = sel.value;
       if (!id) return;
-      alert('이 학회의 JSON 파일을 다시 불러와 주세요. 평점·메모는 그대로 보존됩니다.');
-      sel.value = '';
+      // URL을 갱신해 새 학회로 이동. 페이지가 재로딩되며 bootApp이 그 학회를 fetch.
+      const url = new URL(location.href);
+      url.searchParams.set('conf', id);
+      location.assign(url.toString());
     };
   }
 }
