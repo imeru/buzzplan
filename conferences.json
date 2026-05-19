@@ -10,6 +10,11 @@
       "id": "sarek-2025-winter",
       "name": "대한설비공학회 2025 동계학술발표대회",
       "data": "data/sarek-2025-winter.json"
+    },
+    {
+      "id": "sarek-2025-summer",
+      "name": "대한설비공학회 2025 하계학술발표대회",
+      "data": "data/sarek-2025-summer.json"
     }
   ]
 }

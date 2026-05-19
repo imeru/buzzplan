@@ -1,0 +1,3364 @@
+{
+  "conference": {
+    "id": "sarek-2025-summer",
+    "name": "대한설비공학회 2025 하계학술발표대회"
+  },
+  "sessions": [
+    {
+      "id": "1-A",
+      "block": 1,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "AI활용",
+      "start": "09:00",
+      "end": "10:00",
+      "building": "회장",
+      "room": "1",
+      "floor": 1,
+      "chair": "정유준 (한국기계연구원)"
+    },
+    {
+      "id": "1-B",
+      "block": 1,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별강연 및 특별세션 : 액화수소설비전문위원회",
+      "start": "10:10",
+      "end": "12:20",
+      "building": "회장",
+      "room": "1",
+      "floor": 1,
+      "chair": "김서영 (하이리움산업)"
+    },
+    {
+      "id": "1-C",
+      "block": 1,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 액화수소설비전문위원회",
+      "start": "13:30",
+      "end": "14:30",
+      "building": "회장",
+      "room": "1",
+      "floor": 1,
+      "chair": "김서영 (하이리움산업)"
+    },
+    {
+      "id": "1-D",
+      "block": 1,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 여성설비위원회",
+      "start": "15:20",
+      "end": "17:00",
+      "building": "회장",
+      "room": "1",
+      "floor": 1,
+      "chair": "신현미 (명성하나엔지니어링)"
+    },
+    {
+      "id": "1-E",
+      "block": 1,
+      "day": 20,
+      "date": "6/20/2025",
+      "track_title": "특별세션 : 미래모빌리티 열관리전문위원회",
+      "start": "09:00",
+      "end": "10:15",
+      "building": "회장",
+      "room": "1",
+      "floor": 1,
+      "chair": "이현진 (국민대학교)"
+    },
+    {
+      "id": "1-F",
+      "block": 1,
+      "day": 20,
+      "date": "6/20/2025",
+      "track_title": "에너지생산",
+      "start": "10:35",
+      "end": "11:50",
+      "building": "회장",
+      "room": "1",
+      "floor": 1,
+      "chair": "함정균 (조선대학교)"
+    },
+    {
+      "id": "2-A",
+      "block": 2,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "공조설비1",
+      "start": "09:00",
+      "end": "10:00",
+      "building": "회장",
+      "room": "2",
+      "floor": 1,
+      "chair": "김선혜 (서울과학기술대학교)"
+    },
+    {
+      "id": "2-B",
+      "block": 2,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 지열/수열설비전문위원회",
+      "start": "10:10",
+      "end": "11:10",
+      "building": "회장",
+      "room": "2",
+      "floor": 1,
+      "chair": "강한기 (이젠엔지니어링)"
+    },
+    {
+      "id": "2-C",
+      "block": 2,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 태양에너지전문위원회",
+      "start": "13:30",
+      "end": "15:00",
+      "building": "회장",
+      "room": "2",
+      "floor": 1,
+      "chair": "주홍진 (한국에너지기술연구원)"
+    },
+    {
+      "id": "2-D",
+      "block": 2,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 소방/방재부문위원회",
+      "start": "15:20",
+      "end": "16:35",
+      "building": "회장",
+      "room": "2",
+      "floor": 1,
+      "chair": "이재오 (대전대학교)"
+    },
+    {
+      "id": "2-E",
+      "block": 2,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "공조설비 2",
+      "start": "09:00",
+      "end": "10:00",
+      "building": "회장",
+      "room": "2",
+      "floor": 1,
+      "chair": "신민재 (한양대학교)"
+    },
+    {
+      "id": "2-F",
+      "block": 2,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "공조설비 3",
+      "start": "10:35",
+      "end": "11:50",
+      "building": "회장",
+      "room": "2",
+      "floor": 1,
+      "chair": "김주욱 (조선대학교)"
+    },
+    {
+      "id": "3-A",
+      "block": 3,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "실내환경1",
+      "start": "09:00",
+      "end": "10:00",
+      "building": "회장",
+      "room": "3",
+      "floor": 1,
+      "chair": "박병용 (국립한밭대학교)"
+    },
+    {
+      "id": "3-B",
+      "block": 3,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "실내환경2",
+      "start": "10:10",
+      "end": "11:25",
+      "building": "회장",
+      "room": "3",
+      "floor": 1,
+      "chair": "홍구표 (강원대학교)"
+    },
+    {
+      "id": "3-C",
+      "block": 3,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 데시컨트냉방",
+      "start": "13:30",
+      "end": "14:45",
+      "building": "회장",
+      "room": "3",
+      "floor": 1,
+      "chair": "이대영 (휴마스터)"
+    },
+    {
+      "id": "3-D",
+      "block": 3,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 축열",
+      "start": "15:20",
+      "end": "16:50",
+      "building": "회장",
+      "room": "3",
+      "floor": 1,
+      "chair": "서정식 (한국냉동공조인증센터)"
+    },
+    {
+      "id": "3-E",
+      "block": 3,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "실내환경3",
+      "start": "09:00",
+      "end": "10:15",
+      "building": "회장",
+      "room": "3",
+      "floor": 1,
+      "chair": "남유진 (부산대학교)"
+    },
+    {
+      "id": "3-F",
+      "block": 3,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "실내환경4",
+      "start": "10:35",
+      "end": "11:50",
+      "building": "회장",
+      "room": "3",
+      "floor": 1,
+      "chair": "김지혜 (광운대학교)"
+    },
+    {
+      "id": "4-A",
+      "block": 4,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "열전달1",
+      "start": "09:00",
+      "end": "10:00",
+      "building": "회장",
+      "room": "4",
+      "floor": 1,
+      "chair": "이남규, 연세대학교"
+    },
+    {
+      "id": "4-B",
+      "block": 4,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 차세대 대체냉매",
+      "start": "10:10",
+      "end": "11:25",
+      "building": "회장",
+      "room": "4",
+      "floor": 1,
+      "chair": "이공훈 (한국기계연구원)"
+    },
+    {
+      "id": "4-C",
+      "block": 4,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 대용량 히트펌프",
+      "start": "13:30",
+      "end": "14:45",
+      "building": "회장",
+      "room": "4",
+      "floor": 1,
+      "chair": "김진두 (아진피앤피)"
+    },
+    {
+      "id": "4-D",
+      "block": 4,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 한국기계설비기술사회",
+      "start": "15:20",
+      "end": "16:35",
+      "building": "회장",
+      "room": "4",
+      "floor": 1,
+      "chair": "오명석 (LG전자)"
+    },
+    {
+      "id": "4-E",
+      "block": 4,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "열전달2",
+      "start": "09:00",
+      "end": "10:15",
+      "building": "회장",
+      "room": "4",
+      "floor": 1,
+      "chair": "윤린 (한밭대학교)"
+    },
+    {
+      "id": "4-F",
+      "block": 4,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "열전달3",
+      "start": "10:35",
+      "end": "11:35",
+      "building": "회장",
+      "room": "4",
+      "floor": 1,
+      "chair": "오진우 (충남대학교)"
+    },
+    {
+      "id": "5-A",
+      "block": 5,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "외피 및 창호1",
+      "start": "09:00",
+      "end": "10:00",
+      "building": "회장",
+      "room": "5",
+      "floor": 1,
+      "chair": "도성록, 한밭대학교"
+    },
+    {
+      "id": "5-B",
+      "block": 5,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : ZEB용 HVAC 기술기준 포럼 (주최 : ZEB 시스템 전문 위원회)",
+      "start": "10:10",
+      "end": "11:10",
+      "building": "회장",
+      "room": "5",
+      "floor": 1,
+      "chair": "이광호 (고려대학교)"
+    },
+    {
+      "id": "5-C",
+      "block": 5,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 미래성장특별위원회",
+      "start": "13:30",
+      "end": "15:00",
+      "building": "회장",
+      "room": "5",
+      "floor": 1,
+      "chair": "정재원 (한양대학교)"
+    },
+    {
+      "id": "5-D",
+      "block": 5,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 액침냉각",
+      "start": "15:20",
+      "end": "16:50",
+      "building": "회장",
+      "room": "5",
+      "floor": 1,
+      "chair": "고민건 (삼화에이스)"
+    },
+    {
+      "id": "5-E",
+      "block": 5,
+      "day": 20,
+      "date": "6/20/2025",
+      "track_title": "외피 및 창호2",
+      "start": "09:00",
+      "end": "10:00",
+      "building": "회장",
+      "room": "5",
+      "floor": 1,
+      "chair": "조재완 (인하대학교)"
+    },
+    {
+      "id": "5-F",
+      "block": 5,
+      "day": 20,
+      "date": "6/20/2025",
+      "track_title": "공기청정",
+      "start": "10:35",
+      "end": "11:50",
+      "building": "회장",
+      "room": "5",
+      "floor": 1,
+      "chair": "임한솔 (한밭대학교)"
+    },
+    {
+      "id": "6-A",
+      "block": 6,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "친환경 건물시스템1",
+      "start": "09:00",
+      "end": "10:00",
+      "building": "회장",
+      "room": "6",
+      "floor": 1,
+      "chair": "이재원 (한국해양대학교)"
+    },
+    {
+      "id": "6-B",
+      "block": 6,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 에너지수요관리기술개발사업 기술 공유회",
+      "start": "10:10",
+      "end": "11:20",
+      "building": "회장",
+      "room": "6",
+      "floor": 1,
+      "chair": "임승빈 (한국에너지기술평가원)"
+    },
+    {
+      "id": "6-C",
+      "block": 6,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 에너지수요관리기술개발사업 기술 공유회",
+      "start": "13:30",
+      "end": "14:50",
+      "building": "회장",
+      "room": "6",
+      "floor": 1,
+      "chair": "임승빈 (한국에너지기술평가원)"
+    },
+    {
+      "id": "6-D",
+      "block": 6,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 에너지수요관리기술개발사업 기술 공유회",
+      "start": "15:30",
+      "end": "15:45",
+      "building": "회장",
+      "room": "6",
+      "floor": 1,
+      "chair": "임승빈 (한국에너지기술평가원)"
+    },
+    {
+      "id": "6-E",
+      "block": 6,
+      "day": 20,
+      "date": "6/20/2025",
+      "track_title": "친환경 건물시스템2",
+      "start": "09:00",
+      "end": "10:15",
+      "building": "회장",
+      "room": "6",
+      "floor": 1,
+      "chair": "최원준 (전남대학교)"
+    },
+    {
+      "id": "6-F",
+      "block": 6,
+      "day": 20,
+      "date": "6/20/2025",
+      "track_title": "친환경 건물시스템3",
+      "start": "10:35",
+      "end": "11:50",
+      "building": "회장",
+      "room": "6",
+      "floor": 1,
+      "chair": "오원석 (한밭대학교)"
+    },
+    {
+      "id": "7-A",
+      "block": 7,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "냉난방부하1",
+      "start": "09:00",
+      "end": "10:00",
+      "building": "회장",
+      "room": "7",
+      "floor": 1,
+      "chair": "김동수 (한밭대학교)"
+    },
+    {
+      "id": "7-B",
+      "block": 7,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 공조부하계산표준화특별위원회 20주년과 미래",
+      "start": "10:10",
+      "end": "11:50",
+      "building": "회장",
+      "room": "7",
+      "floor": 1,
+      "chair": "황동곤 (우원엠앤이)"
+    },
+    {
+      "id": "7-C",
+      "block": 7,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 지역냉난방",
+      "start": "13:30",
+      "end": "14:45",
+      "building": "회장",
+      "room": "7",
+      "floor": 1,
+      "chair": "이재승(한국지역난방공사)"
+    },
+    {
+      "id": "7-D",
+      "block": 7,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 공동주택부문",
+      "start": "15:20",
+      "end": "16:35",
+      "building": "회장",
+      "room": "7",
+      "floor": 1,
+      "chair": "이문수 (한국토지주택공사)"
+    },
+    {
+      "id": "7-E",
+      "block": 7,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "냉난방부하2",
+      "start": "09:00",
+      "end": "10:15",
+      "building": "회장",
+      "room": "7",
+      "floor": 1,
+      "chair": "윤영직 (한밭대학교)"
+    },
+    {
+      "id": "7-F",
+      "block": 7,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "열유체해석",
+      "start": "10:35",
+      "end": "11:50",
+      "building": "회장",
+      "room": "7",
+      "floor": 1,
+      "chair": "이승현 (광주과학기술원)"
+    },
+    {
+      "id": "8-A",
+      "block": 8,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "에너지시뮬레이션1",
+      "start": "09:00",
+      "end": "10:00",
+      "building": "회장",
+      "room": "8",
+      "floor": 1,
+      "chair": "이광호, 고려대학교"
+    },
+    {
+      "id": "8-B",
+      "block": 8,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 클린룸설비전문위원회",
+      "start": "10:10",
+      "end": "11:10",
+      "building": "회장",
+      "room": "8",
+      "floor": 1,
+      "chair": "김태성 (성균관대학교)"
+    },
+    {
+      "id": "8-C",
+      "block": 8,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 냉동공조산업발전위원회",
+      "start": "13:30",
+      "end": "14:45",
+      "building": "회장",
+      "room": "8",
+      "floor": 1,
+      "chair": "박창용 (서울과학기술대학교)"
+    },
+    {
+      "id": "8-D",
+      "block": 8,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 가스냉방",
+      "start": "15:20",
+      "end": "16:20",
+      "building": "회장",
+      "room": "8",
+      "floor": 1,
+      "chair": "박찬우 (전북대학교)"
+    },
+    {
+      "id": "8-E",
+      "block": 8,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "에너지시뮬레이션2",
+      "start": "09:00",
+      "end": "10:15",
+      "building": "회장",
+      "room": "8",
+      "floor": 1,
+      "chair": "김민휘 (한국에너지기술연구원)"
+    },
+    {
+      "id": "8-F",
+      "block": 8,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "에너지시뮬레이션3",
+      "start": "10:35",
+      "end": "11:50",
+      "building": "회장",
+      "room": "8",
+      "floor": 1,
+      "chair": "최영진 (경기대학교)"
+    },
+    {
+      "id": "9-A",
+      "block": 9,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별강연 및 냉동/히트펌프1",
+      "start": "09:00",
+      "end": "10:00",
+      "building": "회장",
+      "room": "9",
+      "floor": 1,
+      "chair": "전용석, 아주대학교"
+    },
+    {
+      "id": "9-B",
+      "block": 9,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별강연 및 신재생",
+      "start": "10:10",
+      "end": "11:25",
+      "building": "회장",
+      "room": "9",
+      "floor": 1,
+      "chair": "송재만 (경희대학교)"
+    },
+    {
+      "id": "9-C",
+      "block": 9,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별강연 및 냉동/히트펌프2",
+      "start": "13:30",
+      "end": "14:45",
+      "building": "회장",
+      "room": "9",
+      "floor": 1,
+      "chair": "최종민 (제주대학교)"
+    },
+    {
+      "id": "9-E",
+      "block": 9,
+      "day": 20,
+      "date": "6/20/2025",
+      "track_title": "냉동/히트펌프3",
+      "start": "09:00",
+      "end": "10:15",
+      "building": "회장",
+      "room": "9",
+      "floor": 1,
+      "chair": "이동찬 (서울시립대학교)"
+    },
+    {
+      "id": "9-F",
+      "block": 9,
+      "day": 20,
+      "date": "6/20/2025",
+      "track_title": "냉동/히트펌프4",
+      "start": "10:35",
+      "end": "11:50",
+      "building": "회장",
+      "room": "9",
+      "floor": 1,
+      "chair": "이동휘 (전북대학교)"
+    },
+    {
+      "id": "10-A",
+      "block": 10,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별강연 및 건물에너지1",
+      "start": "09:15",
+      "end": "10:00",
+      "building": "회장",
+      "room": "10",
+      "floor": 1,
+      "chair": "윤성민 (성균관대학교)"
+    },
+    {
+      "id": "10-B",
+      "block": 10,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "건물에너지2",
+      "start": "10:10",
+      "end": "11:25",
+      "building": "회장",
+      "room": "10",
+      "floor": 1,
+      "chair": "임현우 (건국대학교)"
+    },
+    {
+      "id": "10-C",
+      "block": 10,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 콜드체인부문위원회",
+      "start": "13:30",
+      "end": "15:00",
+      "building": "회장",
+      "room": "10",
+      "floor": 1,
+      "chair": "조홍현 (조선대학교)"
+    },
+    {
+      "id": "10-E",
+      "block": 10,
+      "day": 20,
+      "date": "6/20/2025",
+      "track_title": "건물에너지3",
+      "start": "09:00",
+      "end": "10:15",
+      "building": "회장",
+      "room": "10",
+      "floor": 1,
+      "chair": "정웅준 (가천대학교)"
+    },
+    {
+      "id": "10-F",
+      "block": 10,
+      "day": 20,
+      "date": "6/20/2025",
+      "track_title": "건물에너지4",
+      "start": "10:35",
+      "end": "11:50",
+      "building": "회장",
+      "room": "10",
+      "floor": 1,
+      "chair": "박상훈 (인천대학교)"
+    },
+    {
+      "id": "11-B",
+      "block": 11,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 공조부문위원회1",
+      "start": "10:10",
+      "end": "11:25",
+      "building": "회장",
+      "room": "11",
+      "floor": 1,
+      "chair": "김지민 (서울과학기술대학교)"
+    },
+    {
+      "id": "11-C",
+      "block": 11,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 공조부문위원회2",
+      "start": "13:30",
+      "end": "15:00",
+      "building": "회장",
+      "room": "11",
+      "floor": 1,
+      "chair": "김선혜 (서울과학기술대학교)"
+    },
+    {
+      "id": "11-D",
+      "block": 11,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 공조부문위원회3",
+      "start": "15:20",
+      "end": "16:50",
+      "building": "회장",
+      "room": "11",
+      "floor": 1,
+      "chair": "김윤성 (에코에너다임)"
+    },
+    {
+      "id": "11-E",
+      "block": 11,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "열교환기1",
+      "start": "09:00",
+      "end": "10:15",
+      "building": "회장",
+      "room": "11",
+      "floor": 1,
+      "chair": "장동수 (국민대학교)"
+    },
+    {
+      "id": "11-F",
+      "block": 11,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "열교환기2",
+      "start": "10:35",
+      "end": "11:50",
+      "building": "회장",
+      "room": "11",
+      "floor": 1,
+      "chair": "전용석 (아주대학교)"
+    },
+    {
+      "id": "12-C",
+      "block": 12,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "특별세션 : 위생부문위원회",
+      "start": "13:30",
+      "end": "14:45",
+      "building": "회장",
+      "room": "12",
+      "floor": 1,
+      "chair": "이태희 (수원과학대학교)"
+    },
+    {
+      "id": "12-D",
+      "block": 12,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "신제품/신기술",
+      "start": "09:00",
+      "end": "16:50",
+      "building": "회장",
+      "room": "12",
+      "floor": 1,
+      "chair": "이상욱 (중앙대학교)"
+    },
+    {
+      "id": "12-F",
+      "block": 12,
+      "day": 19,
+      "date": "6/19/2025",
+      "track_title": "설계시공",
+      "start": "10:35",
+      "end": "11:50",
+      "building": "회장",
+      "room": "12",
+      "floor": 1,
+      "chair": "권오익 (하이멕)"
+    }
+  ],
+  "papers": [
+    {
+      "paper_no": "25-S-001",
+      "session_id": "1-A",
+      "authors": "송지환*, 윤성민(성균관대학교)",
+      "title": "AI 에이전트를 활용한 건물 운영관리 서비스 자율화에 관한 연구",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-002",
+      "session_id": "1-A",
+      "authors": "Jiteng Li*, Jeyoon Lee, Jabeom Koo, Sungmin Yoon(Sungkyunkwan Univ.)",
+      "title": "in-situ calibration using the distributed approach in building energy system",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-003",
+      "session_id": "1-A",
+      "authors": "이제윤*, 윤성민(성균관대학교)",
+      "title": "건물 디지털 트윈에서의 가상 모델의 정의 및 인공지능 에이전트와의 연계 방안",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-004",
+      "session_id": "1-A",
+      "authors": "김세헌*, 김태연, 남영도, 정재원(한양대학교)",
+      "title": "강화학습 기반 냉방 자율제어 모델의 기축 공동주택 상 적용성 평가",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "10:10-10:40",
+      "session_id": "1-B",
+      "authors": "유호선*(숭실대학교 명예교수)",
+      "title": "[특별강연] 제목 : 천연수소의 가능성을 바라보다",
+      "start": "10:10",
+      "end": "10:40"
+    },
+    {
+      "paper_no": "25-S-005",
+      "session_id": "1-B",
+      "authors": "Meyer Thomas Alexandre*, 구형모, 김서영(하이리움산업), 한화택(국민대학교)",
+      "title": "Thermodynamic modeling of a pneumatic driven GM cryocooler and interpretation of its behavior",
+      "start": "10:40",
+      "end": "10:55"
+    },
+    {
+      "paper_no": "25-S-006",
+      "session_id": "1-B",
+      "authors": "권우찬*, 최대웅, 강상우(한국과학기술연구원)",
+      "title": "수소 슬로싱 해석을 위한 물 기반 대체 유동 모델 개발",
+      "start": "10:55",
+      "end": "11:10"
+    },
+    {
+      "paper_no": "11:40-12:20",
+      "session_id": "1-B",
+      "authors": "민태기 연구소장(에스엔에이치 연구소)",
+      "title": "공학이 만든 음악 공간, 그리고 공간의 권력",
+      "start": "11:40",
+      "end": "12:20"
+    },
+    {
+      "paper_no": "25-S-007",
+      "session_id": "1-C",
+      "authors": "정연우*, 강상우(한국과학기술연구원)",
+      "title": "상변화를 고려한 오쏘-파라 수소 변환 해석",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "25-S-008",
+      "session_id": "1-C",
+      "authors": "Gwang Hoon Rhee*, Dong Hee Hong, Taemin Jung (Univ. of Seoul), Sarng Woo Karng(KIST)",
+      "title": "Dynamic Analysis of Liquid Hydrogen Refueling Station to Improve Charging Efficiency",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "25-S-009",
+      "session_id": "1-C",
+      "authors": "Kamgang Blaise T*, 김고운, 오창묵, 정제봉(하이리움산업)",
+      "title": "겨울철 저온에서 수소연료전지 드론의 체공 시간 개선",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "25-S-010",
+      "session_id": "1-C",
+      "authors": "João Carlos Bernardo*, Jong Kyoung Choi, Tae Hyun Kim, Seo Young Kim(Hylium industries)",
+      "title": "Performance Comparison of Analog Output Methods in Capacitance-Based Cryogenic Level Sensors",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "15:20-15:40",
+      "session_id": "1-D",
+      "authors": "박미라(에너지컨설팅)",
+      "title": "지열시스템의 이해와 시공사례",
+      "start": "15:20",
+      "end": "15:40"
+    },
+    {
+      "paper_no": "15:40-16:00",
+      "session_id": "1-D",
+      "authors": "윤경미(댄포스코리아)",
+      "title": "AI 시대, 데이터센터 냉각",
+      "start": "15:40",
+      "end": "16:00"
+    },
+    {
+      "paper_no": "16:00-16:20",
+      "session_id": "1-D",
+      "authors": "허윤경(메탈히터앤솔루션)",
+      "title": "인공지능 시대의 사람과 함께하는 동파방지 기술",
+      "start": "16:00",
+      "end": "16:20"
+    },
+    {
+      "paper_no": "16:20-16:40",
+      "session_id": "1-D",
+      "authors": "김종대(명성엔지니어링)",
+      "title": "탄소저감 인증형 공동주택 설계사례",
+      "start": "16:20",
+      "end": "16:40"
+    },
+    {
+      "paper_no": "16:40-17:00",
+      "session_id": "1-D",
+      "authors": "박유빈(Erasmus Univ.)",
+      "title": "네덜란드 수자원 기술과 도시계획",
+      "start": "16:40",
+      "end": "17:00"
+    },
+    {
+      "paper_no": "25-S-011",
+      "session_id": "1-E",
+      "authors": "이윤구*, 최홍석, 이호성(고려대학교)",
+      "title": "수소연료전지 차량의 통합 열관리시스템 성능모델 개발",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-012",
+      "session_id": "1-E",
+      "authors": "김소연*, 서기정, 정민규, 구돈익, 김민성(중앙대학교)",
+      "title": "전기자동차 저온 급속 충전 성능 향상을 위한 배터리 승온 시스템에 관한 연구",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-013",
+      "session_id": "1-E",
+      "authors": "이정훈*한성민, 이호성(고려대학교), 심봉석(현대위아)",
+      "title": "EV 적용 공랭식 마이크로채널 응축기의 성능예측 시뮬레이션 모델 개발",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-014",
+      "session_id": "1-E",
+      "authors": "MOHAMMAD FAKHRULREZZA BIN SUHAIMI*, 이현진(국민대학교), 김우근, 조중원(한국자동차연구원)",
+      "title": "Optimizing Local Sensation Coefficients for Thermal Comfort Evaluation in Cold Vehicle Cabins with Radiant Heating",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-015",
+      "session_id": "1-E",
+      "authors": "이화영*, Gholamali Zadeh Peyman, Mahdi Koushaeian, 박준수, 정재동(세종대학교)",
+      "title": "Desiccant를 활용한 전기버스용 통합 열관리 공조 시스템 연구",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "25-S-016",
+      "session_id": "1-F",
+      "authors": "김주영*, 박철원(강릉원주대학교)",
+      "title": "4kW급 가정용 수소 발전기 구현",
+      "start": "10:35",
+      "end": "10:50"
+    },
+    {
+      "paper_no": "25-S-017",
+      "session_id": "1-F",
+      "authors": "Ritesh Prakash*, Piotr Marcin Stepien, Joshua Kim Schimpf, Seo Young Kim(Hylium Industries)",
+      "title": "Analytical Modeling and Experimental Validation of a Liquid Hydrogen Drone Tank System",
+      "start": "10:50",
+      "end": "11:05"
+    },
+    {
+      "paper_no": "25-S-018",
+      "session_id": "1-F",
+      "authors": "박준수*, Abdullah, 최문규, 이화영, 정재동(세종대학교)",
+      "title": "브레이튼-랭킨 및 흡착식 난방 통합 시스템의 최적화 및 성능 분석",
+      "start": "11:05",
+      "end": "11:20"
+    },
+    {
+      "paper_no": "25-S-019",
+      "session_id": "1-F",
+      "authors": "엄장호*, 김보라, 신봉규, 이재원(한국해양대학교)",
+      "title": "CO2 포집 물질을 활용한 태양광 모듈 후면 냉각 성능 평가",
+      "start": "11:20",
+      "end": "11:35"
+    },
+    {
+      "paper_no": "25-S-020",
+      "session_id": "1-F",
+      "authors": "조재윤*, 이재원, 정우철(한국해양대학교), 천상규(파나시아)",
+      "title": "CO2 저장을 위한 충진압력에 따른 저장 시스템 연구",
+      "start": "11:35",
+      "end": "11:50"
+    },
+    {
+      "paper_no": "25-S-021",
+      "session_id": "2-A",
+      "authors": "Syed Mostasim Hasnain Saif*, Sungmin Yoon(Sungkyunkwan Univ)",
+      "title": "Beyond Ontological Representations: Visualizing Complex Digital Twin Systems and Networks with Venn and UpSet Diagrams",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-022",
+      "session_id": "2-A",
+      "authors": "김준원*, 이제헌(부경대학교), 김수경, 김경재, 전승수, 박찬우, 김석우(삼성전자)",
+      "title": "실제 운전데이터 기반 중앙공조 시스템 및 VRF 시스템의 운전비용 비교 분석",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-023",
+      "session_id": "2-A",
+      "authors": "Ivana Amelia Tamba*, Yean Der Kuan (National Chin-Yi University of Technology)",
+      "title": "Efficiency Energy Consumption Comparison between VAV and FCU System for Office using Revit",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-024",
+      "session_id": "2-A",
+      "authors": "임영민*, 한재원(비앤에이테크)",
+      "title": "간접증발 열교환 시스템을 적용한 편의오락시설 건물의 냉방성능 분석 및 탄소저감 운전에 대한 고찰",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-025",
+      "session_id": "2-B",
+      "authors": "채호병*, 남유진(부산대학교)",
+      "title": "지열 시스템 초기투자비 절감을 위한 다층 지반 열물성 추정에 관한 연구",
+      "start": "10:10",
+      "end": "10:25"
+    },
+    {
+      "paper_no": "25-S-026",
+      "session_id": "2-B",
+      "authors": "안광호*, 강한기(이젠엔지니어링)",
+      "title": "지열시스템을 적용한 공동주택의 ZEB 3등급 인증 평가 연구",
+      "start": "10:25",
+      "end": "10:40"
+    },
+    {
+      "paper_no": "25-S-027",
+      "session_id": "2-B",
+      "authors": "김성민*, 김민준(한국냉동공조인증센터), 유지석(대성히트 에너시스), 강지훈(조은에너지), 이우식(코텍에너지)",
+      "title": "보어홀 내 파이프 위치 변화가 지중열교환기 열성능 및 설계길이에 미치는 실험적 연구",
+      "start": "10:40",
+      "end": "10:55"
+    },
+    {
+      "paper_no": "25-S-028",
+      "session_id": "2-B",
+      "authors": "박수현*, 조하빈, 최원준(전남대학교), 슈쿠야 마사노리(도쿄도시대학교)",
+      "title": "토양 열저항의 시간 변화를 고려한 지열교환기 엑서지 분석",
+      "start": "10:55",
+      "end": "11:10"
+    },
+    {
+      "paper_no": "25-S-029",
+      "session_id": "2-C",
+      "authors": "이왕제*, 안영섭, 주홍진, 김득원, 김민휘(한국에너지기술연구원)",
+      "title": "건물일체형 태양광열(BIPVT) 모듈 후면 열회수 방식에 따른 열성능 평가",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "25-S-030",
+      "session_id": "2-C",
+      "authors": "전병기*, 김종규, 김민휘, 주홍진, 안영섭(한국에너지기술연구원)",
+      "title": "데이터 부족 환경을 고려한 강화학습 기반 일사량 예측 및 직달 산란 분리 기법 연구",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "25-S-031",
+      "session_id": "2-C",
+      "authors": "주홍진*, 김종규, 이경호, 김민휘, 안영섭, 김득원, 이왕제(한국에너지기술연구원)",
+      "title": "대량생산 및 저가화를 위한 태양광열(PVT)복합 모듈 기술 개발",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "25-S-032",
+      "session_id": "2-C",
+      "authors": "채수원*, 남유진(부산대학교)",
+      "title": "PVT 연계 히트펌프 시스템의 에너지 최적화를 위한 인공지능 접근법 비교 분석",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "25-S-033",
+      "session_id": "2-C",
+      "authors": "김민휘*, 이왕제, 김득원, 김종규, 주홍진, 안영섭(한국에너 지기술연구원), 이헌민(충남대학교), 최형진(GS건설)",
+      "title": "제로에너지건물 구현을 위한 건물일체형 태양광열시스템 적용성 평가",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "25-S-034",
+      "session_id": "2-C",
+      "authors": "김종규*, 전병기, 김민휘, 황혜미(한국에너지기술연구원)",
+      "title": "산업단지 재생에너지 통합 설계 솔루션 개발 사업 추진방안",
+      "start": "14:45",
+      "end": "15:00"
+    },
+    {
+      "paper_no": "25-S-035",
+      "session_id": "2-D",
+      "authors": "최호성*(한국폴리텍대학), 이재오(대전대학교)",
+      "title": "소방 배관 높이에 따른 고유 주파수 분석에 관한 연구",
+      "start": "15:20",
+      "end": "15:35"
+    },
+    {
+      "paper_no": "25-S-036",
+      "session_id": "2-D",
+      "authors": "고병용*, 김선동, 변상현, 양영권(한국토지주택공사)",
+      "title": "지하주차장의 동절기 온도분포 특성에 따른 수계 소화설비 설계 개선 방안",
+      "start": "15:35",
+      "end": "15:50"
+    },
+    {
+      "paper_no": "25-S-037",
+      "session_id": "2-D",
+      "authors": "문정환*(대림대학교), 윤영은, 이승철(강원대학교)",
+      "title": "지하주차장 방화구획 및 제연경계벽 유무에 따른 전기차 화재 확산에 관한 연구",
+      "start": "15:50",
+      "end": "16:05"
+    },
+    {
+      "paper_no": "25-S-038",
+      "session_id": "2-D",
+      "authors": "김진수*(한백F&C)",
+      "title": "부속실 급기가압제연의 문제와 대책",
+      "start": "16:05",
+      "end": "16:20"
+    },
+    {
+      "paper_no": "25-S-039",
+      "session_id": "2-D",
+      "authors": "변상현*, 고병용(한국토지주택공사), 문정환(대림대학교)",
+      "title": "지하주차장 습식배관 동파방지설비 설계 및 원가산정 분석에 관한 연구",
+      "start": "16:20",
+      "end": "16:35"
+    },
+    {
+      "paper_no": "25-S-040",
+      "session_id": "2-E",
+      "authors": "임채원*, 오인수, 박병용(한밭대학교)",
+      "title": "공동주택 냉방히트펌프의 효율 가중회귀 모형 분석",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-042",
+      "session_id": "2-E",
+      "authors": "강보경*, 위정훈, 김상윤, 채영태(가천대학교)",
+      "title": "전기변색창호를 적용한 전기자동차 HVAC 전력관리 특성 분석",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-043",
+      "session_id": "2-E",
+      "authors": "신재윤*, 하나경, 채영태(가천대학교)",
+      "title": "도메인 유사도 분석을 통한 AFDD 모듈의 일반화 성능평가",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-044",
+      "session_id": "2-E",
+      "authors": "장재균*, 김민수(서울대학교), 정진기, 서경원, 김준규, 김동준(LG전자)",
+      "title": "VRF(냉매유량가변형) 시스템 운전성능분석 기술 기반 노후 에어컨 교체를 통한 에너지 효율 개선 효과 실증",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-045",
+      "session_id": "2-F",
+      "authors": "김경민*, 김민수, 이제헌(부경대학교), 김석우, 박찬우(삼성전자)",
+      "title": "DNN 기반 최적제어를 위한 전이학습 기법 적용: 파인튜닝을 통한 성능 반영 분석",
+      "start": "10:35",
+      "end": "10:50"
+    },
+    {
+      "paper_no": "25-S-047",
+      "session_id": "2-F",
+      "authors": "양자강*, 이창재, 채수인, 진상기(대한기계설비산업연구원)",
+      "title": "그린리모델링을 위한 히트펌프의 동절기 적용 한계점 분석에 관한 연구 (해외 연구 사례를 중심으로)",
+      "start": "11:05",
+      "end": "11:20"
+    },
+    {
+      "paper_no": "25-S-048",
+      "session_id": "2-F",
+      "authors": "이주현*, 오정민, 김세헌, 정재원(한양대학교)",
+      "title": "동절기 EHP 가습운전을 위한 중공사막 가습모듈의 설계인자에 따른 성능변화 분석",
+      "start": "11:20",
+      "end": "11:35"
+    },
+    {
+      "paper_no": "25-S-049",
+      "session_id": "2-F",
+      "authors": "하주환*, 김태성(성균관대학교)",
+      "title": "CFD를 이용한 FFU 내부 Guide Vane 형상 최적화 및 유동 균일화 연구",
+      "start": "11:35",
+      "end": "11:50"
+    },
+    {
+      "paper_no": "25-S-050",
+      "session_id": "3-A",
+      "authors": "강석원*, 김동현, 김태연(연세대학교)",
+      "title": "재실자 중심 제어를 위한 LiDAR 기반 재실자 위치 감지",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-051",
+      "session_id": "3-A",
+      "authors": "봉준영*, 오동근, 김지민(서울과학기술대학교)",
+      "title": "철도 지하역사 공조설비의 필터 효율 개선에 따른 성능 변화 및 미세먼지 저감 효과 분석",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-052",
+      "session_id": "3-A",
+      "authors": "권단비*, 김동현, 김태연(연세대학교)",
+      "title": "CFD Surrogate model을 이용한 강의실의 CO2 농도 분포 예측",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-053",
+      "session_id": "3-A",
+      "authors": "오인수*, 임채원, 박병용(한밭대학교)",
+      "title": "CO2 농도 기반 재실자 수 감지 알고리즘의 유효성 검토",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-054",
+      "session_id": "3-B",
+      "authors": "신동현*, 강율호, 박지호, 이해원, 안영철(부산대학교)",
+      "title": "도시버스 실내·외 센서의 실시간 측정을 통한 실내공기질 평가",
+      "start": "10:10",
+      "end": "10:25"
+    },
+    {
+      "paper_no": "25-S-055",
+      "session_id": "3-B",
+      "authors": "진동찬*, 최지용, 김수민(연세대학교)",
+      "title": "버려지는 의류 폐기물을 활용한 건축용 지속가능 흡음재의 제작 및 성능 분석",
+      "start": "10:25",
+      "end": "10:40"
+    },
+    {
+      "paper_no": "25-S-056",
+      "session_id": "3-B",
+      "authors": "원대관*, 남유진(부산대학교)",
+      "title": "박스형 시험실 모델을 활용한 중량충격음 저감 대책에 관한 연구",
+      "start": "10:40",
+      "end": "10:55"
+    },
+    {
+      "paper_no": "25-S-057",
+      "session_id": "3-B",
+      "authors": "이지수*, 임은경, 신민재(한양대학교)",
+      "title": "시뮬레이션 기반 주변 건축물 외피 반사광에 의한 실내 환경의 눈부심 지수 평가",
+      "start": "10:55",
+      "end": "11:10"
+    },
+    {
+      "paper_no": "25-S-058",
+      "session_id": "3-B",
+      "authors": "이동근*, 윤재우, 박소우, 송두삼(성균관대학교)",
+      "title": "건물의 열적성능 지표로써 자연실온의 형성에 침기의 영향 분석",
+      "start": "11:10",
+      "end": "11:25"
+    },
+    {
+      "paper_no": "25-S-059",
+      "session_id": "3-C",
+      "authors": "진원재*, 이대영(휴마스터)",
+      "title": "박물관 수장고 항온항습기 전력소비 절감을 위한 데시컨트 제습기술 적용",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "25-S-060",
+      "session_id": "3-C",
+      "authors": "이현종*(에코엔하임)",
+      "title": "데시컨트제습을 활용한 저습환경에서의 온습도 디커플링시스템 사례",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "25-S-061",
+      "session_id": "3-C",
+      "authors": "이수진*, 박민건, 홍수연, 정재원(한양대학교)",
+      "title": "수용액 냉각부하 저감을 위한 미세분사형 액체식 제습 시스템 최적 설계",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "25-S-062",
+      "session_id": "3-C",
+      "authors": "노현규*, 정연태, 안종진, 김민성(중앙대학교)",
+      "title": "멤브레인 진공제습 시스템의 성능 변화 연구",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "25-S-063",
+      "session_id": "3-C",
+      "authors": "이대영*, 조선홍, 공석주(휴마스터)",
+      "title": "국소공간 습도제어를 위한 데시컨트 조습기 최적설계",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "25-S-064",
+      "session_id": "3-D",
+      "authors": "고지운*, 송태환, 백종현, 오승진(한국생산기술연구원)",
+      "title": "원형핀이 적용된 PCM 열교환 모듈의 축열 및 방열 특성 분석",
+      "start": "15:20",
+      "end": "15:35"
+    },
+    {
+      "paper_no": "25-S-065",
+      "session_id": "3-D",
+      "authors": "김성은*, 홍성국, 정대헌, 최승욱(한국에너지기술연구원)",
+      "title": "1 Liter급 열저장 시스템을 활용한 열화학 열저장 소재 축·방열 성능 분석",
+      "start": "15:35",
+      "end": "15:50"
+    },
+    {
+      "paper_no": "25-S-066",
+      "session_id": "3-D",
+      "authors": "허재혁*, 이동원, 김득원(한국에너지기술연구원)",
+      "title": "쇼케이스 연계 고밀도 냉열저장을 이용한 P2C 시스템에 관한 연구",
+      "start": "15:50",
+      "end": "16:05"
+    },
+    {
+      "paper_no": "25-S-067",
+      "session_id": "3-D",
+      "authors": "최성민*, ZAKIR HUSSAIN, 조홍현(조선대학교)",
+      "title": "현열축열조의 종횡비 및 평판형 디퓨저 조건에 따른 성층도 분석 및 고찰",
+      "start": "16:05",
+      "end": "16:20"
+    },
+    {
+      "paper_no": "25-S-068",
+      "session_id": "3-D",
+      "authors": "이영복*, 최봉수, 오봉성, 나호상, 나선익, 제상현, 신형기, 강은철, 이범준, 조종재, 왕은석, 이길봉, 조준현(한국에너지기술연구원)",
+      "title": "석탄화력 발전소의 카르노배터리 레트로핏을 위한 열저장 시스템 핵심 기술 개발",
+      "start": "16:20",
+      "end": "16:35"
+    },
+    {
+      "paper_no": "25-S-069",
+      "session_id": "3-D",
+      "authors": "박정호*, 김혜민, 조홍현(조선대학교)",
+      "title": "접시형 태양열 집열기 프레넬렌즈 유무에 따른 성능 개선 연구 비교",
+      "start": "16:35",
+      "end": "16:50"
+    },
+    {
+      "paper_no": "25-S-070",
+      "session_id": "3-E",
+      "authors": "조유빈*, 김동현,김시현,김태연(연세대학교)",
+      "title": "창호형 환기 시스템 적용을 통한 레인지 후드의 효율 향상 및 실내 공기질 개선에 관한 CFD 분석",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-071",
+      "session_id": "3-E",
+      "authors": "이준우*, 정한웅, 강경모(대진대학교)",
+      "title": "재실자 발생 CO2를 활용한 대학 강의실의 공기교환율 추정",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-072",
+      "session_id": "3-E",
+      "authors": "박소우*, 엄혜정, 송두삼(성균관대학교)",
+      "title": "CFD 시뮬레이션을 이용한 학교 급식 조리실 급배기 전략에 따른 조리흄 제거 성능 분석",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-073",
+      "session_id": "3-E",
+      "authors": "임태규*, 이진석(힘펠)",
+      "title": "주방용 정풍량 배기팬 효율 개선 사례: CFD 기반 바이오 후드 팬 형상 최적화를 통한 성능 향상 및 소음 저감 연구",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-074",
+      "session_id": "3-E",
+      "authors": "윤일기*, 윤재우, 심지수, 송두삼(성균관대학교)",
+      "title": "건물의 열적성능 지표로서 자연실온의 형성에 일사 열취득의 영향 분석",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "25-S-075",
+      "session_id": "3-F",
+      "authors": "황재민*, 윤성민(성균관대학교)",
+      "title": "실내환경 정보학 관점의 정보체계 구축 및 에이전트 AI 기반 서비스 개발",
+      "start": "10:35",
+      "end": "10:50"
+    },
+    {
+      "paper_no": "25-S-076",
+      "session_id": "3-F",
+      "authors": "서영훈*, 강은호, 이성주, 윤종호, 김동수(한밭대학교)",
+      "title": "딥러닝 기반 현휘 예측을 활용한 스마트 창호의 시쾌적 및 에너지 성능 평가",
+      "start": "10:50",
+      "end": "11:05"
+    },
+    {
+      "paper_no": "25-S-077",
+      "session_id": "3-F",
+      "authors": "이정훈*, 한지은, 이윤희, 서기원, 박형호(LG전자)",
+      "title": "사용자 위치와 에어컨 운전 정보를 활용한 개인온열감 예측모델 개발",
+      "start": "11:05",
+      "end": "11:20"
+    },
+    {
+      "paper_no": "25-S-078",
+      "session_id": "3-F",
+      "authors": "한지은*, 이정훈, 이윤희, 서기원, 박형호(LG전자)",
+      "title": "실시간 온열감 예측 및 사용자 위치 감지를 통한 쾌적제어 알고리즘 개발",
+      "start": "11:20",
+      "end": "11:35"
+    },
+    {
+      "paper_no": "25-S-079",
+      "session_id": "3-F",
+      "authors": "김범수*, 김주욱(조선대학교)",
+      "title": "병실 환경 변화에 따른 재실자 기반 가상센서 예측",
+      "start": "11:35",
+      "end": "11:50"
+    },
+    {
+      "paper_no": "25-S-080",
+      "session_id": "4-A",
+      "authors": "이재훈*,노재원,이남규(연세대학교), 박현묵, 이동휘(전북대학교)",
+      "title": "영상 기반 기포 변수 회귀를 통한 비등 열전달 내 열유속 예측",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-081",
+      "session_id": "4-A",
+      "authors": "오종택*, Hoang Ngoc Hieu(전남대학교)",
+      "title": "Frictional Pressure Gradient of R455A inside multiport mini-channel tubes",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-082",
+      "session_id": "4-A",
+      "authors": "김정호*, 이성혁(중앙대학교)",
+      "title": "증기 차폐 현상을 고려한 다중 나노유체 액적의 국부 증발 유속 및 입자 증착 제어",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-083",
+      "session_id": "4-A",
+      "authors": "김성진*, 김원석(인제대학교), 강정순(풍성정밀관)",
+      "title": "액체수소 배관 열전달 해석을 통한 다층단열재 성능 평가",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-084",
+      "session_id": "4-B",
+      "authors": "이석환*, 권수용, 이성준, 강웅, 김대호, 남현승(한국표준과학연구원)",
+      "title": "R1132a - CF3I 혼합냉매의 열역학 물성 측정",
+      "start": "10:10",
+      "end": "10:25"
+    },
+    {
+      "paper_no": "25-S-085",
+      "session_id": "4-B",
+      "authors": "이기원*, 김정석, 신화정, 최준영(한국산업기술시험원)",
+      "title": "대체냉매 R-466A를 적용한 VRF 히트펌프 시스템의 냉난방 실증운전결과 분석",
+      "start": "10:25",
+      "end": "10:40"
+    },
+    {
+      "paper_no": "25-S-086",
+      "session_id": "4-B",
+      "authors": "김동호*, 이공훈(한국기계연구원)",
+      "title": "Ternary 혼합냉매 (GWP<150) 도출을 위한 열역학적 및 가연성 해석에 관한 연구",
+      "start": "10:40",
+      "end": "10:55"
+    },
+    {
+      "paper_no": "25-S-087",
+      "session_id": "4-B",
+      "authors": "Amal Vasu*, Young Soo Chang(Kookmin Univ.)",
+      "title": "Assessment of evaporation heat transfer correlations for the low-GWP refrigerant blend CF₃I and R1132a",
+      "start": "10:55",
+      "end": "11:10"
+    },
+    {
+      "paper_no": "25-S-088",
+      "session_id": "4-B",
+      "authors": "라유진*, 김진영, 이수진, 김용찬(고려대학교)",
+      "title": "증발기용 3차원 물결 표면 핀을 적용한 핀-튜브 열교환기 성능 향상 연구",
+      "start": "11:10",
+      "end": "11:25"
+    },
+    {
+      "paper_no": "25-S-089",
+      "session_id": "4-C",
+      "authors": "이기욱*, 이남수, 황의식, 김창희, 박찬명, 이재서, 박상민, 백성기(LG전자)",
+      "title": "대용량 대온도차 히트펌프 핵심기술 개발",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "25-S-090",
+      "session_id": "4-C",
+      "authors": "김진두*, 김희영, 김동현(아진피앤피)",
+      "title": "대용량 대온도차 히트펌프 시스템 실증 기술 개발 방향",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "25-S-091",
+      "session_id": "4-C",
+      "authors": "김동호*, 김학수, 정유준, 정융, 문선영, 이공훈, 송찬호(한국기계연구원)",
+      "title": "제지 건조 공정 연계 산업용 히트펌프 구성 및 운전 방법에 대한 고찰",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "25-S-092",
+      "session_id": "4-C",
+      "authors": "정진희*, 임성빈, 박철진(힉스프로)",
+      "title": "대용량 대온도차 히트펌프 요소기술 개발",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "25-S-093",
+      "session_id": "4-C",
+      "authors": "심정보*, 민재홍, 신재현, 강용태(고려대학교)",
+      "title": "R1233zd(E)를 사용하는 유하박막식 증발 전열촉진관의 형상변화에 따른 열전달 성능 평가",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "25-S-094",
+      "session_id": "4-D",
+      "authors": "홍성욱*(에스앤아이코퍼레이션)",
+      "title": "상관계수를 활용한 공조설비 성능점검",
+      "start": "15:20",
+      "end": "15:35"
+    },
+    {
+      "paper_no": "25-S-095",
+      "session_id": "4-D",
+      "authors": "윤홍익*, 전용한(성한)",
+      "title": "BL3 자동제어 시스템 구축환경",
+      "start": "15:35",
+      "end": "15:50"
+    },
+    {
+      "paper_no": "25-S-096",
+      "session_id": "4-D",
+      "authors": "조형동*, 김원준, 김재민(DL이앤씨) 이영준*, 윤희원(대한기계설비산업연구원)",
+      "title": "오배수입상배관 오염도와 관내압력, 봉수성능에 관한연구 기계설비 돌관공사 대응 방안 연구",
+      "start": "15:50",
+      "end": "16:05"
+    },
+    {
+      "paper_no": "25-S-098",
+      "session_id": "4-D",
+      "authors": "오병길*(대림대학교)",
+      "title": "기계설비 표준시방에 따른 시공절차 작성에 대한 연구",
+      "start": "16:20",
+      "end": "16:35"
+    },
+    {
+      "paper_no": "25-S-099",
+      "session_id": "4-E",
+      "authors": "박범휘*,김진섭, 이공훈 ,정융,김우경(한국기계연구원)",
+      "title": "액침냉각 미활용열 활용을 위한 절연유체를 사용하는 판형 열교환기 내 열전달 특성에 대한 실험적 연구",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-100",
+      "session_id": "4-E",
+      "authors": "최용진*,안준,장영수(국민대학교)",
+      "title": "소구경 수평관에서 친환경 냉매의 증발 열전달 성능실험",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-101",
+      "session_id": "4-E",
+      "authors": "Sarath S S*, Young Soo Chang(Kookmin Univ.)",
+      "title": "Experimental Study of Condensation Heat Transfer and Pressure Drop of R-455A",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-102",
+      "session_id": "4-E",
+      "authors": "류연동*, 김우경, 김진섭(한국기계연구원)",
+      "title": "1U 서버 내 고발열칩 열관리를 위한 단상 액침냉각 열유동 특성 연구",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-103",
+      "session_id": "4-E",
+      "authors": "홍정택*, 홍지현, 김정은, 조용우, 최범준, 박창용(서울과학기술대학교)",
+      "title": "금속 적층 제조 방식으로 제작된 내부 핀 구조물 배열에 따른 응축 열전달 및 압력강하 실험적 연구",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "25-S-104",
+      "session_id": "4-F",
+      "authors": "문지환*, 오진호, 박일석(경북대학교)",
+      "title": "절연 유체의 전도 타입 전기유도유동을 이용한 냉각 기술",
+      "start": "10:35",
+      "end": "10:50"
+    },
+    {
+      "paper_no": "25-S-105",
+      "session_id": "4-F",
+      "authors": "박세원*, 박일석(경북대학교), 임재현, 권순오(한국생산기술연구원)",
+      "title": "직접슬롯냉각기술을 적용한 트랙션 모터 성능 비교 연구",
+      "start": "10:50",
+      "end": "11:05"
+    },
+    {
+      "paper_no": "25-S-106",
+      "session_id": "4-F",
+      "authors": "Liang Xiguan*, Jisoo Shim, Doosam Song(Sungkyunkwan Univ.)",
+      "title": "of radiant floor heating systems with Heatsink structures under varying concrete slab thickness",
+      "start": "11:05",
+      "end": "11:20"
+    },
+    {
+      "paper_no": "25-S-107",
+      "session_id": "4-F",
+      "authors": "황원영*, 이성혁(중앙대학교)",
+      "title": "고착된 한쌍 액적의 표면 온도와 액적 간 거리를 고려한 증발률 모델에 대한 연구",
+      "start": "11:20",
+      "end": "11:35"
+    },
+    {
+      "paper_no": "25-S-108",
+      "session_id": "5-A",
+      "authors": "윤재우*, 양석관, 심지수, 송두삼(성균관대학교)",
+      "title": "건물의 열적 성능 지표로써 자연실온 계산방법의 제안",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-109",
+      "session_id": "5-A",
+      "authors": "이주상*, 이예은, 정봉훈, 김태연(연세대학교)",
+      "title": "공동주택 실 별 제어 DCV 시스템의 적용 및 성능평가",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-110",
+      "session_id": "5-A",
+      "authors": "이혜문*, 문종우, 정아름, 박지연(알링크)",
+      "title": "공조에너지 절감형 전도성 필터 기술 개발",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-111",
+      "session_id": "5-A",
+      "authors": "김태윤*, 엄혜정, 송두삼(성균관대학교)",
+      "title": "외기온도 변화에 따른 창호 유리 공기층 두께 변화 및 열적 성능 변화 분석",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "10:10-10:25",
+      "session_id": "5-B",
+      "authors": "강병하*(국민대학교)",
+      "title": "제로에너지건축물의 HVAC 기술 기준 제정의 필요성",
+      "start": "10:10",
+      "end": "10:25"
+    },
+    {
+      "paper_no": "10:25-10:40",
+      "session_id": "5-B",
+      "authors": "성민기*(세종대학교)",
+      "title": "제로에너지 건축물의 열회수형 환기장치 성능기준(안)",
+      "start": "10:25",
+      "end": "10:40"
+    },
+    {
+      "paper_no": "10:40-10:55",
+      "session_id": "5-B",
+      "authors": "서정식*(한국냉동공조인증센터)",
+      "title": "제로에너지 건축물의 냉방설비 성능 기준(안)",
+      "start": "10:40",
+      "end": "10:55"
+    },
+    {
+      "paper_no": "10:55-11:10",
+      "session_id": "5-B",
+      "authors": "",
+      "title": "패널 토론",
+      "start": "10:55",
+      "end": "11:10"
+    },
+    {
+      "paper_no": "25-S-112",
+      "session_id": "5-C",
+      "authors": "장동수*(국민대학교)",
+      "title": "주거용 제로에너지건물에서 지열 통합 히트펌프의 성능 평가",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "25-S-113",
+      "session_id": "5-C",
+      "authors": "위승환*, 한상우, 박건우(서울과학기술대학교)",
+      "title": "바이오차를 활용한 난연폴리우레탄폼 단열재 개발",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "25-S-114",
+      "session_id": "5-C",
+      "authors": "오진우*, 김정균, 우한석, 김대용, 장유빈(충남대학교)",
+      "title": "증기 선택적 분리막 기반 제습 기술의 산업용 건조 및 건물 응용 분야로의 확장",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "25-S-115",
+      "session_id": "5-C",
+      "authors": "정수광*(숭실대학교)",
+      "title": "nVOC 공급형 공기 필터 적용을 위한 피톤치드 유화 안정성 향상 및 기능성 제올라이트 개발",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "25-S-116",
+      "session_id": "5-C",
+      "authors": "이남규*(연세대학교)",
+      "title": "고온 부품 내 열/유체 현상의 설계 인자 도출을 통한 열교환부 열설계 연구",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "25-S-117",
+      "session_id": "5-C",
+      "authors": "윤영직*(한밭대학교)",
+      "title": "기포자가진동현상을 이용한 열전달 촉진 기술 및 설비분야 응용",
+      "start": "14:45",
+      "end": "15:00"
+    },
+    {
+      "paper_no": "25-S-118",
+      "session_id": "5-D",
+      "authors": "고민건*, 채동준, 한호승, 김성호(삼화에이스)",
+      "title": "데이터센터 액침냉각 시스템 연계 미활용에너지 활용 기술 설계 방안",
+      "start": "15:20",
+      "end": "15:35"
+    },
+    {
+      "paper_no": "25-S-119",
+      "session_id": "5-D",
+      "authors": "문주현*, 조진균(한밭대학교)",
+      "title": "Meta-Heuristic 기법을 활용한 열시스템 Simulink 최적설계 방법론 연구",
+      "start": "15:35",
+      "end": "15:50"
+    },
+    {
+      "paper_no": "25-S-120",
+      "session_id": "5-D",
+      "authors": "Thi Nhan Nguyen*, 송윤하, Van Cong Le, 김용근, 박태현, 박찬우(전북대학교)",
+      "title": "데이터센터 액침 냉각용 신규 단상용 냉각 유체의 열전달 성능 특성 연구",
+      "start": "15:50",
+      "end": "16:05"
+    },
+    {
+      "paper_no": "25-S-121",
+      "session_id": "5-D",
+      "authors": "최종락*, 김주호, 양성진(한국전자기술연구원)",
+      "title": "액침 냉각 성능 예측을 위한 수치해석 기법 개발",
+      "start": "16:05",
+      "end": "16:20"
+    },
+    {
+      "paper_no": "25-S-122",
+      "session_id": "5-D",
+      "authors": "김하늘*, 김민준, 서정식, 백민철(한국냉동공조인증센터)",
+      "title": "데이터센터 액침냉각 시스템 성능평가 방법에 관한 연구",
+      "start": "16:20",
+      "end": "16:35"
+    },
+    {
+      "paper_no": "25-S-123",
+      "session_id": "5-D",
+      "authors": "송준화*, 서효제, 김유진, 황현진(한국데이터센터에너지효율협회)",
+      "title": "데이터센터의 액침냉각 시스템 도입에 따른 이점 및 도입 장애 요인",
+      "start": "16:35",
+      "end": "16:50"
+    },
+    {
+      "paper_no": "25-S-124",
+      "session_id": "5-E",
+      "authors": "유재현*, 윤성민(성균관대학교)",
+      "title": "AI agent 기반 컴퓨터 비전 기법을 활용한 도시 건물 에너지 모델링을 위한 창면적비 자동 추정 연구",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-125",
+      "session_id": "5-E",
+      "authors": "김성수*, 임종연(강원대학교), 전상은(부산대학교), 김준영, 김용희(영산대학교)",
+      "title": "현장 실측을 통한 건물 외피의 누기면적과 차음성능의 관계에 대한 연구",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-126",
+      "session_id": "5-E",
+      "authors": "황정윤*, 임현우(건국대학교)",
+      "title": "건물 에너지 소비량 데이터 기반 창면적비 추정 모델의 성능비교",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-127",
+      "session_id": "5-E",
+      "authors": "송아현*, 김예은, 신민재(한양대학교)",
+      "title": "건물 외벽의 열관류율 현장 평가 시 환경 변수의 영향 분석",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-128",
+      "session_id": "5-F",
+      "authors": "신철웅*, 박지윤, 이재호(한국건설생활환경시험연구원)",
+      "title": "케미컬 필터 효율 평가를 위한 실험적 연구",
+      "start": "10:35",
+      "end": "10:50"
+    },
+    {
+      "paper_no": "25-S-129",
+      "session_id": "5-F",
+      "authors": "우상무*, 강율호, 박지호, 신동현, 송해은, 최두리, 안영철(부산대학교)",
+      "title": "공기청정기 사용환경에서의 실내공기질 빅데이터 분석 연구",
+      "start": "10:50",
+      "end": "11:05"
+    },
+    {
+      "paper_no": "25-S-130",
+      "session_id": "5-F",
+      "authors": "서원덕*, 조호현, 김수민(연세대학교)",
+      "title": "비주거용 공간의 바닥용 페인트에 생태섬유 적용에 따른 미세플라스틱 방출량 분석",
+      "start": "11:05",
+      "end": "11:20"
+    },
+    {
+      "paper_no": "25-S-131",
+      "session_id": "5-F",
+      "authors": "박병용*, 오인수, 임채원(한밭대학교), 신철웅(한국건설생활환경시험연구원)",
+      "title": "실내공기환경 제어를 위한 오염물질 저감 계수에 따른 필요환기량 산출",
+      "start": "11:20",
+      "end": "11:35"
+    },
+    {
+      "paper_no": "25-S-132",
+      "session_id": "5-F",
+      "authors": "김영준*(하이엠솔루텍), 이민석(트윈위즈), 김지민, 조현상(서울과학기술대학교)",
+      "title": "에어컨 드레인 팬 표면 코팅 기술의 항균 성능 평가",
+      "start": "11:35",
+      "end": "11:50"
+    },
+    {
+      "paper_no": "25-S-133",
+      "session_id": "6-A",
+      "authors": "윤동희*, 김민종, 심지수, 송두삼(성균관대학교)",
+      "title": "바닥복사난방 구조체의 열전도판 적용에 따른 초기 설정온도 도달시간의 변화 및 난방에너지 절감효과 분석",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-134",
+      "session_id": "6-A",
+      "authors": "김성헌*, 김성곤, 강용태(고려대학교)",
+      "title": "태양 에너지 활용을 위한 투과 방식의 상온 이하 복사 액체 냉각 시스템",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-135",
+      "session_id": "6-A",
+      "authors": "임세현*, 김준규, 김성은, 송용우, 박진철(중앙대학교)",
+      "title": "그린리모델링 요소기술의 탄소저감 효과 분석",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-136",
+      "session_id": "6-A",
+      "authors": "장창원*, 윤린(한밭대학교), 김동우(한국에너지기술연구원)",
+      "title": "히트펌프 운전방식에 따른 전기화 공동주택의 경제성평가",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "10:10-10:20",
+      "session_id": "6-B",
+      "authors": "",
+      "title": "개최 인사",
+      "start": "10:10",
+      "end": "10:20"
+    },
+    {
+      "paper_no": "10:20-10:40",
+      "session_id": "6-B",
+      "authors": "이주백((주)대진정공)",
+      "title": "가변형 고효율 유체기기 핵심기술 개발(펌프)",
+      "start": "10:20",
+      "end": "10:40"
+    },
+    {
+      "paper_no": "10:40-11:00",
+      "session_id": "6-B",
+      "authors": "양상호((주)삼원이앤비)",
+      "title": "가변형 고효율 유체기기 핵심기술 개발(송풍기)",
+      "start": "10:40",
+      "end": "11:00"
+    },
+    {
+      "paper_no": "11:00-11:20",
+      "session_id": "6-B",
+      "authors": "이동인(대주기계)",
+      "title": "가변형 고효율 유체기기 핵심기술 개발(공기압축기)",
+      "start": "11:00",
+      "end": "11:20"
+    },
+    {
+      "paper_no": "13:30-13:50",
+      "session_id": "6-C",
+      "authors": "이정호(아주대학교)",
+      "title": "비등을 이용한 히트파이프 열교환기 핵심기술 개발",
+      "start": "13:30",
+      "end": "13:50"
+    },
+    {
+      "paper_no": "13:50-14:10",
+      "session_id": "6-C",
+      "authors": "김영(한국기계연구원)",
+      "title": "화학흡착식 히트펌프 시스템 개발",
+      "start": "13:50",
+      "end": "14:10"
+    },
+    {
+      "paper_no": "14:10-14:30",
+      "session_id": "6-C",
+      "authors": "임승범((주)이온)",
+      "title": "고집적 데이터센터 에너지 효율 향상",
+      "start": "14:10",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "14:30-14:50",
+      "session_id": "6-C",
+      "authors": "신명철(생산기술연구원)",
+      "title": "산업용 보일러 운전데이터 구축 및 효율향상",
+      "start": "14:30",
+      "end": "14:50"
+    },
+    {
+      "paper_no": "15:30-15:45",
+      "session_id": "6-D",
+      "authors": "서민현(한국에너지공단) 김용훈(씨알케이 주식회사) 강명원(대륜산업) 양연호(글로우원)",
+      "title": "기기분야 에너지효율관리체계 고도화 방안 ‘24년 제도연계형R&D 신규과제(냉동시스템) ‘24년 제도연계형R&D 신규과제(송풍시스템) ‘24년 제도연계형R&D 신규과제(조명시스템)",
+      "start": "15:30",
+      "end": "15:45"
+    },
+    {
+      "paper_no": "25-S-137",
+      "session_id": "6-E",
+      "authors": "김민종*, 윤동희, 심지수, 송두삼(성균관대학교)",
+      "title": "바닥난방구조체 모르타르 두께에 따른 실내 온열환경 및 난방에너지 성능 비교",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-138",
+      "session_id": "6-E",
+      "authors": "이상하*, 방민규, 김찬규, 이태하, 여명석(서울대학교), 백승효(목원대학교), 김원준, 조형동(디엘이앤씨)",
+      "title": "공동주택에서의 층간소음 저감을 위한 신규바닥구조체의 난방 성능 평가",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-139",
+      "session_id": "6-E",
+      "authors": "방민규*, 김찬규, 이태하, 여명석(서울대학교), 백승효(목원대학교)",
+      "title": "공동주택에서의 난방 공급수 온도에 따른 PVT 연계 바닥복사난방 시스템의 적용성 검토",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-140",
+      "session_id": "6-E",
+      "authors": "정현우*, 박해든, 변지영, 김나원, 신세윤, 장성진(경상대학교)",
+      "title": "OSC 적용 중고층 목조건축물의 생애주기평가 (LCA)를 통한 환경부하 저감 방안 연구",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-141",
+      "session_id": "6-E",
+      "authors": "이동식*, 권민지, 나수현, 윤린(한밭대학교), 허재혁(한국에너지기술연구원)",
+      "title": "PCM 혼합 축열조를 적용한 열원별 P2H 시스템에 관한 이론적 연구",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "25-S-142",
+      "session_id": "6-F",
+      "authors": "송광현*, 윤종호, 김동수(한밭대학교), 이필립(KIST)",
+      "title": "에너지 개선을 위한 기계적 메타물질이 적용된 동적 외피 시스템 설계 및 성능평가",
+      "start": "10:35",
+      "end": "10:50"
+    },
+    {
+      "paper_no": "25-S-143",
+      "session_id": "6-F",
+      "authors": "홍수연*, 박민건, 이수진, 정재원(한양대학교)",
+      "title": "겨울철 주거 건물의 난방 및 급탕을 위한 열교환식 하이브리드 히트펌프 시스템의 성능 평가",
+      "start": "10:50",
+      "end": "11:05"
+    },
+    {
+      "paper_no": "25-S-144",
+      "session_id": "6-F",
+      "authors": "이준영*, 김동수, 윤종호(한밭대학교), 오덕진(유진시스템), 오명환(한국건설생활환경시험연구원), 신민재(한양대학교)",
+      "title": "스마트 이중외피 시스템의 기후대별 냉·난방 부하 저감 효과에 관한 시뮬레이션 연구",
+      "start": "11:05",
+      "end": "11:20"
+    },
+    {
+      "paper_no": "25-S-145",
+      "session_id": "6-F",
+      "authors": "서지현*, 신대환, 김종훈(한국에너지기술연구원), 김태연(연세대학교)",
+      "title": "현장 측정 데이터를 활용한 히트펌프 성능 추정 모델 개발 및 성능 비교 연구",
+      "start": "11:20",
+      "end": "11:35"
+    },
+    {
+      "paper_no": "25-S-146",
+      "session_id": "6-F",
+      "authors": "정한웅*, 강경모(대진대학교)",
+      "title": "현장에서의 열회수형 환기장치 필터 여과 효율 평가 방법에 대한 실험적 연구",
+      "start": "11:35",
+      "end": "11:50"
+    },
+    {
+      "paper_no": "25-S-147",
+      "session_id": "7-A",
+      "authors": "김지원*, 김내경, 홍장호, 조수현, 곽영훈, 문선혜(서울시립대학교)",
+      "title": "실제 에너지 사용량 데이터 기반 국공립어린이집의 그린리모델링 효과 평가 모델 개발",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-148",
+      "session_id": "7-A",
+      "authors": "조정현*, 임현우(건국대학교)",
+      "title": "연돌효과가 고층 사무용 건물 냉난방 부하에 미치는 영향",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-149",
+      "session_id": "7-A",
+      "authors": "임은경*, 이지수, 신민재(한양대학교)",
+      "title": "스마트 빌딩 에너지 성능 향상을 위한 재실자 행동 정보의 활용 가능성 검토",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-150",
+      "session_id": "7-A",
+      "authors": "김권예*,남유진(부산대학교)",
+      "title": "LCA를 기반으로 한 그린리모델링의 탄소저감 효과 분석",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "10:10-10:15",
+      "session_id": "7-B",
+      "authors": "오명도*(전임회장 및 초대 위원장)",
+      "title": "인사말",
+      "start": "10:10",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "10:15-10:30",
+      "session_id": "7-B",
+      "authors": "이진천*(디씨에스)",
+      "title": "RTS-SAREK의 개발 경과 및 향후 개발 방향 소개",
+      "start": "10:15",
+      "end": "10:30"
+    },
+    {
+      "paper_no": "10:30-10:50",
+      "session_id": "7-B",
+      "authors": "임종연*(강원대학교)",
+      "title": "머신러닝을 활용한 공조 부하 계산의 확장",
+      "start": "10:30",
+      "end": "10:50"
+    },
+    {
+      "paper_no": "10:50-11:10",
+      "session_id": "7-B",
+      "authors": "서충국*, 황동곤(우원엠앤이)",
+      "title": "RTS-SAREK을 활용한 스마트팜 냉방부하 산출 사례",
+      "start": "10:50",
+      "end": "11:10"
+    },
+    {
+      "paper_no": "11:10-11:30",
+      "session_id": "7-B",
+      "authors": "엄태윤(하이멕)",
+      "title": "RTS 부하계산법을 응용한 기계설비 엔지니어 지원 툴 개발 사례",
+      "start": "11:10",
+      "end": "11:30"
+    },
+    {
+      "paper_no": "25-S-151",
+      "session_id": "7-B",
+      "authors": "김종현*, 김지혜(광운대학교), 김희강(포스코이앤씨)",
+      "title": "냉방부하계산을 위한 국내 비주거 건물의 CTSF 도출",
+      "start": "11:30",
+      "end": "11:50"
+    },
+    {
+      "paper_no": "25-S-152",
+      "session_id": "7-C",
+      "authors": "문원식*, 조동일, 조윤진, 남준혁(숭실대학교), 차재필, 최성혁, 이재승(한국지역난방공사)",
+      "title": "지역난방 발전설비 정지 사례 분석",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "25-S-153",
+      "session_id": "7-C",
+      "authors": "최지민*, 황지석, 한태훈, 이찬(수원대학교), 이용갑(SIMEX), 이재승(한국지역난방공사)",
+      "title": "밸브 개도 조절에 따른 열병합 발전소 증기 배관망의 유량 불균형 해소에 관한 연구",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "25-S-154",
+      "session_id": "7-C",
+      "authors": "이용철*(현대기전),조계호,김태광,이재승(한국지역난방공사)",
+      "title": "SRF 보일러 저압 통풍계통의 FBHE 및 Seal Pot Blower 고장 원인 분석과 대체 방안 연구",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "25-S-155",
+      "session_id": "7-C",
+      "authors": "이재승*(한국지역난방공사), 김훈, 이중용(유진에너지기술)",
+      "title": "가스엔진 바이오가스 전처리설비 고장원인 분석 및 대책 고찰",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "25-S-156",
+      "session_id": "7-C",
+      "authors": "최재준*, 강세별, 이현희(한국에너지기술연구원), 윤영식(한 밭대학교), 이재승, 김경민(한국지역난방공사)",
+      "title": "흡수식열펌프 기술특성 및 지역난방 적용 방안에 관한 연구",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "25-S-157",
+      "session_id": "7-D",
+      "authors": "조용철*, 백석, 장원주(한국토지주택공사)",
+      "title": "기축 노후임대 간이형 스프링클러 설치를 통한 화재안전 강화",
+      "start": "15:20",
+      "end": "15:35"
+    },
+    {
+      "paper_no": "25-S-158",
+      "session_id": "7-D",
+      "authors": "양영권*, 박정하, 이종건(LH 토지주택연구원)",
+      "title": "공동주택의 주방 보조 급기 성능 분석",
+      "start": "15:35",
+      "end": "15:50"
+    },
+    {
+      "paper_no": "25-S-159",
+      "session_id": "7-D",
+      "authors": "강갑용*(한국토지주택공사)",
+      "title": "스마트 음식물자원화 시스템(SRS) 시범사업 소개",
+      "start": "15:50",
+      "end": "16:05"
+    },
+    {
+      "paper_no": "25-S-160",
+      "session_id": "7-D",
+      "authors": "유선화*, 박시효(한국토지주택공사)",
+      "title": "욕실 당해층 벽면배관 설치기준 연구",
+      "start": "16:05",
+      "end": "16:20"
+    },
+    {
+      "paper_no": "25-S-161",
+      "session_id": "7-D",
+      "authors": "곽병창*, 김길태, 황인태, 정상휘(한국토지주택공사)",
+      "title": "공동주택 에너지 자립률 향상을 위한 건물형 태양광 발전시스템 적용 방향",
+      "start": "16:20",
+      "end": "16:35"
+    },
+    {
+      "paper_no": "25-S-162",
+      "session_id": "7-E",
+      "authors": "심찬형*, 홍구표(강원대학교)",
+      "title": "ZEB 인증을 위한 공동주택 설비용량 및 에너지 생산량 분석",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-163",
+      "session_id": "7-E",
+      "authors": "조현문*, 정상헌, 채수원, 채호병, 남유진(부산대학교)",
+      "title": "동적시뮬레이션을 이용한 PVT연계 공기열원 히트펌프 시스템의 성능 분석",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-164",
+      "session_id": "7-E",
+      "authors": "구경민*(한국섬유기계융합연구원)",
+      "title": "파울링 관리에 따른 에너지 분석",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-165",
+      "session_id": "7-E",
+      "authors": "방민규*, 김찬규, 여명석(서울대학교), 송용민(경동나비엔), 백승효(목원대학교)",
+      "title": "비교 실험을 통한 멀티존에서의 공급수 온도 제어 방식에 따른 제어성능 분석",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-166",
+      "session_id": "7-E",
+      "authors": "성효경*, 김민성, 김태연, 안소연, 정재원(한양대학교)",
+      "title": "열전 소자 기반 액티브 단열 패널 적용을 통한 난방에너지 절감 효과 분석",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "25-S-167",
+      "session_id": "7-F",
+      "authors": "이수진*, 이세원, 김용찬(고려대학교)",
+      "title": "핫스탬핑 공정에서의 예비가열을 위한 다양한 설계 변수에서의 유도 가열 코일의 성능 평가에 관한 연구",
+      "start": "10:35",
+      "end": "10:50"
+    },
+    {
+      "paper_no": "25-S-168",
+      "session_id": "7-F",
+      "authors": "Alaa Itaiwi*, Isha Sameen, Takahiko Miyazaki, Yukihiro Higashi, Kyaw Thu (Kyushu Univ.), Ryo Akasaka(Kyushu Sangyo Univ.)",
+      "title": "Predicting Speed of Sound in Pure Refrigerants Using Experimentally-measured Sound Speed in Mixtures",
+      "start": "10:50",
+      "end": "11:05"
+    },
+    {
+      "paper_no": "25-S-169",
+      "session_id": "7-F",
+      "authors": "Balqis*, Chong-Kai Wang, Yean-Der Kuan(National Chin-Yi University of Technology)",
+      "title": "Investigating Performance Differences of Cooling Tower Models During Winter and Summer Using CFD Simulation Approach",
+      "start": "11:05",
+      "end": "11:20"
+    },
+    {
+      "paper_no": "25-S-170",
+      "session_id": "7-F",
+      "authors": "김호연*, 서흥석(한국가스공사)",
+      "title": "이성분(CH4-N2)계 2차원 압축성 유동 솔버 개발",
+      "start": "11:20",
+      "end": "11:35"
+    },
+    {
+      "paper_no": "25-S-171",
+      "session_id": "7-F",
+      "authors": "김무중*(킨키대학교), 이명우(삼성전자), 정종수, 사이토 키요시(와세다대학교)",
+      "title": "메탈폼 기반 기-액 접촉기의 액체 제습냉방 시스템 적용 성능 분석",
+      "start": "11:35",
+      "end": "11:50"
+    },
+    {
+      "paper_no": "25-S-172",
+      "session_id": "8-A",
+      "authors": "류성우*,이호철,이재인, 황동곤(우원엠앤이)",
+      "title": "EnergyPlus-Python Co-Simulation을 활용한 복사냉난방 시스템의 DQN 기반 최적 제어 전략",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-173",
+      "session_id": "8-A",
+      "authors": "이성주*, 고재윤, 도성록, 윤종호, 김동수(한밭대학교)",
+      "title": "Heatpump 성능 데이터를 활용한 건물 에너지 시뮬레이션의 공조기 적용 정밀화 및 검증 연구",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-174",
+      "session_id": "8-A",
+      "authors": "엄혜정*, 박소우, 송두삼(성균관대학교)",
+      "title": "TRNSYS와 TRNFlow 연성 시뮬레이션을 통한 학교 급식 조리실 환기 전략에 따른 열환경, 공기질 및 에너지 성능 종합 분석",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-175",
+      "session_id": "8-A",
+      "authors": "최승훈*, 박준규, 연상훈, 이광호(고려대학교), 도성록(한밭대학교)",
+      "title": "데이터센터 바닥공조 및 천장공조 시스템의 에너지 비교 분석을 위한 EnergyPlus 모델링 기법",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-176",
+      "session_id": "8-B",
+      "authors": "이상욱*, 정성원, 이예현, 송준, 윤현준, 한태원(중앙대학교)",
+      "title": "클린룸 모델링 기반 에너지흐름 분석",
+      "start": "10:10",
+      "end": "10:25"
+    },
+    {
+      "paper_no": "25-S-177",
+      "session_id": "8-B",
+      "authors": "정융*, 송찬호(한국기계연구원)",
+      "title": "첨단 클린룸의 공조 에너지 효율 향상을 위한 외조기 시스템 설계 전략",
+      "start": "10:25",
+      "end": "10:40"
+    },
+    {
+      "paper_no": "25-S-178",
+      "session_id": "8-B",
+      "authors": "Joo Young Song*, Jungho Park, Jaegeun Cho(Sam- sung Electronics), Junho Hyun(Samsung C&T)",
+      "title": "Fault-tolerant power distribution strategy for fan filter units in semiconductor cleanrooms",
+      "start": "10:40",
+      "end": "10:55"
+    },
+    {
+      "paper_no": "25-S-179",
+      "session_id": "8-B",
+      "authors": "Chengxi Yao*, 김태성(성균관대학교)",
+      "title": "Numerical Analysis on Optimization of FFU Arrangements in Cleanroom to Control the Hazardous Leakage",
+      "start": "10:55",
+      "end": "11:10"
+    },
+    {
+      "paper_no": "25-S-180",
+      "session_id": "8-C",
+      "authors": "김범준*(한국건설기술연구원), 정재원(한양대학교)",
+      "title": "가스 보일러 난방 대체 히트펌프 기술 현황 분석 및 필요 연구,정책 제안",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "25-S-181",
+      "session_id": "8-C",
+      "authors": "이민수*, 이호성(고려대학교)",
+      "title": "데이터센터 냉각기술",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "25-S-182",
+      "session_id": "8-C",
+      "authors": "최준영*(한국산업기술시험원)",
+      "title": "전 세계적 냉매 규제에 대응하기 위한 국내 냉매규제 제안을 위한 연구 - ISO 5149 개정 작업을 기준으로",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "25-S-183",
+      "session_id": "8-C",
+      "authors": "채윤호*, 장영수(국민대학교)",
+      "title": "냉동시스템 흡입관에서 오일 회수 기술 분석",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "25-S-184",
+      "session_id": "8-C",
+      "authors": "박창용*(서울과학기술대학교)",
+      "title": "가연성 냉매 관련 안전기준 및 기술 동향",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "25-S-185",
+      "session_id": "8-D",
+      "authors": "최형원*, 구자룡, 강용태(고려대학교)",
+      "title": "히트펌프와 결합한 솝션 열배터리의 작동특성 및 최적화",
+      "start": "15:20",
+      "end": "15:35"
+    },
+    {
+      "paper_no": "25-S-186",
+      "session_id": "8-D",
+      "authors": "신다혁*, 배경진, 권오경(한국생산기술연구원)",
+      "title": "흡착식 냉동기의 흡착탑 제어방식에 따른 성능 특성 비교",
+      "start": "15:35",
+      "end": "15:50"
+    },
+    {
+      "paper_no": "25-S-187",
+      "session_id": "8-D",
+      "authors": "Duong Van Hau*, Thanh Phuong Nguyen, Thi Nhan Nguyen, Van Cong Le, Tan Loc Huynh, Quang Bao Phuc Doan, 박찬우(전북대학교)",
+      "title": "전열관 종류에 따른 서브제로 저온수 생산 흡수식 냉동기용 저압 흡수기의 전열 성능 특성에 관한 연구",
+      "start": "15:50",
+      "end": "16:05"
+    },
+    {
+      "paper_no": "25-S-188",
+      "session_id": "8-D",
+      "authors": "노세현*, Doan Quang Bao Phuc, Nguyen Thanh Phuong, 박찬우(전북대학교)",
+      "title": "배가스 열회수 흡수식 시스템용 흡수제의 기초 열물성 특성 연구",
+      "start": "16:05",
+      "end": "16:20"
+    },
+    {
+      "paper_no": "25-S-189",
+      "session_id": "8-E",
+      "authors": "이슬*, 한광우, 김종훈(한국에너지기술연구원), 장길수(고려대학교)",
+      "title": "다변량 시계열 입력 기반 Spiking Neural Network 모델을 활용한 비주거 건물 전력 수요 예측",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-190",
+      "session_id": "8-E",
+      "authors": "Yuxin Li*, Sungmin Yoon(Sungkyunkwan Univ.)",
+      "title": "Development of an AI Agent-Driven Method for Holistic Operational Signature Analysis",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-191",
+      "session_id": "8-E",
+      "authors": "구자범*, 윤성민(성균관대학교)",
+      "title": "건물 HVAC 시스템의 디지털 트윈 시뮬레이터 구현에 관한 연구",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-192",
+      "session_id": "8-E",
+      "authors": "정다경*, 차재환, 연상훈, 이광호(도려대학교), 최민호(한국건설생활환경시험연구원)",
+      "title": "주거 건물에서 BIPV 시스템의 전력 생산량 예측을 위한 머신러닝 모델 연구",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-193",
+      "session_id": "8-E",
+      "authors": "Abu Talib*, Jaewan Joe(Inha Univ.)",
+      "title": "A physics-informed neural network approach for thermal modeling and cost-savings in commercial building",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "25-S-194",
+      "session_id": "8-F",
+      "authors": "장아민*, 김민호, 이다빈, 반창현, 도성록(한밭대학교)",
+      "title": "데이터센터 외기 도입 제어 방법에 따른 열환경 및 에너지 사용량 평가",
+      "start": "10:35",
+      "end": "10:50"
+    },
+    {
+      "paper_no": "25-S-195",
+      "session_id": "8-F",
+      "authors": "이상민*, 임현우(건국대학교)",
+      "title": "TRNSYS를 활용한 공동주택 Central Heat Pump Water Heater 시스템 구축",
+      "start": "10:50",
+      "end": "11:05"
+    },
+    {
+      "paper_no": "25-S-196",
+      "session_id": "8-F",
+      "authors": "김민호*, 장아민, 반창현, 이다빈, 도성록(한밭대학교)",
+      "title": "지중열교환 외기덕트를 적용한 공조시스템의 이코노마이저 성능 향상 및 에너지 절감 가능성 분석",
+      "start": "11:05",
+      "end": "11:20"
+    },
+    {
+      "paper_no": "25-S-197",
+      "session_id": "8-F",
+      "authors": "안태겸*, 박지혜, 장예준, 채영태(가천대학교)",
+      "title": "3차원 공간 정보를 활용한 저정밀 외피모델의 변수 추정 및 보정 기법",
+      "start": "11:20",
+      "end": "11:35"
+    },
+    {
+      "paper_no": "25-S-198",
+      "session_id": "8-F",
+      "authors": "김태곤*, 정다경, 김동우, 홍섭협, 연상훈, 이광호(고려대학교)",
+      "title": "ECO2와 EnergyPlus의 설계 변수에 따른 에너지 부하 민감도 및 특성 비교 분석",
+      "start": "11:35",
+      "end": "11:50"
+    },
+    {
+      "paper_no": "25-S-199",
+      "session_id": "9-A",
+      "authors": "이유진*, 유준선, 김윤수, 윤용수, 송재만, 홍희기(경희대학교)",
+      "title": "PVT 저온 축열 조건에서 복합열원 히트펌프 운전 방식에 따른 난방 성능 분석",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-200",
+      "session_id": "9-A",
+      "authors": "문찬혁*, 김윤수, 이유진, 김덕근, 송재만, 홍희기(경희대학교)",
+      "title": "PVT와 공기열 히트펌프를 이용한 급탕 시스템의 실증 실험",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "09:45-10:00",
+      "session_id": "9-A",
+      "authors": "김민성*(중앙대학교)",
+      "title": "[특별강연]",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-201",
+      "session_id": "9-B",
+      "authors": "이도헌*, 이세민, 신민재(한양대학교)",
+      "title": "전이 학습 기반 한반도 전역 태양 복사 예측 모델 개발",
+      "start": "10:10",
+      "end": "10:25"
+    },
+    {
+      "paper_no": "25-S-201",
+      "session_id": "9-B",
+      "authors": "조하빈*, 최원준(전남대학교), 슈쿠야 마사노리(동경도시대학교)",
+      "title": "태양열 보조 급탕 시스템의 엑서지 성능 분석",
+      "start": "10:25",
+      "end": "10:40"
+    },
+    {
+      "paper_no": "25-S-203",
+      "session_id": "9-B",
+      "authors": "전새봄*, 오진환, 남유진(부산대학교)",
+      "title": "실증 실험을 통한 BIPVT 시스템의 계절별 열 및 전기 생산량 분석",
+      "start": "10:40",
+      "end": "10:55"
+    },
+    {
+      "paper_no": "10:55-11:25",
+      "session_id": "9-B",
+      "authors": "최종원*(한국에너지기술연구원)",
+      "title": "[특별강연]",
+      "start": "10:55",
+      "end": "11:25"
+    },
+    {
+      "paper_no": "13:30-14:00",
+      "session_id": "9-C",
+      "authors": "송찬호*(한국기계연구원)",
+      "title": "[특별강연] 제목 : 자연냉매를 활용한 냉동기 및 고온 히트펌프 개발 현황과 전망",
+      "start": "13:30",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "25-S-204",
+      "session_id": "9-C",
+      "authors": "안유민*, 윤정인, 손창효, 설성훈(부경대학교), 구병수, 양우성(동화엔텍)",
+      "title": "N2 농도 변화에 따른 CO2-N2 혼합가스 액화 특성에 관한 실험적 연구",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "25-S-205",
+      "session_id": "9-C",
+      "authors": "김태성*, 이상욱, 이호성(고려대학교)",
+      "title": "극한 환경에서의 냉각사이클 성능예측 시뮬레이션 모델 개발",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "25-S-206",
+      "session_id": "9-C",
+      "authors": "최종민*(제주대학교)",
+      "title": "자기 냉동 시스템 작동 유체 성능 비교 열해석",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "25-S-207",
+      "session_id": "9-E",
+      "authors": "이성락*(유천써모텍), 김덕근, 김세훈, 홍희기(경희대학교)",
+      "title": "반송에너지 절약형 저온냉수 및 고온수 열원 공급을 위한 지열히트펌프 효율 향상",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-208",
+      "session_id": "9-E",
+      "authors": "Alfarabi Habil Muhammad*, Fauzan, Young Soo Chang(Kookmin Univ.)",
+      "title": "Dynamic Simulation of a Car Seat Heat Pump System Using MATLAB Simscape",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-209",
+      "session_id": "9-E",
+      "authors": "이종문*, 이호영(한국형냉난방시스템), 김진서(서현이엔지) 정상헌*, 채수원, 남유진(부산대학교)",
+      "title": "복합열원과 실내 공기청정 동시 히트펌프 냉난방시스템에 관한 연구 PVT연계 공기열원 히트펌프 시스템의 간절기 난방운전 순환수 최적 제어 실증실험",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-211",
+      "session_id": "9-E",
+      "authors": "안민영*,함세현,김용찬(고려대학교)",
+      "title": "전기자동차 공조 시스템의 압축기 제어로직 개선 연구",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "25-S-212",
+      "session_id": "9-F",
+      "authors": "주홍렬*, 김민수(서울대학교)",
+      "title": "축열조를 결합한 R1233zd(E) 냉매 터보 압축기 스팀 히트펌프 해석모델 개발",
+      "start": "10:35",
+      "end": "10:50"
+    },
+    {
+      "paper_no": "25-S-213",
+      "session_id": "9-F",
+      "authors": "김민준*, 김동호, 이공훈(한국기계연구원)",
+      "title": "GWP 150이하 Ternary 혼합냉매 조합 및 성능특성에 관한 열역학적 분석",
+      "start": "10:50",
+      "end": "11:05"
+    },
+    {
+      "paper_no": "25-S-214",
+      "session_id": "9-F",
+      "authors": "양현민*, 김소연, 정민규, 구돈익, 서기정, 박지현, 송지원, 김민성(중앙대학교)",
+      "title": "전기화학적 R1234yf 압축기 실험 성능 평가",
+      "start": "11:05",
+      "end": "11:20"
+    },
+    {
+      "paper_no": "25-S-215",
+      "session_id": "9-F",
+      "authors": "김지겸*, 변상우, 조진균, 문주현(한밭대학교)",
+      "title": "수냉을 적용한 2U 고밀도 서버의 열 평가 연구",
+      "start": "11:20",
+      "end": "11:35"
+    },
+    {
+      "paper_no": "25-S-216",
+      "session_id": "9-F",
+      "authors": "Jong Min Choi*, Nicholas Lamptey Boafo, Min Soo Hur, Jang Yun Nam, Woo Yeong Ryu, Minho Oh(Hanbat National Univ.)",
+      "title": "Performance Characteristics and Energy-saving Analysis of Data Center Air-conditioning System Utilizing Dam Water Heat Source",
+      "start": "11:35",
+      "end": "11:50"
+    },
+    {
+      "paper_no": "09:15-09:30",
+      "session_id": "10-A",
+      "authors": "정재원*(한양대학교)",
+      "title": "[특별강연] 제목 : 공동주택 난방 및 급탕 전기화를 위한 히트펌프 적용 방안",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-217",
+      "session_id": "10-A",
+      "authors": "추한경*, 김혜기, 김덕우(한국건설기술연구원)",
+      "title": "건물 및 기후 요인에 대한 인과발견 알고리즘 적용 및 구조 신뢰성 검증 방법",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-218",
+      "session_id": "10-A",
+      "authors": "김예은*, 송아현, 신민재(한양대학교)",
+      "title": "도시 건물 에너지 모델링을 위한 비정형 건물 열적 조닝 자동화 프레임워크",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-219",
+      "session_id": "10-B",
+      "authors": "최원종*, 이왕제, 김민휘(한국에너지기술연구원), 정재원(한양대학교)",
+      "title": "5세대 지역냉난방 시스템 실증설비 설계 및 분석",
+      "start": "10:10",
+      "end": "10:25"
+    },
+    {
+      "paper_no": "25-S-220",
+      "session_id": "10-B",
+      "authors": "임지수*, 황정윤, 임현우(건국대학교)",
+      "title": "에너지 공유 시스템을 위한 지역 건물 에너지 모델 구축 과정",
+      "start": "10:25",
+      "end": "10:40"
+    },
+    {
+      "paper_no": "25-S-221",
+      "session_id": "10-B",
+      "authors": "여태훈*, 조재완(인하대학교)",
+      "title": "캠퍼스 건물군의 모델기반 예측제어를 위한 간소화 물리모델 개발 연구",
+      "start": "10:40",
+      "end": "10:55"
+    },
+    {
+      "paper_no": "25-S-222",
+      "session_id": "10-B",
+      "authors": "이고운*, 윤성민(성균관대학교)",
+      "title": "AI 에이전트 기반 건물 에너지 사용량 데이터의 결측치 복원 서비스 개발",
+      "start": "10:55",
+      "end": "11:10"
+    },
+    {
+      "paper_no": "25-S-223",
+      "session_id": "10-B",
+      "authors": "김인섭*, 임현우(건국대학교)",
+      "title": "도시 에너지 사용량 패턴 평탄화를 위한 건물 용도 비율 최적화",
+      "start": "11:10",
+      "end": "11:25"
+    },
+    {
+      "paper_no": "25-S-224",
+      "session_id": "10-C",
+      "authors": "허민수*, 남장윤, 최종민(한밭대학교)",
+      "title": "열부하 조건에 따른 항온챔버의 기초 성능 연구",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "25-S-225",
+      "session_id": "10-C",
+      "authors": "이시은*, 안재환, 심준영, 이동찬(서울시립대학교)",
+      "title": "택배 배송에서 식품 품온 예측 모델 개발 및 품온 유지를 위한 변수 분석 연구",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "25-S-226",
+      "session_id": "10-C",
+      "authors": "박상찬*, 이준혁, 윤정인, 손창효, 설성훈(부경대학교)",
+      "title": "CO2 혼합냉매를 이용한 -60℃ 초저온 줄-톰슨 냉동기에 대한 실험적 연구",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "25-S-227",
+      "session_id": "10-C",
+      "authors": "정용진*, 고아현, 신영진, 오상현, 주영환(한국에너지기술연구원)",
+      "title": "자연 냉열 저장용 분리형 히트파이프 시스템의 기초 연구",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "25-S-228",
+      "session_id": "10-C",
+      "authors": "Tsogtbilegt*, 이민정, 조홍현(조선대학교)",
+      "title": "of Nanoparticle Addition Sequence on the Thermal Behavior of Eicosane-Based Phase Change Nano-Emulsions",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "25-S-229",
+      "session_id": "10-C",
+      "authors": "황준한*,이동찬(서울시립대학교)",
+      "title": "PCM 캡슐을 활용한 축열조 연구",
+      "start": "14:45",
+      "end": "15:00"
+    },
+    {
+      "paper_no": "25-S-230",
+      "session_id": "10-E",
+      "authors": "이도연*,임현우(건국대학교)",
+      "title": "공공데이터를 활용한 건물 에너지 벤치마킹 분류 기준의 설명력 개선 연구",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-231",
+      "session_id": "10-E",
+      "authors": "최세빈*, 윤성민(성균관대학교)",
+      "title": "Multi-AI agent 기반 도시건물 에너지 서비스 기술 개발에 관한 연구",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-232",
+      "session_id": "10-E",
+      "authors": "이도윤*, 이상민, 최은정(한국기계연구원)",
+      "title": "건물 옥상온실 설치 전후 난방 에너지 소비 변화에 대한 실증 데이터 분석",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-233",
+      "session_id": "10-E",
+      "authors": "한광우*, 최하늘, 서병모, 김종훈(한국에너지기술연구원)",
+      "title": "Grid-Interactive Efficient Building (GEB)을 위한 건물군 단위 수요 유연성 자동 정량화 프레임워크",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-234",
+      "session_id": "10-E",
+      "authors": "최하늘*,한설이,김종훈(한국에너지기술연구원)",
+      "title": "GEB(Grid-interactive Efficient Building) 구현을 위한 국내 건물 에너지 설계기준 분석",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "25-S-235",
+      "session_id": "10-F",
+      "authors": "석민주*, 윤성민(성균관대학교)",
+      "title": "건물에너지 소비 유형 검사 도구 BCTI 개발 : 서울시 건물에너지 성능 평가",
+      "start": "10:35",
+      "end": "10:50"
+    },
+    {
+      "paper_no": "25-S-236",
+      "session_id": "10-F",
+      "authors": "김단은*, 정준렬,이호성(고려대학교)",
+      "title": "공동주택 대상 개별식·중앙식 공기열원 히트펌프 시스템의 에너지, 환경, 경제성 평가",
+      "start": "10:50",
+      "end": "11:05"
+    },
+    {
+      "paper_no": "25-S-237",
+      "session_id": "10-F",
+      "authors": "정준렬*, 김단은, 이호성(고려대학교)",
+      "title": "수소 및 전기 에너지캐리어 기반의 플러스에너지빌딩 시나리오에 대한 연구",
+      "start": "11:05",
+      "end": "11:20"
+    },
+    {
+      "paper_no": "25-S-238",
+      "session_id": "10-F",
+      "authors": "남현진*, 허원행, 권민호(LG전자), 고재윤, 김동수(한밭대학교)",
+      "title": "공기열원 히트펌프의 제상운전(Defrost Operation) 특성에 관한 건물에너지모델링과 실제 제품 모델의 비교 연구",
+      "start": "11:20",
+      "end": "11:35"
+    },
+    {
+      "paper_no": "25-S-239",
+      "session_id": "10-F",
+      "authors": "이세민*, 이도헌, 신민재(한양대학교)",
+      "title": "국내 옥상녹화 적용에 따른 성능평가:미래 기후시나리오에 따른 난방 및 냉방 부하 영향",
+      "start": "11:35",
+      "end": "11:50"
+    },
+    {
+      "paper_no": "25-S-244",
+      "session_id": "11-B",
+      "authors": "손인혁*, 권석재, 김준호, 성준, 이도영, 이민재, 김지민(서울과학기술대학교)",
+      "title": "지열 히트펌프 및 태양광 패널 사용한 대학 캠퍼스 건물 에너지 절감 전략",
+      "start": "10:10",
+      "end": "10:25"
+    },
+    {
+      "paper_no": "25-S-245",
+      "session_id": "11-B",
+      "authors": "이강찬*, 김영우, 윤진성, 윤태규, 운드람 에르대느, 이민재, 김지민(서울과학기술대학교)",
+      "title": "데이터센터 폐열과 지역난방 융합의 에너지 절감 효과 분석",
+      "start": "10:25",
+      "end": "10:40"
+    },
+    {
+      "paper_no": "25-S-246",
+      "session_id": "11-B",
+      "authors": "박민우*, 정수아, 정다현, 백민지, 김지민(서울과학기술대학교)",
+      "title": "에너지 다소비 커튼월 건물의 에너지 성능 개선",
+      "start": "10:40",
+      "end": "10:55"
+    },
+    {
+      "paper_no": "25-S-247",
+      "session_id": "11-B",
+      "authors": "남윤성*, 김진선, 강우진, 전승민, 최세은, 김지민(서울과학기술대학교)",
+      "title": "신축 및 리모델링 건물의 외피 설계에 따른 일사 성능 비교: 대학 캠퍼스 내 북서향 입면을 중심으로",
+      "start": "10:55",
+      "end": "11:10"
+    },
+    {
+      "paper_no": "25-S-248",
+      "session_id": "11-B",
+      "authors": "김인제*, 박재민, 조시은, 이상민, 허정회, 김지민(서울과학기술대학교)",
+      "title": "철도 역사 지붕의 환기 시스템에 관한 연구",
+      "start": "11:10",
+      "end": "11:25"
+    },
+    {
+      "paper_no": "25-S-249",
+      "session_id": "11-C",
+      "authors": "김성원*, 김영일(서울과학기술대학교)",
+      "title": "수냉식 터보 냉동기 운전 최적화를 위한 측정 데이터 기반 COP 상관식 개발",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "25-S-250",
+      "session_id": "11-C",
+      "authors": "윤종석*,김성원,김영일(서울과학기술대학교)",
+      "title": "교육 시설 강당에서 환기 전략에 따른 실내공기질 개선 방안 연구",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "25-S-251",
+      "session_id": "11-C",
+      "authors": "조진균*, 변상우, 김지겸, 문주현(한밭대학교)",
+      "title": "고밀도 데이터센터 DLC의 에너지 성능 평가에 대한 연구",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "25-S-252",
+      "session_id": "11-C",
+      "authors": "이기윤*, 김나영, 안시은, 조소운, 김지민(서울과학기술대학교)",
+      "title": "캠퍼스 건물의 옥상 및 벽면녹화 유형별 에너지 성능 분석과 설계 기법 제안",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "25-S-253",
+      "session_id": "11-C",
+      "authors": "조진균*, 변상우(한밭대학교), 김진호(수원대학교)",
+      "title": "대공간의 공조환경 개선을 위한 수치해석 기반 설계",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "25-S-041",
+      "session_id": "11-C",
+      "authors": "조진표*, 김광희(인하대학교), 장원모, 이강선(오토메스텔 스타), 김준기(태극엔지니어링), 이훈(미크론텍)",
+      "title": "Air Bubble 및 UV램프를 적용한 스크러버 복합 악취 저감 시스템 개발",
+      "start": "14:45",
+      "end": "15:00"
+    },
+    {
+      "paper_no": "25-S-254",
+      "session_id": "11-D",
+      "authors": "최승훈*(의정부성모병원), 김선혜(서울과학기술대학교)",
+      "title": "대학병원 에너지 절감 조치의 측정 및 검증(M&V)을 위한 베이스라인 개발",
+      "start": "15:20",
+      "end": "15:35"
+    },
+    {
+      "paper_no": "25-S-255",
+      "session_id": "11-D",
+      "authors": "조성윤*, 이수연, 박두루, 박은상, 이도영, 김지민(서울과학기술대학교)",
+      "title": "고도에 따른 외기 조건 변화가 수열원 냉난방 시스템 성능에 미치는 영향 분석",
+      "start": "15:35",
+      "end": "15:50"
+    },
+    {
+      "paper_no": "25-S-256",
+      "session_id": "11-D",
+      "authors": "양지성*, 김기영, 권진희, 서민아, 한범희, 오동근, 김지민(서울과학기술대학교)",
+      "title": "지하 공연장의 창문 구성 방식이 실내환경질에 미치는 영향 분석",
+      "start": "15:50",
+      "end": "16:05"
+    },
+    {
+      "paper_no": "25-S-257",
+      "session_id": "11-D",
+      "authors": "양진규*, 이상윤, 최우형, 박명훈, 조현상, 김지민(서울과학기술대학교)",
+      "title": "시뮬레이션 기반 가로주택정비사업 주거모델에서 일사량 및 이중창 적용을 통한 에너지 사용량 분석",
+      "start": "16:05",
+      "end": "16:20"
+    },
+    {
+      "paper_no": "25-S-258",
+      "session_id": "11-D",
+      "authors": "조유진*, 성시우, 김소희, 윤태용, 서정환, 김지민(서울과학기술대학교)",
+      "title": "근대 건축 문화유산의 냉난방 에너지 효율 개선에 대한 연구",
+      "start": "16:20",
+      "end": "16:35"
+    },
+    {
+      "paper_no": "25-S-259",
+      "session_id": "11-D",
+      "authors": "조민주*, 이원교, 김진형, 서정환, 김지민(서울과학기술대학교)",
+      "title": "동일 개구율에서 파라메트릭 외피 디자인 형태가 건물 냉난방 부하에 미치는 영향 비교 연구",
+      "start": "16:35",
+      "end": "16:50"
+    },
+    {
+      "paper_no": "25-S-260",
+      "session_id": "11-E",
+      "authors": "문찬성*, 송찬호, 김정철(한국기계연구원)",
+      "title": "유동가시화 기법을 이용한 PCHE의 유동 불균형에 관한 실험적 연구",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-261",
+      "session_id": "11-E",
+      "authors": "정성원*, 송준, 윤현준, 한태원, 이상욱(중앙대학교), 이예현(건국대학교)",
+      "title": "리시버 일체형 응축기 모델링 및 성능평가",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-262",
+      "session_id": "11-E",
+      "authors": "임수환*, 옥정수, 강용태(고려대학교)",
+      "title": "Low GWP 냉매 적용 이상유동 조건에서의 전열관 형상 최적화를 통한 열전달 성능 수치해석 연구",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-263",
+      "session_id": "11-E",
+      "authors": "김영찬*, 김두현, 윤린(한밭대학교)",
+      "title": "응축과 증발시 판형열교환기 설계프로그램 개발 및 실험적 검증",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-264",
+      "session_id": "11-E",
+      "authors": "Van Cong Le*, Thi Nhan Nguyen, 박찬우(전북대학교)",
+      "title": "세라믹 멤브레인을 적용한 폐열 회수 열교환기의 성능 특성에 관한 연구",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "25-S-265",
+      "session_id": "11-F",
+      "authors": "김재헌*, 김보겸, 이공훈, 김민창,김우경(한국기계연구원)",
+      "title": "액체수소 기반 고압 기체수소 공급 시스템용 인쇄 기판형 열교환기 축소모형 열교환 성능 실험",
+      "start": "10:35",
+      "end": "10:50"
+    },
+    {
+      "paper_no": "25-S-266",
+      "session_id": "11-F",
+      "authors": "하수현*, 박태현, 박찬우(전북대학교), 곽태희, 박내현(LG전자)",
+      "title": "고온 증기 생성 히트펌프 내 쉘 앤 플레이트 열교환기의 상변화 현상 연구",
+      "start": "10:50",
+      "end": "11:05"
+    },
+    {
+      "paper_no": "25-S-267",
+      "session_id": "11-F",
+      "authors": "정기택*, 이호성(고려대학교)",
+      "title": "오프셋 스트립 핀 판형 열교환기의 연구 동향 및 성능 향상 방안에 대한 고찰",
+      "start": "11:05",
+      "end": "11:20"
+    },
+    {
+      "paper_no": "25-S-268",
+      "session_id": "11-F",
+      "authors": "서진영*, 이동찬(서울시립대학교)",
+      "title": "실험을 통한 수력직경에 따른 마이크로채널 튜브 열교환기 성능 비교",
+      "start": "11:20",
+      "end": "11:35"
+    },
+    {
+      "paper_no": "25-S-269",
+      "session_id": "11-F",
+      "authors": "김주영*, 박철원(강릉원주대학교)",
+      "title": "펠티어 어레이와 수냉각기를 이용한 GM 극저온냉동기의 헬륨 압축기 냉각 시스템에 관한 연구",
+      "start": "11:35",
+      "end": "11:50"
+    },
+    {
+      "paper_no": "25-S-274",
+      "session_id": "12-C",
+      "authors": "이태희*(수원과학대학교), 양재구(플로우테크)",
+      "title": "국내 하수 방류 관로의 체크밸브 슬램 현상 분석 및 해결 사례",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "25-S-275",
+      "session_id": "12-C",
+      "authors": "맹승규*, 탁지현(세종대학교), 김신화, 최수훈(충남대학교)",
+      "title": "옥내수도배관 재질에 따른 생물학적 안정성 평가",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "25-S-276",
+      "session_id": "12-C",
+      "authors": "이용화*(유한대학교), 이재준, 최효섭, 김영수, 홍석원(PPI PIPE)",
+      "title": "양변기 배수 부하 시 배수 수직관 내 공기 압력 분포 특성",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "25-S-277",
+      "session_id": "12-C",
+      "authors": "장춘만*, 손성완(한국건설기술연구원), 김영수, 홍석원(PPI PIPE)",
+      "title": "오배수 수직배관 스핀형상에 따른 유동 성능평가",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "25-S-278",
+      "session_id": "12-C",
+      "authors": "홍성결*, 문선영, 신민정, 최희주, 장재수(LG전자)",
+      "title": "에어컨 열교환기의 곰팡이 성장 예측 모델 및 위생 관리 알고리즘 개발",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "25-S-279",
+      "session_id": "12-D",
+      "authors": "박준수*, 유정훈, 신항주, 최성호, 최종원(한국에너지기술 연구원), 이미혜(고려대학교)",
+      "title": "Filter free 열회수 환기장치 개발 및 성능평가 실험에 관한 연구",
+      "start": "15:20",
+      "end": "15:35"
+    },
+    {
+      "paper_no": "25-S-280",
+      "session_id": "12-D",
+      "authors": "김광범*, 김지홍(미성)",
+      "title": "FCU 배관 시스템의 진동 감쇠 성능 설계 및 내진 특성에 대한 연구",
+      "start": "15:35",
+      "end": "15:50"
+    },
+    {
+      "paper_no": "25-S-281",
+      "session_id": "12-D",
+      "authors": "김민종*, 백주미, 윤동희, 송두삼(성균관대학교)",
+      "title": "모바일 기기를 이용한 Scan-to-BIM 기반 도면생성 프로세스: 도면생성의 정확도 향상을 위한 연구",
+      "start": "15:50",
+      "end": "16:05"
+    },
+    {
+      "paper_no": "25-S-282",
+      "session_id": "12-D",
+      "authors": "조진표*, 박영규, 김광희, 현승균, 김지유(인하대학교)",
+      "title": "지붕 개량용 MATT 컬러강판 표면 질감 분류를 위한 딥러닝 기반 자동 검사 기법 연구",
+      "start": "16:05",
+      "end": "16:20"
+    },
+    {
+      "paper_no": "25-S-283",
+      "session_id": "12-D",
+      "authors": "조진표*, 김광희, 김지유(인하대학교), 심동현, 김학선(엔 에스브이), 전시환(유창하이테크)",
+      "title": "인공지능을 활용한 폴리우레탄 폼 밀도 예측 및 제조 공정 최적화 연구",
+      "start": "16:20",
+      "end": "16:35"
+    },
+    {
+      "paper_no": "25-S-284",
+      "session_id": "12-D",
+      "authors": "우제승*(코리스이엔티) 좌장 : 정창호 (수원대학교)",
+      "title": "비구조요소 내진 솔루션과 내진적용현장 설계 및 시공현장 컨설팅 특별세션 : 건축환경부문위원회",
+      "start": "16:35",
+      "end": "16:50"
+    },
+    {
+      "paper_no": "25-S-285",
+      "session_id": "12-D",
+      "authors": "김원준*, 조형동, 김재민(DL이앤씨)",
+      "title": "공동주택 결로 방지를 위한 온습도 기반 환기제어로직 개발",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "25-S-286",
+      "session_id": "12-D",
+      "authors": "신대환*, 서지현, 한설이, 김종훈(한국에너지기술연구원), 김수민(연세대학교)",
+      "title": "동절기 건물 외피의 현장 단열 성능 평가 : 벽체 및 창호에 대한 실외 열화상법 적용 사례",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "25-S-287",
+      "session_id": "12-D",
+      "authors": "강은호*, 김동수, 윤종수(한밭대학교)",
+      "title": "발열유리 창호를 이용한 실내 복사쾌적도 제어 연구",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "25-S-288",
+      "session_id": "12-D",
+      "authors": "김정민*, 스가 켄타로(교토공예섬유대학교)",
+      "title": "교토전통가옥 쿄마치야의 리노베이션을 통한 온열환경 개선 및 에너지성능 향상에 관한 연구",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "25-S-289",
+      "session_id": "12-D",
+      "authors": "박정안*, 오원석(한밭대학교), 이도윤(한국기계연구원), 곽종성(Takushoku Univ.)",
+      "title": "동적 열 환경에서 개인의 열적 쾌적감 예측을 위한 뇌파 기반 개인 열쾌적성 모델 평가",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "25-S-290",
+      "session_id": "12-F",
+      "authors": "조남현*, 박범찬(인천국제공항공사), 조성균, 장주복(에이치엠텍)",
+      "title": "이종 열원을 활용한 하수슬러지의 효율적 건조처리설비 개발",
+      "start": "10:35",
+      "end": "10:50"
+    },
+    {
+      "paper_no": "25-S-291",
+      "session_id": "12-F",
+      "authors": "손진웅*,권오익(하이멕)",
+      "title": "OSC 기반 공동주택 활성화를 위한 MEP 모듈 설계 요구사항",
+      "start": "10:50",
+      "end": "11:05"
+    },
+    {
+      "paper_no": "25-S-292",
+      "session_id": "12-F",
+      "authors": "김현민*, 권오익, 이진영(하이멕)",
+      "title": "교육시설의 탄소중립을 위한 리모델링 마스터플랜 프로세스: 국제학교 설계사례를 중심으로",
+      "start": "11:05",
+      "end": "11:20"
+    },
+    {
+      "paper_no": "25-S-293",
+      "session_id": "12-F",
+      "authors": "최환호*, 강성택, 김수민(연세대학교)",
+      "title": "한국 하수도 건설현장에서 폐플라스틱을 활용한 HDPE 배관 적용에 따른 환경영향 저감 효과 분석",
+      "start": "11:20",
+      "end": "11:35"
+    },
+    {
+      "paper_no": "25-S-294",
+      "session_id": "12-F",
+      "authors": "백주미*, 송두삼(성균관대학교)",
+      "title": "대학 캠퍼스 에너지 효율화 사업을 통한 온실가스 배출권 외부사업 사례 연구",
+      "start": "11:35",
+      "end": "11:50"
+    }
+  ]
+}
