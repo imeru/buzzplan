@@ -90,9 +90,45 @@
     background: #fff; border: 1px solid #e6e6e6; border-radius: 4px; padding: 8px;
   }
   .slot .room-head {
-    font-weight: 600; font-size: 11px; margin-bottom: 4px; color: #1f1f1f;
+    font-size: 11px; margin-bottom: 6px;
     display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; user-select: none; gap: 8px;
   }
+  .slot .room-head:hover .room-loc { filter: brightness(0.9); }
+  .slot .room-head .room-meta { font-weight: 400; color: #888; display: inline-flex; gap: 6px; align-items: center; }
+  .slot .room-col.collapsed .room-body { display: none; }
+  .slot .room-col.collapsed { padding: 6px 8px; }
+
+  /* Emphasized location chip in room-head — building-colored, larger, with floor info */
+  .room-loc {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 5px; font-weight: 700;
+    background: #f0f0f0; color: #1f1f1f;
+    font-size: 13px; letter-spacing: 0.02em;
+  }
+  .room-loc .room-icon { font-size: 12px; }
+  .room-loc .room-bldg { font-weight: 700; }
+  .room-loc .room-no   { font-weight: 700; }
+  .room-loc .room-floor {
+    font-size: 10px; font-weight: 600; padding: 1px 5px; border-radius: 3px;
+    background: rgba(0,0,0,0.08); margin-left: 2px;
+  }
+  /* Per-building accent: left border + tinted chip (default = neutral blue) */
+  .slot .room-col { border-left: 4px solid #4a90e2; }
+  .slot .room-col .room-loc { background: #e4eef9; color: #0f2a4d; }
+  .slot .room-col.tag-SGM { border-left-color: #1d4e89; }
+  .slot .room-col.tag-GFS { border-left-color: #8a4b00; }
+  .slot .room-col.tag-VHE { border-left-color: #553f8a; }
+  .slot .room-col.tag-SGM .room-loc { background: #d6e6f7; color: #0f2a4d; }
+  .slot .room-col.tag-GFS .room-loc { background: #fae5c8; color: #4a2700; }
+  .slot .room-col.tag-VHE .room-loc { background: #e2d4ff; color: #2c1f51; }
+
+  .room-toggle {
+    background: none; border: none; cursor: pointer; padding: 0; color: #666;
+    font-size: 10px; line-height: 1; width: 14px;
+  }
+  .slot .hop-list { margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e0e0e0; }
+  .slot .hop-list .info { margin-bottom: 4px; }
   .slot.multi-room { background: #fffaf0; border-left-color: #f5a623; }
   .slot.multi-room .info { color: #b8860b; font-size: 11px; font-weight: 600; margin-top: 4px; }
   .slot .timeline { margin-top: 8px; }
@@ -251,6 +287,8 @@
 
   .toggle-collapse { background: none; border: none; cursor: pointer; font-size: 11px; color: #4a90e2; padding: 2px 6px; }
   .session.collapsed .paper-list { display: none; }
+  .session.collapsed { padding: 8px 12px; }
+  .session.collapsed .session-header { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
 
   /* Now / past-session controls */
   .browse-controls { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
@@ -262,6 +300,30 @@
   .now-btn:disabled { background: #ccc; cursor: not-allowed; }
   .collapse-toggle { font-size: 12px; color: #444; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
   .now-hint { font-size: 11px; color: #888; }
+
+  /* "모두 접기 / 펴기" buttons */
+  .collapse-all { display: inline-flex; gap: 4px; }
+  .collapse-all button {
+    background: #fff; border: 1px solid #ccc; padding: 5px 10px; cursor: pointer;
+    border-radius: 4px; font-size: 11px; color: #444;
+  }
+  .collapse-all button:hover { background: #f0f0f0; border-color: #999; }
+
+  /* Floating "맨 위로" button */
+  .to-top {
+    position: fixed; right: 20px; bottom: 24px; z-index: 50;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: #1f1f1f; color: #fff; border: none; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-size: 18px; line-height: 1; padding: 0;
+    opacity: 0; transform: translateY(8px) scale(0.9); pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s, background 0.15s;
+  }
+  .to-top.visible { opacity: 0.9; transform: translateY(0) scale(1); pointer-events: auto; }
+  .to-top:hover { background: #000; opacity: 1; }
+  @media (max-width: 720px) {
+    .to-top { right: 14px; bottom: 18px; width: 48px; height: 48px; font-size: 20px; }
+  }
 
   /* Past session: collapsed + dimmed header */
   .session.past { opacity: 0.6; }
@@ -458,6 +520,10 @@
         <label class="collapse-toggle">
           <input type="checkbox" id="toggle-collapse-past"> 지난 세션 접기
         </label>
+        <span class="collapse-all">
+          <button id="btn-collapse-all-browse" title="보이는 모든 세션 접기">📕 모두 접기</button>
+          <button id="btn-expand-all-browse" title="보이는 모든 세션 펴기">📖 모두 펴기</button>
+        </span>
         <span class="now-hint" id="now-hint"></span>
       </div>
       <div id="session-list"></div>
@@ -469,6 +535,9 @@
   </div>
 
 </div>
+
+<!-- Floating "맨 위로" button (둘러보기·내 일정 탭에서 스크롤이 길어지면 표시) -->
+<button id="to-top" class="to-top" title="맨 위로" aria-label="맨 위로">↑</button>
 
 <script>
 // ====== Data (loaded at boot from data/<conf>.json) ======
@@ -521,8 +590,9 @@ function confNameFor(d) {
 }
 
 let currentConfId = null;
-const kSelected = () => `cs:${currentConfId}:selected`;
-const kNotes    = () => `cs:${currentConfId}:notes`;
+const kSelected  = () => `cs:${currentConfId}:selected`;
+const kNotes     = () => `cs:${currentConfId}:notes`;
+const kCollapsed = () => `cs:${currentConfId}:collapsed`;
 
 // Registry of conferences this browser has seen — drives the quick-switch dropdown.
 function rememberConference(d) {
@@ -571,6 +641,8 @@ function initState() {
   selected: new Set(JSON.parse(localStorage.getItem(kSelected()) || '[]')),
   // notes: { "session_id#paper_no": { rating: 0..5, note: "..." } }
   notes: new Map(Object.entries(JSON.parse(localStorage.getItem(kNotes()) || '{}'))),
+  // 사용자가 명시적으로 접은 세션 id 집합. 둘러보기·내 일정 둘 다 공유.
+  collapsedSessions: new Set(JSON.parse(localStorage.getItem(kCollapsed()) || '[]')),
   search: '',
   dayFilter: 'all',
   tracks:    allTracksOf(DATA),
@@ -616,6 +688,10 @@ function saveNotes() {
   localStorage.setItem(kNotes(), JSON.stringify(Object.fromEntries(state.notes)));
 }
 
+function saveCollapsed() {
+  localStorage.setItem(kCollapsed(), JSON.stringify([...state.collapsedSessions]));
+}
+
 // Swap to a different conference DATA loaded by the user:
 function switchConference(newData) {
   DATA = newData;
@@ -623,6 +699,7 @@ function switchConference(newData) {
   currentConfId = confIdFor(newData);
   state.selected = new Set(JSON.parse(localStorage.getItem(kSelected()) || '[]'));
   state.notes    = new Map(Object.entries(JSON.parse(localStorage.getItem(kNotes()) || '{}')));
+  state.collapsedSessions = new Set(JSON.parse(localStorage.getItem(kCollapsed()) || '[]'));
   state.tracks    = allTracksOf(newData);
   state.buildings = allBuildingsOf(newData);
   state.dayFilter = 'all'; state.search = '';
@@ -947,13 +1024,18 @@ function renderSessions() {
 
     const div = document.createElement('div');
     div.className = 'session';
+    div.dataset.sessionId = s.id;
     // 현재 시각 기준 상태 반영
     const status = sessionStatus(s);
     let statusBadge = '';
     if (status === 'current')  { div.classList.add('current'); div.dataset.now = '1'; statusBadge = '<span class="current-badge">진행 중</span>'; }
     else if (status === 'upcoming') { div.dataset.next = '1'; statusBadge = '<span class="upcoming-badge">예정</span>'; }
-    else if (status === 'past') { div.classList.add('past'); statusBadge = '<span class="past-badge">종료</span>';
-                                  if (state.collapsePast) div.classList.add('collapsed'); }
+    else if (status === 'past') { div.classList.add('past'); statusBadge = '<span class="past-badge">종료</span>'; }
+    // 접힘 판정: 사용자가 명시적으로 접은 경우 OR ('지난 세션 접기' ON + 종료된 세션)
+    const collapsedByUser = state.collapsedSessions.has(s.id);
+    if (collapsedByUser || (state.collapsePast && status === 'past')) {
+      div.classList.add('collapsed');
+    }
     const bldgTag = `<span class="building-tag tag-${s.building}">${hi(s.building + ' ' + s.room)}</span>`;
     const chair = s.chair ? `Chair: ${hi(s.chair)}` : '';
     div.innerHTML = `
@@ -967,7 +1049,21 @@ function renderSessions() {
       </div>
       <div class="paper-list"></div>
     `;
-    div.querySelector('.toggle-collapse').onclick = () => div.classList.toggle('collapsed');
+    div.querySelector('.toggle-collapse').onclick = (e) => {
+      e.stopPropagation();
+      const nowCollapsed = !div.classList.contains('collapsed');
+      div.classList.toggle('collapsed');
+      if (nowCollapsed) state.collapsedSessions.add(s.id);
+      else              state.collapsedSessions.delete(s.id);
+      saveCollapsed();
+    };
+    // 헤더 클릭으로도 접기/펴기 가능
+    div.querySelector('.session-header').onclick = (e) => {
+      // 버튼 클릭은 위에서 처리; 다른 영역 클릭만 처리
+      if (e.target.closest('.toggle-collapse')) return;
+      div.querySelector('.toggle-collapse').click();
+    };
+    div.querySelector('.session-header').style.cursor = 'pointer';
 
     const pl = div.querySelector('.paper-list');
     if (matchingPapers.length === 0) {
@@ -1100,14 +1196,19 @@ function renderItinerary() {
     it.pt = paperTime(it.s, it.p, idx, ordered.length);
   }
 
-  // ===== View toggle + 지금 버튼 =====
+  // ===== View toggle + 지금 버튼 + 모두 접기/펴기 =====
   const showNow = conferenceIsToday();
+  const showCollapseAll = state.itineraryView === 'list';
   let html = `<div class="iv-header">
     <div class="iv-toggle">
       <button class="${state.itineraryView==='list'?'active':''}" data-iv="list">📋 리스트</button>
       <button class="${state.itineraryView==='grid'?'active':''}" data-iv="grid">🗓️ 시간표</button>
     </div>
     ${showNow ? '<button id="btn-now-itin" class="now-btn">🔴 지금</button>' : ''}
+    ${showCollapseAll ? `<span class="collapse-all">
+      <button id="btn-collapse-all-itin" title="보이는 모든 세션 접기">📕 모두 접기</button>
+      <button id="btn-expand-all-itin" title="보이는 모든 세션 펴기">📖 모두 펴기</button>
+    </span>` : ''}
   </div>`;
 
   // ===== Timetable (grid) branch =====
@@ -1149,7 +1250,7 @@ function renderItinerary() {
       return `<div class="pick${pickCls}"${nowAttr}>
         <div class="ptitle">${timeBadge}${escapeHtml(it.p.title)}${pickBadge}</div>
         <div class="pauthors">${escapeHtml(it.p.authors)}</div>
-        <div class="pmeta">${escapeHtml(it.s.building)} ${escapeHtml(it.s.room)} · ${escapeHtml(it.s.track_title)} · #${escapeHtml(it.p.paper_no)}
+        <div class="pmeta">${escapeHtml(it.s.track_title)} · #${escapeHtml(it.p.paper_no)}
           <a href="#" data-key="${it.key}" class="rm" style="margin-left:6px;color:#d0021b;">제거</a></div>
         <div class="rating" data-key="${it.key}">${stars}
           <span class="star clear-star" data-key="${it.key}" data-val="0" title="평점 지우기" style="color:#ccc;font-size:13px;margin-left:6px;">✕</span>
@@ -1181,12 +1282,43 @@ function renderItinerary() {
       html += `<div class="slot ${isMulti?'multi-room':''}">`;
       html += `<div class="time">${picks[0].s.start}–${picks[0].s.end}${isMulti ? ` · 병행 ${byRoom.size}개 방` : ''}</div>`;
 
+      // ----- ROOM CARDS: 각 방 = 하나의 세션. 접기/펴기 가능, 세션장은 강하게 강조.
+      const roomEntries = [...byRoom.entries()].sort((a,b) => a[0].localeCompare(b[0]));
+      html += `<div class="rooms">`;
+      for (const [room, roomPicks] of roomEntries) {
+        roomPicks.sort((a,b) => a.pt.startMin - b.pt.startMin);
+        const sid = roomPicks[0].s.id;
+        const bldg = roomPicks[0].s.building || '';
+        const rno  = roomPicks[0].s.room || '';
+        const floor = roomPicks[0].s.floor;
+        // CSS 클래스용 안전화: 공백·특수문자 제거
+        const bldgCls = String(bldg).replace(/[^A-Za-z0-9_-]/g, '_') || 'unknown';
+        const collapsed = state.collapsedSessions.has(sid);
+        html += `<div class="room-col tag-${bldgCls} ${collapsed?'collapsed':''}" data-session-id="${escapeHtml(sid)}">
+          <div class="room-head">
+            <span class="room-loc">
+              <span class="room-icon">📍</span>
+              <span class="room-bldg">${escapeHtml(bldg)}</span>
+              <span class="room-no">${escapeHtml(rno)}</span>
+              ${floor ? `<span class="room-floor">${escapeHtml(String(floor))}F</span>` : ''}
+            </span>
+            <span class="room-meta">
+              <span class="room-count">${roomPicks.length}개</span>
+              <button class="room-toggle" title="접기/펴기" aria-label="접기/펴기">${collapsed?'▶':'▼'}</button>
+            </span>
+          </div>
+          <div class="room-body">
+            ${roomPicks.map(it => renderPick(it, it.pt)).join('')}
+          </div>
+        </div>`;
+      }
+      html += `</div>`;
+
+      // ----- HOP HINTS (multi-room only): chronological transitions between picks across rooms
       if (isMulti) {
-        // ----- TIMELINE VIEW: sort picks by detailed paper time, insert walk hints between consecutive picks
-        html += `<div class="info">↔ 발표별 시작 시각 순서로 정리했습니다. 방 사이 이동시간과 여유를 보고 hop 가능 여부를 판단하세요.</div>`;
         const sortedPicks = [...picks].sort((a,b) => a.pt.startMin - b.pt.startMin || a.s.id.localeCompare(b.s.id));
-        html += `<div class="timeline">`;
         let prevPick = null;
+        const hops = [];
         for (const it of sortedPicks) {
           if (prevPick && (prevPick.s.building !== it.s.building || prevPick.s.room !== it.s.room)) {
             const gap = it.pt.startMin - prevPick.pt.endMin;
@@ -1196,20 +1328,13 @@ function renderItinerary() {
             const note = tight
               ? `⚠️ 시간 부족 (도보 ${w}분, 여유 ${gap}분)`
               : `도보 ~${w}분 · 여유 ${gap}분`;
-            html += `<div class="hop ${cls}">↻ ${prevPick.s.building} ${prevPick.s.room} → ${it.s.building} ${it.s.room} · ${note}</div>`;
+            hops.push(`<div class="hop ${cls}">↻ ${it.pt.start} · ${escapeHtml(prevPick.s.building)} ${escapeHtml(prevPick.s.room)} → ${escapeHtml(it.s.building)} ${escapeHtml(it.s.room)} · ${note}</div>`);
           }
-          html += renderPick(it, it.pt);
           prevPick = it;
         }
-        html += `</div>`;
-      } else {
-        // ----- SINGLE-ROOM SLOT: simple time-ordered list inside one room column
-        const [room, roomPicks] = [...byRoom.entries()][0];
-        roomPicks.sort((a,b) => a.pt.startMin - b.pt.startMin);
-        html += `<div class="rooms"><div class="room-col">
-          <div class="room-head"><span>${escapeHtml(room)}</span><span style="font-weight:400;color:#888;">${roomPicks.length}개</span></div>
-          ${roomPicks.map(it => renderPick(it, it.pt)).join('')}
-        </div></div>`;
+        if (hops.length) {
+          html += `<div class="hop-list"><div class="info">↔ 방 사이 이동 계획</div>${hops.join('')}</div>`;
+        }
       }
       html += `</div>`;
 
@@ -1276,6 +1401,30 @@ function wireItineraryToggle() {
   // 내 일정 탭의 "지금" 버튼
   const nowBtn = document.getElementById('btn-now-itin');
   if (nowBtn) nowBtn.onclick = () => scrollToNowItinerary(true);
+
+  // 모두 접기/펴기
+  const ca = document.getElementById('btn-collapse-all-itin');
+  const ea = document.getElementById('btn-expand-all-itin');
+  if (ca) ca.onclick = collapseAllVisible;
+  if (ea) ea.onclick = expandAllVisible;
+
+  // 각 .room-col의 헤더 클릭(혹은 버튼 클릭)으로 접기/펴기
+  document.querySelectorAll('#itinerary .room-col[data-session-id]').forEach(col => {
+    const sid = col.dataset.sessionId;
+    const head = col.querySelector('.room-head');
+    if (!head) return;
+    head.addEventListener('click', (e) => {
+      // pick 내부의 링크/별/메모는 무시 (room-body 안의 요소들).
+      if (e.target.closest('.room-body')) return;
+      const nowCollapsed = !col.classList.contains('collapsed');
+      col.classList.toggle('collapsed');
+      if (nowCollapsed) state.collapsedSessions.add(sid);
+      else              state.collapsedSessions.delete(sid);
+      const tg = col.querySelector('.room-toggle');
+      if (tg) tg.textContent = col.classList.contains('collapsed') ? '▶' : '▼';
+      saveCollapsed();
+    });
+  });
 }
 
 // 내 일정 패널 안에서 현재(없으면 다음) 발표로 스크롤.
@@ -1744,6 +1893,58 @@ document.getElementById('toggle-collapse-past').onchange = (e) => {
   localStorage.setItem('cs:collapsepast', e.target.checked ? 'on' : 'off');
   renderSessions();
 };
+
+// ====== "모두 접기 / 펴기" — 현재 보이는 세션 단위로 동작 ======
+// 둘러보기: .session[data-session-id]  /  내 일정: .room-col[data-session-id]
+function collectVisibleSessionIds() {
+  const ids = new Set();
+  const root = state.view === 'browse'
+    ? document.getElementById('session-list')
+    : document.getElementById('itinerary');
+  if (!root) return ids;
+  root.querySelectorAll('[data-session-id]').forEach(el => ids.add(el.dataset.sessionId));
+  return ids;
+}
+function collapseAllVisible() {
+  for (const id of collectVisibleSessionIds()) state.collapsedSessions.add(id);
+  saveCollapsed();
+  if (state.view === 'browse') renderSessions();
+  else                          renderItinerary();
+}
+function expandAllVisible() {
+  for (const id of collectVisibleSessionIds()) state.collapsedSessions.delete(id);
+  // '지난 세션 접기'가 켜져 있으면 종료된 세션은 여전히 접힘. 사용자의 "모두 펴기" 의도를 살리려면 끄기.
+  if (state.view === 'browse' && state.collapsePast) {
+    state.collapsePast = false;
+    localStorage.setItem('cs:collapsepast', 'off');
+    document.getElementById('toggle-collapse-past').checked = false;
+  }
+  saveCollapsed();
+  if (state.view === 'browse') renderSessions();
+  else                          renderItinerary();
+}
+document.getElementById('btn-collapse-all-browse').onclick = collapseAllVisible;
+document.getElementById('btn-expand-all-browse').onclick   = expandAllVisible;
+
+// ====== Floating "맨 위로" button (둘러보기·내 일정 탭에서만 표시) ======
+// 스크롤이 충분히 내려갔을 때만 떠오르고, 클릭하면 부드럽게 맨 위로 이동.
+(function setupToTop() {
+  const btn = document.getElementById('to-top');
+  if (!btn) return;
+  const THRESHOLD = 300; // px — 이 정도 내려가야 등장
+  const update = () => {
+    const y = window.scrollY || document.documentElement.scrollTop;
+    btn.classList.toggle('visible', y > THRESHOLD);
+  };
+  // passive 리스너로 스크롤 성능 보호
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  btn.addEventListener('click', () => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+  });
+  update();
+})();
 
 // ====== Boot (async: fetch data, then initialize) ======
 async function bootApp() {
