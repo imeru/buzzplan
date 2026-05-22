@@ -891,7 +891,7 @@ const DAY_TABS_AS_SELECT = 5;
 
 function renderFilters() {
   // Day filter
-  const days = [...new Set(DATA.sessions.map(s => s.day))].sort();
+  const days = [...new Set(DATA.sessions.map(s => s.day))].sort((a, b) => a - b);
   const dt = document.getElementById('day-tabs');
   dt.innerHTML = '';
   // Strip the year from "5/19/2026" → "5/19" so the tab fits.
@@ -1012,7 +1012,7 @@ function renderSessions() {
 
   // Group sessions by (day, start) for orderly display
   const sorted = [...DATA.sessions].sort((a,b) =>
-    (a.day - b.day) || (timeToMin(a.start) - timeToMin(b.start)) || a.id.localeCompare(b.id)
+    (a.day - b.day) || (timeToMin(a.start) - timeToMin(b.start)) || natCompare(a.id, b.id)
   );
 
   let shownCount = 0;
@@ -1193,7 +1193,7 @@ function renderItinerary() {
     items.push({ s, p, key });
   }
   items.sort((a,b) =>
-    (a.s.day - b.s.day) || (timeToMin(a.s.start) - timeToMin(b.s.start)) || a.s.id.localeCompare(b.s.id)
+    (a.s.day - b.s.day) || (timeToMin(a.s.start) - timeToMin(b.s.start)) || natCompare(a.s.id, b.s.id)
   );
 
   // Group by day
@@ -1297,7 +1297,7 @@ function renderItinerary() {
       html += `<div class="time">${picks[0].s.start}–${picks[0].s.end}${isMulti ? ` · 병행 ${byRoom.size}개 방` : ''}</div>`;
 
       // ----- ROOM CARDS: 각 방 = 하나의 세션. 접기/펴기 가능, 세션장은 강하게 강조.
-      const roomEntries = [...byRoom.entries()].sort((a,b) => a[0].localeCompare(b[0]));
+      const roomEntries = [...byRoom.entries()].sort((a,b) => natCompare(a[0], b[0]));
       html += `<div class="rooms">`;
       for (const [room, roomPicks] of roomEntries) {
         roomPicks.sort((a,b) => a.pt.startMin - b.pt.startMin);
@@ -1330,7 +1330,7 @@ function renderItinerary() {
 
       // ----- HOP HINTS (multi-room only): chronological transitions between picks across rooms
       if (isMulti) {
-        const sortedPicks = [...picks].sort((a,b) => a.pt.startMin - b.pt.startMin || a.s.id.localeCompare(b.s.id));
+        const sortedPicks = [...picks].sort((a,b) => a.pt.startMin - b.pt.startMin || natCompare(a.s.id, b.s.id));
         let prevPick = null;
         const hops = [];
         for (const it of sortedPicks) {
@@ -1471,7 +1471,7 @@ function renderTimetable(byDay) {
     const date = list[0].s.date;
 
     // Columns: distinct rooms in this day, sorted by building then room
-    const roomKeys = [...new Set(list.map(it => `${it.s.building}|${it.s.room}`))].sort();
+    const roomKeys = [...new Set(list.map(it => `${it.s.building}|${it.s.room}`))].sort(natCompare);
 
     // Rows: 15-min slots from floor(min start) to ceil(max end)
     const minStart = Math.min(...list.map(it => it.pt.startMin));
@@ -1599,6 +1599,12 @@ function escapeHtml(s) {
   return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+// 자연 정렬 비교자: "1", "2", ..., "9", "10", "11" 순. 문자열 사전순이 아닌 숫자 인식.
+// 회장 번호("1"~"15"), 세션 id("1-1"~"10-3"), 방 번호 정렬에 사용.
+function natCompare(a, b) {
+  return String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' });
+}
+
 // Escape regex metacharacters in the user query so e.g. "C++" or "(IEQ)" works.
 function escapeRegExp(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -1703,7 +1709,7 @@ document.getElementById('btn-export-csv').onclick = () => {
   items.sort((a,b) =>
     (a.s.day - b.s.day) ||
     (a.pt.startMin - b.pt.startMin) ||
-    a.s.id.localeCompare(b.s.id)
+    natCompare(a.s.id, b.s.id)
   );
 
   for (const it of items) {
