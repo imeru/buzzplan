@@ -88,6 +88,7 @@
   }
   .slot .room-col {
     background: #fff; border: 1px solid #e6e6e6; border-radius: 4px; padding: 8px;
+    contain: layout style;
   }
   .slot .room-head {
     font-size: 11px; margin-bottom: 6px;
@@ -250,6 +251,8 @@
   /* Sessions */
   .session {
     margin-bottom: 14px; padding: 10px 12px; border: 1px solid #e6e6e6; border-radius: 6px; background: #fff;
+    /* CSS containment: 카드 내부 변경이 페이지 전체 reflow를 일으키지 않게 격리 */
+    contain: layout style;
   }
   .session-header {
     display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
@@ -674,10 +677,27 @@ function initState() {
   rememberConference(DATA);
 }
 
+// 숨겨진 탭은 변경 사항을 dirty 플래그로만 표시하고 실제 렌더링은 탭 진입 시 1회 수행.
+// 둘러보기에서 체크박스를 빠르게 여러 개 토글할 때 매번 itinerary DOM을 다시 그리는 비용 제거.
+let _itineraryDirty = false;
+let _browseDirty    = false;
+function markItineraryDirty() { _itineraryDirty = true; }
+function markBrowseDirty()    { _browseDirty    = true; }
+function renderItineraryIfVisible() {
+  if (state.view === 'itinerary') { renderItinerary(); _itineraryDirty = false; }
+  else markItineraryDirty();
+}
+function renderSessionsIfVisible() {
+  if (state.view === 'browse') { renderSessions(); _browseDirty = false; }
+  else markBrowseDirty();
+}
+
 function setView(v) {
   state.view = v;
   localStorage.setItem('cs:view', v);
   renderView();
+  if (v === 'itinerary' && _itineraryDirty) { renderItinerary(); _itineraryDirty = false; }
+  if (v === 'browse'    && _browseDirty)    { renderSessions();  _browseDirty    = false; }
 }
 
 function renderView() {
@@ -709,7 +729,7 @@ function saveCollapsed() {
 // Swap to a different conference DATA loaded by the user:
 function switchConference(newData) {
   DATA = newData;
-  invalidatePaperCache();
+  invalidateCaches();
   currentConfId = confIdFor(newData);
   state.selected = new Set(JSON.parse(localStorage.getItem(kSelected()) || '[]'));
   state.notes    = new Map(Object.entries(JSON.parse(localStorage.getItem(kNotes()) || '{}')));
@@ -744,7 +764,7 @@ function timeToMin(t) {
   return hh * 60 + m;
 }
 
-function sessionFor(paper) { return DATA.sessions.find(s => s.id === paper.session_id); }
+function sessionFor(paper) { return sessionById(paper.session_id); }
 
 // Status of a session relative to the real-world "now":
 //   'past-day'  : its date is before today
@@ -796,21 +816,58 @@ function statusSignature() {
 
 let _lastStatusSig = '';
 let _nowTimer = null;
-// 30초마다 상태 변화를 감지해, 바뀌었을 때만 시각 의존 화면을 다시 그린다.
-// 메모 입력 중이면 입력이 끊기지 않도록 이번 주기는 건너뛴다(다음 주기에 반영).
+// 다음 상태 전환 시각(가장 가까운 세션 시작/종료)을 계산해 정확히 그 때만 깬다.
+// 전환이 오늘 안에 없으면 자정에 깨서 다시 평가 (날짜가 바뀐 뒤 새 세션이 today가 되는 경우).
+// 이전엔 30초 setInterval로 폴링했지만, 활성 학회 중에도 paper 단위 ~15분 간격이라
+// 99% 호출은 "변화 없음" 즉시 반환. 모바일 배터리·CPU 절약을 위해 setTimeout으로 전환.
+function nextStatusTransitionMs(now = Date.now()) {
+  const today = new Date(now);
+  today.setHours(0, 0, 0, 0);
+  const todayStart = today.getTime();
+  const todayEnd   = todayStart + 24 * 60 * 60 * 1000;
+  let next = Infinity;
+  for (const s of DATA.sessions) {
+    if (!s.date) continue;
+    const [m, d, y] = s.date.split('/').map(Number);
+    if (!m || !d || !y) continue;
+    const sDay = new Date(y, m - 1, d).setHours(0, 0, 0, 0);
+    if (sDay !== todayStart) continue;
+    const startMin = s.start ? timeToMin(s.start) : 0;
+    const endMin   = s.end   ? timeToMin(s.end)   : 24 * 60;
+    const startMs  = todayStart + startMin * 60000;
+    const endMs    = todayStart + endMin   * 60000;
+    if (startMs > now) next = Math.min(next, startMs);
+    if (endMs   > now) next = Math.min(next, endMs);
+  }
+  return isFinite(next) ? next : todayEnd;  // 오늘 전환 없음 → 자정에 재평가
+}
+
 function startNowTimer() {
-  if (_nowTimer) clearInterval(_nowTimer);
+  if (_nowTimer) clearTimeout(_nowTimer);
   _lastStatusSig = statusSignature();
-  _nowTimer = setInterval(() => {
-    const sig = statusSignature();
-    if (sig === _lastStatusSig) return;                 // 변화 없음
+  scheduleNextTick();
+}
+
+function scheduleNextTick() {
+  const delay = Math.max(1000, nextStatusTransitionMs() - Date.now() + 1000);
+  _nowTimer = setTimeout(nowTick, delay);
+}
+
+function nowTick() {
+  const sig = statusSignature();
+  if (sig !== _lastStatusSig) {
     const ae = document.activeElement;
-    if (ae && ae.classList && ae.classList.contains('note-input')) return; // 메모 입력 중 → 대기
+    if (ae && ae.classList && ae.classList.contains('note-input')) {
+      // 메모 입력 중 — 5초 후 재시도 (포커스 손실 방지)
+      _nowTimer = setTimeout(nowTick, 5000);
+      return;
+    }
     _lastStatusSig = sig;
-    renderSessions();      // 둘러보기: 종료 세션 접기·배지 갱신
-    renderItinerary();     // 내 일정: 진행 중/예정/종료 갱신
-    renderNowControls();   // 컨트롤 바 안내 갱신
-  }, 30000);
+    if (state.view === 'browse') { renderSessions();  markItineraryDirty(); }
+    else                          { renderItinerary(); markBrowseDirty(); }
+    renderNowControls();
+  }
+  scheduleNextTick();
 }
 
 // Convert minutes-since-midnight back to "h:mm" using the same 12-hour-no-AM/PM
@@ -861,8 +918,12 @@ function paperTime(session, paper, paperIndex, totalPapers) {
   };
 }
 
-// Cache of papers grouped by session, in PDF order (= presentation order).
-let _papersBySession = null;
+// ===== Lookup caches (학회 전환 시 invalidateCaches()) =====
+// 모두 lazy 초기화. DATA가 바뀌면 null로 비우고, 다음 호출 때 다시 빌드.
+let _papersBySession = null;  // Map<sessionId, Paper[]>  발표 순서대로
+let _sessionsById    = null;  // Map<sessionId, Session>  세션 O(1) 조회
+let _paperByKey      = null;  // Map<"sid#pno", Paper>    내 일정·ICS·CSV 조회용
+
 function papersForSession(sessionId) {
   if (!_papersBySession) {
     _papersBySession = new Map();
@@ -873,7 +934,25 @@ function papersForSession(sessionId) {
   }
   return _papersBySession.get(sessionId) || [];
 }
-function invalidatePaperCache() { _papersBySession = null; }
+function sessionById(sid) {
+  if (!_sessionsById) {
+    _sessionsById = new Map();
+    for (const s of DATA.sessions) _sessionsById.set(s.id, s);
+  }
+  return _sessionsById.get(sid);
+}
+function paperByKey(key) {
+  if (!_paperByKey) {
+    _paperByKey = new Map();
+    for (const p of DATA.papers) _paperByKey.set(p.session_id + '#' + p.paper_no, p);
+  }
+  return _paperByKey.get(key);
+}
+function invalidateCaches() {
+  _papersBySession = null;
+  _sessionsById    = null;
+  _paperByKey      = null;
+}
 
 // One-shot lookup: given a paper, return its time block + ordinal within session.
 function timeOfPaper(paper) {
@@ -1024,7 +1103,7 @@ function renderSessions() {
     if (!state.buildings.has(s.building)) continue;
     if (!sessionInTimeRange(s)) continue;
 
-    const sPapers = DATA.papers.filter(p => p.session_id === s.id);
+    const sPapers = papersForSession(s.id);  // O(1) lookup vs DATA.papers.filter
     // Session-level haystack: id, track, building, room, chair — so user can find
     // "1-3", "Indoor Air Quality", "SGM 101", "Vincenzo Gentile" etc.
     const sessionHay = `${s.id} ${s.track_title} ${s.building} ${s.room} ${s.chair || ''}`.toLowerCase();
@@ -1106,7 +1185,7 @@ function renderSessions() {
         if (e.target.checked) state.selected.add(key);
         else state.selected.delete(key);
         saveSelection();
-        renderItinerary();
+        renderItineraryIfVisible();  // 둘러보기에서 토글 시엔 dirty만, 탭 진입 시 1회 렌더
       };
       pl.appendChild(row);
     }
@@ -1185,8 +1264,7 @@ function renderItinerary() {
   // Build list of {session, paper} for selected items
   const items = [];
   for (const key of state.selected) {
-    const [sid, pno] = key.split('#');
-    const p = DATA.papers.find(x => x.session_id===sid && x.paper_no===pno);
+    const p = paperByKey(key);
     if (!p) continue;
     const s = sessionFor(p);
     if (!s) continue;
@@ -1593,6 +1671,7 @@ function renderAll() {
   renderItinerary();
   renderView();
   renderNowControls();
+  _browseDirty = _itineraryDirty = false;  // 전체 재렌더 후 dirty 클리어
 }
 
 function escapeHtml(s) {
@@ -1641,8 +1720,8 @@ document.getElementById('btn-export-ics').onclick = () => {
   };
   const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Conference Planner//KO'];
   for (const key of state.selected) {
-    const [sid, pno] = key.split('#');
-    const p = DATA.papers.find(x => x.session_id===sid && x.paper_no===pno);
+    const pno = key.split('#')[1];
+    const p = paperByKey(key);
     if (!p) continue;
     const s = sessionFor(p);
     const n = getNote(key);
@@ -1697,8 +1776,8 @@ document.getElementById('btn-export-csv').onclick = () => {
   // Sort by day → paper start time
   const items = [];
   for (const key of keys) {
-    const [sid, pno] = key.split('#');
-    const p = DATA.papers.find(x => x.session_id===sid && x.paper_no===pno);
+    const pno = key.split('#')[1];
+    const p = paperByKey(key);
     if (!p) continue;
     const s = sessionFor(p);
     if (!s) continue;
@@ -1889,11 +1968,18 @@ function applyShareFromHash() {
   history.replaceState(null, '', location.pathname);
 }
 
-// ====== Search input wiring ======
+// ====== Search input wiring (debounced) ======
+// 한글 IME는 한 글자 조합 중에도 input 이벤트가 여러 번 발생. 180ms 디바운스로
+// 매 키 입력마다 전체 세션 리스트를 다시 그리는 부담을 줄임.
 const searchInput = document.getElementById('search');
+let _searchT = null;
 searchInput.addEventListener('input', (e) => {
-  state.search = e.target.value || '';
-  renderSessions();
+  const v = e.target.value || '';
+  clearTimeout(_searchT);
+  _searchT = setTimeout(() => {
+    state.search = v;
+    renderSessions();
+  }, 180);
 });
 
 // ====== View-tab wiring ======
@@ -2045,7 +2131,7 @@ async function bootApp() {
   }
 
   // 4. Initialize state for this conference
-  invalidatePaperCache();
+  invalidateCaches();
   currentConfId = confIdFor(DATA);
   migrateLegacyKeys();
   renameOldIds();
