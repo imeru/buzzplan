@@ -650,10 +650,23 @@ function renameOldIds() {
 // start pre-populated with every value so the user sees everything until they choose
 // to narrow. "전체 해제" empties the set → nothing of that dimension shows.
 function allTracksOf(d)    { return new Set(d.sessions.map(s => s.track_title)); }
-function allBuildingsOf(d) { return new Set(d.sessions.map(s => s.building));    }
+
+// 건물 필터의 분류 단위. 보통은 s.building (예: SGM/GFS/VHE)이지만, 학회 전체가
+// 같은 건물명을 쓰면 (예: SAREK '회장') 그 단위로 묶어도 의미가 없으므로
+// 방 번호까지 합쳐서 "회장 1", "회장 2" 단위로 분류한다.
+function buildingKeyOf(s) {
+  return _useRoomLevelBuilding ? `${s.building} ${s.room}` : s.building;
+}
+let _useRoomLevelBuilding = false;
+function refreshBuildingKeyStrategy(d) {
+  const distinct = new Set(d.sessions.map(s => s.building));
+  _useRoomLevelBuilding = distinct.size === 1;
+}
+function allBuildingsOf(d) { return new Set(d.sessions.map(buildingKeyOf)); }
 
 let state = null;
 function initState() {
+  refreshBuildingKeyStrategy(DATA);
   state = {
   selected: new Set(JSON.parse(localStorage.getItem(kSelected()) || '[]')),
   // notes: { "session_id#paper_no": { rating: 0..5, note: "..." } }
@@ -734,6 +747,7 @@ function switchConference(newData) {
   state.selected = new Set(JSON.parse(localStorage.getItem(kSelected()) || '[]'));
   state.notes    = new Map(Object.entries(JSON.parse(localStorage.getItem(kNotes()) || '{}')));
   state.collapsedSessions = new Set(JSON.parse(localStorage.getItem(kCollapsed()) || '[]'));
+  refreshBuildingKeyStrategy(newData);
   state.tracks    = allTracksOf(newData);
   state.buildings = allBuildingsOf(newData);
   state.dayFilter = 'all'; state.search = '';
@@ -1029,8 +1043,9 @@ function renderFilters() {
     tf.appendChild(row);
   });
 
-  // Buildings
-  const blds = [...new Set(DATA.sessions.map(s => s.building))].sort();
+  // Buildings — buildingKeyOf로 분류 (학회가 단일 건물이면 "회장 1" 단위)
+  // natCompare로 회장 1, 2, ..., 9, 10 순서 보장
+  const blds = [...new Set(DATA.sessions.map(buildingKeyOf))].sort(natCompare);
   const bf = document.getElementById('building-filter');
   bf.innerHTML = '';
   blds.forEach(b => {
@@ -1100,7 +1115,7 @@ function renderSessions() {
     // Track/building filters: a session must be in BOTH selected sets to show.
     // Empty set = "전체 해제" → nothing of that dimension is included.
     if (!state.tracks.has(s.track_title)) continue;
-    if (!state.buildings.has(s.building)) continue;
+    if (!state.buildings.has(buildingKeyOf(s))) continue;
     if (!sessionInTimeRange(s)) continue;
 
     const sPapers = papersForSession(s.id);  // O(1) lookup vs DATA.papers.filter
