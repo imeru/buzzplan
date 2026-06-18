@@ -403,6 +403,30 @@
   .modal-body { padding: 16px 18px; }
   .modal-note { font-size: 13px; color: #444; margin: 0 0 12px; line-height: 1.5; }
   .modal-hint { font-size: 11px; color: #888; margin: 10px 0 0; line-height: 1.5; }
+
+  /* Help modal: wider + structured sections */
+  .modal-help { max-width: 560px; }
+  .modal-help .modal-body { max-height: 70vh; overflow-y: auto; }
+  .help-h {
+    margin: 14px 0 6px; font-size: 13px; color: #1f1f1f;
+    padding-bottom: 4px; border-bottom: 1px solid #eee;
+  }
+  .help-h:first-child { margin-top: 0; }
+  .help-p { font-size: 13px; color: #333; margin: 0 0 8px; line-height: 1.55; }
+  .help-note {
+    font-size: 11px; color: #8a6d00; background: #fff8e0; padding: 6px 10px;
+    border-radius: 4px; margin: 6px 0 8px; line-height: 1.5;
+  }
+  .help-ul { margin: 4px 0 8px; padding-left: 22px; font-size: 13px; color: #333; }
+  .help-ul li { margin: 4px 0; line-height: 1.5; }
+
+  /* First-visit pulse hint on the help button */
+  @keyframes help-pulse {
+    0%   { box-shadow: 0 0 0 0   rgba(74,144,226,0.6); }
+    70%  { box-shadow: 0 0 0 10px rgba(74,144,226,0); }
+    100% { box-shadow: 0 0 0 0   rgba(74,144,226,0); }
+  }
+  #btn-help.pulse { animation: help-pulse 1.6s ease-out infinite; }
   .share-row { display: flex; gap: 6px; margin-bottom: 12px; }
   .share-row input {
     flex: 1; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px;
@@ -447,6 +471,7 @@
   </div>
   <div class="stats" id="stats"></div>
   <div class="actions">
+    <button id="btn-help" title="사용법">❓ 도움말</button>
     <button id="btn-clear">선택 초기화</button>
     <button id="btn-share">🔗 공유 링크</button>
     <button id="btn-export-state">💾 내 데이터 내보내기</button>
@@ -456,6 +481,52 @@
     <input type="file" id="file-json" accept=".json" style="display:none">
   </div>
 </header>
+
+<!-- Help modal -->
+<div class="modal-bg" id="help-modal" style="display:none;">
+  <div class="modal modal-help">
+    <div class="modal-head">
+      <strong>📘 사용법</strong>
+      <button class="modal-close" id="help-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4 class="help-h">① 발표 선택 → 일정 보기</h4>
+      <p class="help-p">
+        <strong>둘러보기</strong> 탭에서 듣고 싶은 발표 옆 체크박스를 누르세요.
+        왼쪽 <strong>필터</strong>(검색·Day·시간 범위·트랙·회장)로 좁힐 수 있습니다.
+        선택이 끝나면 <strong>내 일정</strong> 탭에서 시간순 리스트(이동 거리·여유 안내 포함) 또는
+        시간표(회장 × 시간 격자) 형태로 확인합니다. 별점·메모는 각 발표 아래에서 바로 입력합니다.
+      </p>
+
+      <h4 class="help-h">② 📱 컴퓨터 ↔ 모바일로 옮기기</h4>
+      <p class="help-p">
+        헤더의 <strong>🔗 공유 링크</strong> 버튼을 누르면 <strong>QR 코드</strong>와 URL이
+        뜹니다. 폰 카메라로 QR을 스캔하거나 URL을 카톡으로 본인에게 전송한 뒤 폰에서 열면
+        선택한 발표와 별점이 자동 적용됩니다. 반대 방향(폰→PC)도 같은 방식입니다.
+      </p>
+      <p class="help-note">
+        ※ 공유 링크에는 <strong>선택과 별점만</strong> 담깁니다. 메모까지 옮기시려면 다음 항목의
+        <em>내 데이터 내보내기</em>를 쓰세요.
+      </p>
+
+      <h4 class="help-h">③ 💾 영구 보관 / 다른 캘린더로</h4>
+      <ul class="help-ul">
+        <li><strong>💾 내 데이터 내보내기 / 📂 불러오기</strong> — 메모 포함 전체 상태를 JSON으로 저장·복원. 브라우저를 바꿔도 안전.</li>
+        <li><strong>📅 ICS</strong> — Google Calendar·Apple Calendar 등에 임포트.</li>
+        <li><strong>📊 CSV</strong> — Excel로 노트 정리.</li>
+      </ul>
+
+      <h4 class="help-h">④ 자잘한 팁</h4>
+      <ul class="help-ul">
+        <li><strong>🔴 지금</strong> 버튼 — 현재(없으면 다음) 발표로 자동 스크롤.</li>
+        <li>세션 헤더를 누르면 발표 목록 <strong>접기/펴기</strong>, "모두 접기"도 있음.</li>
+        <li>모바일에선 <strong>트랙·회장 필터</strong>가 기본으로 접혀 있습니다 (탭하면 펴짐).</li>
+        <li>스크롤이 길어지면 우하단에 <strong>↑ 맨 위로</strong> 버튼이 나타남.</li>
+        <li>상단 <strong>학회명</strong> 클릭으로 이름 변경, 옆 드롭다운으로 다른 학회 전환.</li>
+      </ul>
+    </div>
+  </div>
+</div>
 
 <!-- Share-link modal -->
 <div class="modal-bg" id="share-modal" style="display:none;">
@@ -2074,6 +2145,29 @@ document.getElementById('btn-expand-all-browse').onclick   = expandAllVisible;
       localStorage.setItem(key, nowClosed ? 'closed' : 'open');
       updateChev();
     };
+  });
+})();
+
+// ====== 도움말 모달 + 첫 방문 펄스 힌트 ======
+(function setupHelp() {
+  const btn   = document.getElementById('btn-help');
+  const modal = document.getElementById('help-modal');
+  const close = document.getElementById('help-close');
+  if (!btn || !modal) return;
+  const SEEN_KEY = 'cs:help-seen';
+  // 첫 방문이면 도움말 버튼에 펄스 애니메이션
+  if (!localStorage.getItem(SEEN_KEY)) btn.classList.add('pulse');
+  const open = () => {
+    modal.style.display = 'flex';
+    btn.classList.remove('pulse');
+    localStorage.setItem(SEEN_KEY, '1');
+  };
+  btn.onclick   = open;
+  close.onclick = () => { modal.style.display = 'none'; };
+  modal.onclick = (e) => { if (e.target.id === 'help-modal') modal.style.display = 'none'; };
+  // Esc로 닫기
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.style.display === 'flex') modal.style.display = 'none';
   });
 })();
 
