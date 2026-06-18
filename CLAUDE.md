@@ -4,9 +4,13 @@
 
 ## 무엇을 만드는 프로젝트인가
 
+**BuzzPlan (버즈플랜)** — 학회 일정·동선 도우미.
+
 학회 프로그램북 PDF에서 세션·발표 정보를 추출해, 사용자가 듣고 싶은 발표를
 고르면 개인 일정과 발표장 동선을 계획해 주는 **단일 페이지 웹 도구**.
 여러 학회를 한 URL에서 `?conf=<id>`로 전환해 다룬다.
+
+로고: `assets/buzzplan-logo.png` (1x), `assets/buzzplan-logo@2x.png` (retina).
 
 - 배포: GitHub Pages — `https://imeru.github.io/conference-planner/`
 - 백엔드 없음. 정적 호스팅 + 브라우저 localStorage만 사용.
