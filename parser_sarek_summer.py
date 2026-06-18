@@ -41,6 +41,9 @@ TITLE_X_MAX = 375           # 제목 영역의 우측 끝
 # "▣ 제N회장 (간사: ...)" — 회장 시작 마커. 초청강연 안의 "(제9회장)" 같은
 # 참조와 구분하기 위해 ▣ 글머리표를 요구.
 HALL_START_RE = re.compile(r'^▣\s*제(\d+)회장')
+# "▣ 포스터 세션" — 정규 발표가 끝나는 지점. 이후 행은 처리하지 않음
+# (포스터 표는 시간 컬럼이 없어 정규 발표 파싱 로직과 충돌함).
+POSTER_STOP_RE = re.compile(r'^▣\s*포스터')
 # "<6월 25일(목)>" 같은 일자 헤더
 DAY_HEADER_RE = re.compile(r'^<\s*\d+월\s+(\d+)일')
 # 두 형태 모두 지원:
@@ -123,143 +126,93 @@ def collect_paper_words(words, skip_first=False):
     return title_parts, author_parts
 
 
-def process_rows(rows, year, month, sessions, papers, state):
-    """Rows 한 묶음을 처리하며 state(hall_num, day, session, paper)를 갱신.
+def process_table(table_data, year, month, state, sessions, papers):
+    """extract_tables가 만든 한 표를 처리.
 
-    state는 가변 dict로 전달되며, 페이지를 가로질러 같은 인스턴스가 유지됨.
-    이렇게 해야 회장이 페이지를 넘어 이어지는 2026 PDF 형식도 정상 파싱됨.
+    표 첫 행은 subsection 헤더 (예: ['1-A 열환경', '', '좌장 : 위승환 (서울과학기술대학교)']).
+    이후 행들은 발표 (예: ['09:00 - 09:15\\n(26-S-001)', '제목', '저자']).
+    셀 안의 다중라인 텍스트는 PDF의 시각적 줄바꿈을 \\n으로 보존하므로 단순히
+    공백으로 합치면 깔끔한 단일 문자열이 된다 — 기존 단어 단위 파싱이 겪던
+    '제목 라인이 시간 라인보다 위에 렌더돼 잘못 귀속' 문제가 사라짐.
     """
-    def flush_paper():
-        cp = state['paper']
-        cs = state['session']
-        if cp and cs:
-            title   = ' '.join(cp['title_parts']).strip()
-            authors = ' '.join(cp['author_parts']).strip()
-            paper_no = cp['paper_no'] or f"{cp['start']}-{cp['end']}"
-            if title or authors:
-                papers.append({
-                    'paper_no':   paper_no,
-                    'session_id': cs['id'],
-                    'authors':    authors,
-                    'title':      title,
-                    'start':      cp['start'],
-                    'end':        cp['end'],
-                })
-        state['paper'] = None
+    if not table_data: return
+    # 헤더 — 모든 셀을 합쳐 SUBSECTION_RE에 매칭. 슬래시·줄바꿈 정규화.
+    header_cells = [(c or '').replace('\n', ' ').replace('/', ' ').strip()
+                    for c in table_data[0]]
+    header_text  = ' '.join(c for c in header_cells if c)
+    m = SUBSECTION_RE.match(header_text)
+    if not m:
+        return  # 세션 표가 아님 (초청강연 등)
+    day_str    = m.group(1)
+    section_id = m.group(2)
+    if day_str is None:
+        sm = re.match(r'^(19|20|25|26)(\d+-[A-Z])$', section_id)
+        if sm:
+            day_str    = sm.group(1)
+            section_id = sm.group(2)
+    if day_str is not None:
+        state['day'] = int(day_str)
+    if state['day'] is None:
+        return
+    hall_num = int(section_id.split('-')[0])
+    track_title = m.group(3).strip()
+    chair       = m.group(4).strip()
+    existing = next((s for s in sessions if s['id'] == section_id), None)
+    if existing:
+        session = existing
+    else:
+        session = {
+            'id': section_id,
+            'block': hall_num,
+            'day': state['day'],
+            'date': f"{month}/{state['day']}/{year}",
+            'track_title': track_title,
+            'start': None, 'end': None,
+            'building': '회장',
+            'room': str(hall_num),
+            'floor': 1,
+            'chair': chair,
+        }
+        sessions.append(session)
 
-    i = 0
-    while i < len(rows):
-        row = rows[i]
-        text = ' '.join(w['text'] for w in row).strip()
+    # 발표 행 처리
+    for row in table_data[1:]:
+        if len(row) < 2: continue
+        # 보통 [time_cell, title_cell, author_cell] 3열이지만 일부 표는 2열.
+        time_cell   = row[0] or ''
+        title_cell  = row[1] or ''
+        author_cell = row[2] if len(row) > 2 else ''
 
-        # 0) 회장 시작 헤더 — "▣ 제N회장 (간사: ...)"
-        hm = HALL_START_RE.match(text)
-        if hm:
-            flush_paper()
-            state['hall_num'] = int(hm.group(1))
-            state['session']  = None
-            i += 1
-            continue
-
-        # 0b) 일자 헤더 — "<6월 25일(목)>"
-        dh = DAY_HEADER_RE.match(text)
-        if dh:
-            flush_paper()
-            state['day'] = int(dh.group(1))
-            i += 1
-            continue
-
-        # 0c) 부분 subsection 처리: "1-C 교육 : ..." (좌장이 다음 줄에 있음)
-        # 다음 줄에 좌장 정보가 있으면 두 줄을 합쳐 SUBSECTION_RE로 매칭.
-        if (PARTIAL_SUB_RE.match(text) and not CHAIR_LINE_RE.search(text)
-                and i + 1 < len(rows)):
-            next_text = ' '.join(w['text'] for w in rows[i+1]).strip()
-            if CHAIR_LINE_RE.search(next_text):
-                merged = text + ' ' + next_text
-                m = SUBSECTION_RE.match(merged)
-                if m:
-                    text = merged  # 아래 로직이 처리하도록
-                    i += 1         # 다음 줄도 소비
-
-        # 1) Subsection 헤더 (일자 prefix는 선택적)
-        m = SUBSECTION_RE.match(text)
-        if m:
-            flush_paper()
-            day_str    = m.group(1)
-            section_id = m.group(2)
-            # 특수 케이스: "1911-A" 처럼 일자와 subsection이 붙은 경우 (2025)
-            if day_str is None:
-                sm = re.match(r'^(19|20|25|26)(\d+-[A-Z])$', section_id)
-                if sm:
-                    day_str    = sm.group(1)
-                    section_id = sm.group(2)
-            if day_str is not None:
-                state['day'] = int(day_str)
-            if state['day'] is None or state['hall_num'] is None:
-                # 회장이나 일자 정보 없으면 이 subsection은 처리 불가 — skip
-                continue
-            track_title = m.group(3).strip()
-            chair       = m.group(4).strip()
-            sid = section_id
-            existing = next((s for s in sessions if s['id'] == sid), None)
-            if existing:
-                state['session'] = existing
-            else:
-                state['session'] = {
-                    'id': sid,
-                    'block': int(section_id.split('-')[0]),
-                    'day': state['day'],
-                    'date': f"{month}/{state['day']}/{year}",
-                    'track_title': track_title,
-                    'start': None, 'end': None,
-                    'building': '회장',
-                    'room': str(state['hall_num']),
-                    'floor': 1,
-                    'chair': chair,
-                }
-                sessions.append(state['session'])
-            i += 1
-            continue
-
-        # 2) 시간 행
-        tm = TIME_RE.match(text)
-        if tm:
-            if is_skip_row(text):
-                flush_paper(); i += 1; continue
-            flush_paper()
-            if not state['session']: i += 1; continue
-            state['paper'] = {
-                'start': tm.group(1),
-                'end':   tm.group(2),
-                'paper_no':    '',
-                'title_parts':  [],
-                'author_parts': [],
-            }
-            t_parts, a_parts = collect_paper_words(row, skip_first=True)
-            state['paper']['title_parts'].extend(t_parts)
-            state['paper']['author_parts'].extend(a_parts)
-            i += 1
-            continue
-
-        # 3) 발표번호 행 — (YY-S-NNN) 형식
-        if state['paper'] and row:
-            first_text = row[0]['text']
-            pn = PAPER_NO_RE.match(first_text)
-            if pn:
-                state['paper']['paper_no'] = pn.group(1)
-                t_parts, a_parts = collect_paper_words(row, skip_first=True)
-                state['paper']['title_parts'].extend(t_parts)
-                state['paper']['author_parts'].extend(a_parts)
-                i += 1
-                continue
-
-        # 4) 연속 행
-        if state['paper']:
-            if not is_skip_row(text):
-                t_parts, a_parts = collect_paper_words(row)
-                state['paper']['title_parts'].extend(t_parts)
-                state['paper']['author_parts'].extend(a_parts)
-        i += 1
+        # time_cell: "HH:MM - HH:MM" 또는 "HH:MM - HH:MM\n(26-S-NNN)"
+        time_line = time_cell.split('\n', 1)[0].strip()
+        tm = TIME_RE.match(time_line)
+        if not tm: continue
+        # 발표가 아닌 진행 항목 (질의 응답 등)은 스킵
+        joined = (time_cell + ' ' + title_cell).strip()
+        if is_skip_row(joined): continue
+        # paper_no — time_cell 두번째 줄 또는 title_cell에서 찾기
+        paper_no = ''
+        for src in (time_cell, title_cell):
+            pm = re.search(r'\(?(\d{2}-S-\d{3,4})\)?', src or '')
+            if pm:
+                paper_no = pm.group(1)
+                break
+        if not paper_no:
+            paper_no = f"{tm.group(1)}-{tm.group(2)}"
+        # title·author 정규화: \n과 다중 공백을 단일 공백으로
+        title   = ' '.join((title_cell  or '').split())
+        # 제목에서 발표번호 패턴이 끼어들면 제거
+        title   = re.sub(r'\(?\d{2}-S-\d{3,4}\)?\s*', '', title).strip()
+        authors = ' '.join((author_cell or '').split())
+        if not title and not authors: continue
+        papers.append({
+            'paper_no':   paper_no,
+            'session_id': section_id,
+            'authors':    authors,
+            'title':      title,
+            'start':      tm.group(1),
+            'end':        tm.group(2),
+        })
 
 
 def _t(s):
@@ -285,34 +238,44 @@ def derive_session_times(sessions, papers):
 
 def parse_pdf(pdf_path, year, month):
     sessions, papers = [], []
-    # 페이지를 가로질러 hall/day/session/paper 상태를 유지.
-    # 회장이 페이지를 넘어 이어지는 2026 PDF 형식을 처리하기 위함.
-    state = {'hall_num': None, 'day': None, 'session': None, 'paper': None}
+    state = {'day': None, 'stopped': False}
+
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages:
+            if state['stopped']: break
+
+            # 페이지의 텍스트 마커(<6월 N일>, 포스터 시작)와 표를 y순서로 처리
+            items = []  # [(y, kind, payload)]
+
+            # 1) 텍스트에서 마커 찾기
             words = page.extract_words(keep_blank_chars=False)
-            words = [w for w in words if w['top'] < CONTENT_Y_MAX]
             words = consolidate_split_chars(words)
             rows  = group_rows(words)
-            process_rows(rows, year, month, sessions, papers, state)
-    # 마지막 페이지에 남은 paper flush
-    if state['paper'] and state['session']:
-        process_rows([], year, month, sessions, papers, state)  # no-op이지만 안전 호출
-        # 직접 flush
-        cp, cs = state['paper'], state['session']
-        title   = ' '.join(cp['title_parts']).strip()
-        authors = ' '.join(cp['author_parts']).strip()
-        paper_no = cp['paper_no'] or f"{cp['start']}-{cp['end']}"
-        if title or authors:
-            papers.append({
-                'paper_no':   paper_no,
-                'session_id': cs['id'],
-                'authors':    authors,
-                'title':      title,
-                'start':      cp['start'],
-                'end':        cp['end'],
-            })
-        state['paper'] = None
+            for row in rows:
+                rtext = ' '.join(w['text'] for w in row).strip()
+                y = min(w['top'] for w in row)
+                dm = DAY_HEADER_RE.match(rtext)
+                if dm:
+                    items.append((y, 'day', int(dm.group(1))))
+                elif POSTER_STOP_RE.match(rtext):
+                    items.append((y, 'stop', None))
+
+            # 2) 표
+            for tbl in page.find_tables():
+                y = tbl.bbox[1]
+                items.append((y, 'table', tbl.extract()))
+
+            items.sort(key=lambda it: it[0])
+
+            for y, kind, payload in items:
+                if kind == 'stop':
+                    state['stopped'] = True
+                    break
+                elif kind == 'day':
+                    state['day'] = payload
+                elif kind == 'table':
+                    process_table(payload, year, month, state, sessions, papers)
+
     derive_session_times(sessions, papers)
     return sessions, papers
 
