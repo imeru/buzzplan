@@ -1,9 +1,9 @@
-# Conference Schedule Planner
+# BuzzPlan — Conference Schedule Planner
 
 학회 세션 PDF에서 발표 정보를 추출하여, 듣고 싶은 발표를 선택하고
 일정·동선을 자동으로 계획해 주는 도구. 한 URL에서 여러 학회를 함께 다룰 수 있습니다.
 
-배포본: [https://imeru.github.io/conference-planner/](https://imeru.github.io/conference-planner/)
+배포본: [https://imeru.github.io/buzzplan/](https://imeru.github.io/buzzplan/)
 
 ---
 
@@ -11,28 +11,36 @@
 
 | ID | 이름 | 일시 | 회장 | 세션 | 발표 |
 |---|---|---|---|---|---|
+| `sarek-2026-summer` | 대한설비공학회 2026 하계학술발표대회 | 2026/6/24–26 (평창 알펜시아) | 제1~제13회장 | — | — |
 | `iaqvec-2026` | IAQVEC 2026 | 2026/5/19–21 (USC) | SGM·GFS·VHE | 60 | 321 |
 | `sarek-2025-winter` | 대한설비공학회 2025 동계학술발표대회 | 2025/11/28 (한국과학기술회관) | 제1~제7회장 | 34 | 159 |
 | `sarek-2025-summer` | 대한설비공학회 2025 하계학술발표대회 | 2025/6/19–20 (평창 알펜시아) | 제1~제12회장 | 66 | 312 |
 
-기본 학회는 IAQVEC 2026이며, URL 끝에 `?conf=<id>`를 붙이면 다른 학회로 전환됩니다. 헤더 드롭다운으로도 즉시 전환 가능합니다.
+기본 학회는 SAREK 2026 하계이며, URL 끝에 `?conf=<id>`를 붙이면 다른 학회로 전환됩니다. 헤더 드롭다운으로도 즉시 전환 가능합니다.
 
 ---
 
 ## 폴더 구조
 
 ```
-conference-planner/
+buzzplan/
 ├── index.html                    # 도구 본체 (학회별 데이터를 부팅 시 fetch)
 ├── conferences.json              # 사용 가능한 학회 목록 + default
+├── assets/
+│   ├── buzzplan-bee.png          # 헤더 로고 (벌 아이콘 1x)
+│   ├── buzzplan-bee@2x.png       # 헤더 로고 (2x retina)
+│   ├── buzzplan-logo.png         # 파비콘용 풀 로고
+│   └── buzzplan-logo@2x.png
 ├── data/
 │   ├── iaqvec-2026.json
 │   ├── sarek-2025-winter.json
-│   └── sarek-2025-summer.json
+│   ├── sarek-2025-summer.json
+│   └── sarek-2026-summer.json
 ├── parser.py                     # IAQVEC·IBPSA 형식 PDF 파서
 ├── parser_sarek.py               # SAREK 동계(가로 2단 컬럼) 파서
 ├── parser_sarek_summer.py        # SAREK 하계(세로 1단 컬럼) 파서
 ├── build.py                      # PDF → JSON → 학회 등록 자동화
+├── preview.command               # macOS용 로컬 서버 + Chrome 자동 실행 헬퍼
 └── README.md
 ```
 
@@ -46,18 +54,20 @@ conference-planner/
 
 | 접근 방식 | URL |
 |---|---|
-| 기본 학회 (IAQVEC 2026) | `https://imeru.github.io/conference-planner/` |
-| IAQVEC 2026 명시 | `…/?conf=iaqvec-2026` |
+| 기본 학회 (SAREK 2026 하계) | `https://imeru.github.io/buzzplan/` |
+| SAREK 2026 하계 명시 | `…/?conf=sarek-2026-summer` |
+| IAQVEC 2026 | `…/?conf=iaqvec-2026` |
 | SAREK 2025 동계 | `…/?conf=sarek-2025-winter` |
 | SAREK 2025 하계 | `…/?conf=sarek-2025-summer` |
 | 다른 학회로 전환 | 헤더 드롭다운 또는 URL의 `?conf=` 변경 |
 
 **기본 흐름**
-1. 좌측 필터(검색·Day·트랙·건물)로 관심 세션을 좁힙니다.
+1. 좌측 필터(검색·Day·트랙·회장)로 관심 세션을 좁힙니다.
 2. 발표 옆 체크박스로 듣고 싶은 발표를 선택합니다.
 3. 상단 **📅 내 일정** 탭에서 리스트·시간표 두 가지로 일정을 확인합니다.
 4. 학회 종료 후 발표별로 별점·메모를 남길 수 있습니다.
-5. 상단 **공유 링크**·**ICS**·**CSV** 버튼으로 데이터를 내보낼 수 있습니다.
+5. 상단 **🔗 공유 링크**·**📅 ICS**·**📊 CSV** 버튼으로 데이터를 내보낼 수 있습니다.
+6. 컴퓨터에서 짠 일정을 모바일에서 이어 보려면 **🔗 공유 링크**의 QR 코드를 폰으로 스캔.
 
 **데이터 저장**
 모든 선택·평점·메모는 **본인 브라우저의 localStorage**에 학회별로 분리 저장됩니다.
@@ -69,9 +79,9 @@ conference-planner/
 
 ### 최초 1회
 
-1. github.com에서 **New repository** → `conference-planner` → **Public** → Create.
+1. github.com에서 **New repository** → `buzzplan` (또는 원하는 이름) → **Public** → Create.
 2. 본 폴더의 모든 파일·폴더를 **Add file → Upload files**로 끌어다 놓고 **Commit changes**.
-   - `data/` 폴더도 함께 드래그.
+   - `data/`·`assets/` 폴더도 함께 드래그.
 3. **Settings → Pages** → Source: `main` 브랜치, `/ (root)` → **Save**.
 4. 1~2분 후 페이지 상단에 URL이 표시됩니다.
 
@@ -93,18 +103,18 @@ conference-planner/
 ```bash
 # IAQVEC 형식
 python3 build.py /path/to/new_iaqvec.pdf \
-  --id iaqvec-2028 --name "IAQVEC 2028"
+  --id iaqvec-2028 --name "IAQVEC 2028" --default
 
 # SAREK 동계
 python3 build.py /path/to/sarek-winter.pdf \
   --parser parser_sarek.py \
-  --id sarek-2026-winter --name "대한설비공학회 2026 동계학술발표대회"
+  --id sarek-2026-winter --name "대한설비공학회 2026 동계학술발표대회" --default
 
 # SAREK 하계
 python3 build.py /path/to/sarek-summer.pdf \
   --parser parser_sarek_summer.py \
-  --id sarek-2026-summer --name "대한설비공학회 2026 하계학술발표대회" \
-  --year 2026 --month 6
+  --id sarek-2027-summer --name "대한설비공학회 2027 하계학술발표대회" \
+  --default
 ```
 
 `build.py`가 자동으로 다음을 수행합니다.
@@ -115,7 +125,7 @@ python3 build.py /path/to/sarek-summer.pdf \
 이후 변경된 `data/<id>.json`과 `conferences.json` 두 파일만 GitHub에 push하면 학생들이 보는 사이트에서 새 학회가 즉시 선택 가능해집니다. HTML 자체는 건드릴 필요 없음.
 
 **옵션**
-- `--default`: 이 학회를 default로 지정 (URL에 `?conf` 없을 때 보이는 학회)
+- `--default`: 이 학회를 default로 지정 (URL에 `?conf` 없을 때 처음 보이는 학회). 가장 최신 학회를 등록할 땐 함께 주세요.
 - `--dry-run`: 파일 갱신 없이 파서 결과만 검증
 
 ### 학회 ID 명명 규칙
@@ -123,7 +133,7 @@ python3 build.py /path/to/sarek-summer.pdf \
 | 형식 | 예 |
 |---|---|
 | `<학회약어>-<년도>` | `iaqvec-2026`, `iaqvec-2028` |
-| `<학회약어>-<년도>-<시즌>` | `sarek-2025-winter`, `sarek-2025-summer` |
+| `<학회약어>-<년도>-<시즌>` | `sarek-2025-winter`, `sarek-2026-summer` |
 | `<학회약어>-<주최지>` | `ibpsa-bs-2027-glasgow` |
 
 같은 ID로 재빌드하면 그 학회 학생들의 평점·메모는 그대로 유지됩니다.
@@ -135,12 +145,14 @@ python3 build.py /path/to/sarek-summer.pdf \
 `index.html`을 더블클릭으로 열면 **동작하지 않습니다**. 브라우저의 `file://` 보안 정책 때문에 `fetch()`로 다른 파일을 읽을 수 없습니다. 로컬 테스트는 다음 한 줄로 가능합니다.
 
 ```bash
-cd /path/to/conference-planner
+cd /path/to/buzzplan
 python3 -m http.server 8080
 ```
 
 그 다음 브라우저에서 `http://localhost:8080/` 접속.
-특정 학회 검증: `http://localhost:8080/?conf=sarek-2025-winter`.
+특정 학회 검증: `http://localhost:8080/?conf=sarek-2026-summer`.
+
+macOS는 폴더에 들어있는 `preview.command`를 더블클릭하면 위 한 줄을 알아서 띄우고 Chrome도 열어 줍니다.
 
 ---
 
@@ -152,7 +164,7 @@ python3 -m http.server 8080
 |---|---|
 | `parser.py` | 세로 페이지, 1단 컬럼, 표 형식. 영문. 발표 시간은 세션 전체 시간 → 15분 분할 |
 | `parser_sarek.py` | 가로 페이지(2단 컬럼), 1일, 발표마다 명시 시간 (HH:MM-HH:MM), `25-W-NNN` |
-| `parser_sarek_summer.py` | 세로 페이지, 1단 컬럼, 다일자(subsection 헤더에 일자 prefix), 발표마다 명시 시간, `(25-S-NNN)` |
+| `parser_sarek_summer.py` | 세로 페이지, 1단 컬럼, 다일자(subsection 헤더에 일자 prefix), 발표마다 명시 시간, `(26-S-NNN)` |
 
 ### 진단
 
