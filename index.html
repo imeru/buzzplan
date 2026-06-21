@@ -24,18 +24,21 @@
   header h1 .brand-bee {
     height: 42px; width: auto; display: block;
   }
+  header h1 .brand-text {
+    display: inline-flex; flex-direction: column; align-items: flex-start; gap: 3px;
+  }
   header h1 .brand-name {
     font-size: 22px; font-weight: 700; letter-spacing: -0.01em;
-    color: #fff;
+    color: #fff; line-height: 1;
   }
   header h1 .brand-sub  {
-    font-size: 11px; font-weight: 400; opacity: 0.65;
-    margin-left: 4px; display: inline-block;
+    font-size: 11px; font-weight: 400; opacity: 0.6; color: #fff;
+    letter-spacing: 0.04em; text-transform: uppercase; line-height: 1;
   }
   @media (max-width: 720px) {
     header h1 .brand-bee  { height: 34px; }
     header h1 .brand-name { font-size: 18px; }
-    header h1 .brand-sub  { display: none; }
+    header h1 .brand-sub  { font-size: 10px; }
   }
   header .stats { font-size: 12px; opacity: 0.7; }
   header .conf-chip {
@@ -488,8 +491,10 @@
     <img class="brand-bee" src="assets/buzzplan-bee.png"
          srcset="assets/buzzplan-bee.png 1x, assets/buzzplan-bee@2x.png 2x"
          alt="">
-    <span class="brand-name">BuzzPlan</span>
-    <span class="brand-sub">학회 일정·동선 도우미</span>
+    <span class="brand-text">
+      <span class="brand-name">BuzzPlan</span>
+      <span class="brand-sub">Conference Planner</span>
+    </span>
   </h1>
   <div class="conf-chip" id="conf-chip" title="현재 학회 (학회명 클릭하여 수정)">
     <span class="conf-name" id="conf-name" title="클릭하여 학회명 수정"></span>
