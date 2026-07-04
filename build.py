@@ -25,6 +25,8 @@ import pathlib
 import subprocess
 import sys
 
+from parser_utils import validate_v2, SCHEMA_VERSION
+
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
@@ -34,6 +36,8 @@ def main():
     ap.add_argument('--name', required=True, help='학회 표시명')
     ap.add_argument('--parser', default='parser.py',
                     help='사용할 파서 스크립트 (기본: parser.py)')
+    ap.add_argument('--timezone', default=None,
+                    help='IANA timezone (예: Asia/Seoul). 파서에 전달')
     ap.add_argument('--default', action='store_true',
                     help='이 학회를 conferences.json의 default로 지정')
     ap.add_argument('--dry-run', action='store_true',
@@ -61,6 +65,8 @@ def main():
     print(f"[1/4] PDF 파싱 ({args.parser}): {args.pdf}")
     cmd = [sys.executable, str(parser_py), args.pdf,
            '--id', args.id, '--name', args.name, '--out', str(tmp_path)]
+    if args.timezone:
+        cmd += ['--timezone', args.timezone]
     try:
         subprocess.run(cmd, check=True)
     except subprocess.CalledProcessError as e:
@@ -78,6 +84,32 @@ def main():
     if orphans:
         print(f"      [경고] orphan papers: {len(orphans)}")
         print(f"             paper_no 일부: {[p['paper_no'] for p in orphans[:8]]}")
+
+    # 스키마 v2 검증 (24h 시간, ISO 날짜, schema_version)
+    problems = validate_v2(data)
+    if problems:
+        print(f"      [실패] 스키마 v{SCHEMA_VERSION} 검증 {len(problems)}건:")
+        for p in problems[:10]:
+            print(f"             - {p}")
+        sys.exit("  파서 출력이 스키마 v2 규칙을 위반합니다. 파서를 확인하세요.")
+    print(f"      스키마 v{SCHEMA_VERSION} 검증 통과 (24h 시간·ISO 날짜)")
+
+    # 세션 시간 겹침 검사 (같은 building+room에서 시간대 중복)
+    from collections import defaultdict
+    by_room = defaultdict(list)
+    for s in data['sessions']:
+        if s.get('start') and s.get('end') and s.get('date'):
+            by_room[(s['date'], s.get('building'), s.get('room'))].append(s)
+    overlaps = []
+    for key, group in by_room.items():
+        group.sort(key=lambda s: s['start'])
+        for a, b in zip(group, group[1:]):
+            if b['start'] < a['end']:
+                overlaps.append(f"{a['id']}({a['start']}-{a['end']}) ↔ {b['id']}({b['start']}-{b['end']}) @ {key}")
+    if overlaps:
+        print(f"      [경고] 같은 방 시간 겹침: {len(overlaps)}건")
+        for o in overlaps[:5]:
+            print(f"             - {o}")
 
     if args.dry_run:
         try: tmp_path.unlink()

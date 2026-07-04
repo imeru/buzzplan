@@ -7,6 +7,8 @@ import re
 import json
 from pathlib import Path
 
+from parser_utils import finalize_v2, slugify
+
 # Column x-boundaries (based on actual left-aligned column text, not centered headers).
 # Header text is centered (Author@252, Title@436), but body text is left-aligned at ~194 and ~336.
 AUTHOR_X = 190
@@ -173,12 +175,6 @@ def parse_pdf(pdf_path):
 
     return sessions, papers
 
-def slugify(s):
-    """Lowercase, ASCII letters/digits/hyphen only. Used for conference id."""
-    s = re.sub(r'[^A-Za-z0-9]+', '-', s).strip('-').lower()
-    return s or 'conference'
-
-
 if __name__ == '__main__':
     import argparse
     ap = argparse.ArgumentParser(description='Conference schedule PDF parser.')
@@ -187,6 +183,8 @@ if __name__ == '__main__':
     ap.add_argument('--id',   help='Conference id (slug). Defaults to slugified --name or PDF stem.')
     ap.add_argument('--name', help='Conference display name (e.g. "Building Simulation 2026").')
     ap.add_argument('--out',  default='schedule.json', help='Output JSON path.')
+    ap.add_argument('--timezone', default=None,
+                    help='IANA timezone (e.g. "America/Los_Angeles").')
     args = ap.parse_args()
 
     pdf_path = args.pdf
@@ -205,5 +203,7 @@ if __name__ == '__main__':
         'sessions':   sessions,
         'papers':     papers,
     }
+    # 이 형식의 PDF는 AM/PM 없는 12시간제("1:30"=오후) → threshold 8로 24h 정규화
+    finalize_v2(out, timezone=args.timezone, pm_threshold=8)
     Path(args.out).write_text(json.dumps(out, ensure_ascii=False, indent=2))
     print(f"Saved → {args.out} ({Path(args.out).stat().st_size} bytes)")

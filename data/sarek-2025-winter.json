@@ -1,450 +1,485 @@
 {
   "conference": {
     "id": "sarek-2025-winter",
-    "name": "대한설비공학회 2025 동계학술발표대회"
+    "name": "대한설비공학회 2025 동계학술발표대회",
+    "timezone": "Asia/Seoul"
   },
   "sessions": [
     {
       "id": "1-A",
       "block": 1,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "에너지 생산/저장 1",
       "start": "08:50",
       "end": "10:05",
       "building": "회장",
       "room": "1",
       "floor": 1,
-      "chair": "최종민(제주대학교)"
+      "chair": "최종민(제주대학교)",
+      "type": "oral"
     },
     {
       "id": "1-B",
       "block": 1,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "특별세션 : 1000RT 히트펌프",
       "start": "11:05",
       "end": "12:20",
       "building": "회장",
       "room": "1",
       "floor": 1,
-      "chair": "이남수(LG전자)"
+      "chair": "이남수(LG전자)",
+      "type": "oral"
     },
     {
       "id": "1-C",
       "block": 1,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "특별세션 : 차세대 대체냉매",
       "start": "13:25",
       "end": "14:40",
       "building": "회장",
       "room": "1",
       "floor": 1,
-      "chair": "이공훈(한국기계연구원)"
+      "chair": "이공훈(한국기계연구원)",
+      "type": "oral"
     },
     {
       "id": "1-D",
       "block": 1,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "특별세션 : 기계설비 기술 R&D 로드맵 연구",
       "start": "14:45",
       "end": "15:25",
       "building": "회장",
       "room": "1",
       "floor": 1,
-      "chair": "정창호(수원대학교)"
+      "chair": "정창호(수원대학교)",
+      "type": "oral"
     },
     {
       "id": "1-E",
       "block": 1,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "특별세션 : 여성설비위원회",
       "start": "15:55",
       "end": "16:55",
       "building": "회장",
       "room": "1",
       "floor": 1,
-      "chair": "신현미(명성하나엔지니어링)"
+      "chair": "신현미(명성하나엔지니어링)",
+      "type": "oral"
     },
     {
       "id": "2-A",
       "block": 2,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "냉동/열펌프 1",
       "start": "08:50",
       "end": "10:05",
       "building": "회장",
       "room": "2",
       "floor": 1,
-      "chair": "이남규(연세대학교)"
+      "chair": "이남규(연세대학교)",
+      "type": "oral"
     },
     {
       "id": "2-B",
       "block": 2,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "냉동/열펌프 2",
       "start": "11:05",
       "end": "12:35",
       "building": "회장",
       "room": "2",
       "floor": 1,
-      "chair": "문주현(한밭대학교)"
+      "chair": "문주현(한밭대학교)",
+      "type": "oral"
     },
     {
       "id": "2-C",
       "block": 2,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "냉동/열펌프 3",
       "start": "13:25",
       "end": "14:40",
       "building": "회장",
       "room": "2",
       "floor": 1,
-      "chair": "윤영직(한밭대학교)"
+      "chair": "윤영직(한밭대학교)",
+      "type": "oral"
     },
     {
       "id": "2-D",
       "block": 2,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "수소/연료전지",
       "start": "14:45",
       "end": "15:45",
       "building": "회장",
       "room": "2",
       "floor": 1,
-      "chair": "김동규(중앙대학교)"
+      "chair": "김동규(중앙대학교)",
+      "type": "oral"
     },
     {
       "id": "3-A",
       "block": 3,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "냉동/열펌프 1",
       "start": "08:50",
       "end": "10:05",
       "building": "회장",
       "room": "3",
       "floor": 1,
-      "chair": "조진균(아주대학교)"
+      "chair": "조진균(아주대학교)",
+      "type": "oral"
     },
     {
       "id": "3-B",
       "block": 3,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "특별세션 : 액침냉각 1",
       "start": "11:05",
       "end": "12:35",
       "building": "회장",
       "room": "3",
       "floor": 1,
-      "chair": "고민건(삼화에이스)"
+      "chair": "고민건(삼화에이스)",
+      "type": "oral"
     },
     {
       "id": "3-C",
       "block": 3,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "특별세션 : 액침냉각 2",
       "start": "13:25",
       "end": "14:25",
       "building": "회장",
       "room": "3",
       "floor": 1,
-      "chair": "김진섭(한국기계연구원)"
+      "chair": "김진섭(한국기계연구원)",
+      "type": "oral"
     },
     {
       "id": "3-D",
       "block": 3,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "유원엔지니어링",
       "start": "14:45",
       "end": "15:45",
       "building": "회장",
       "room": "3",
       "floor": 1,
-      "chair": "정지호(유원엔지니어링)"
+      "chair": "정지호(유원엔지니어링)",
+      "type": "oral"
     },
     {
       "id": "3-E",
       "block": 3,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "특별세션 : 하이멕・미래인재",
       "start": "15:55",
       "end": "16:55",
       "building": "회장",
       "room": "3",
       "floor": 1,
-      "chair": "권오익(하이멕)"
+      "chair": "권오익(하이멕)",
+      "type": "oral"
     },
     {
       "id": "4-A",
       "block": 4,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "냉동/열펌프 1",
       "start": "08:50",
       "end": "10:05",
       "building": "회장",
       "room": "4",
       "floor": 1,
-      "chair": "이동찬(서울시립대학교)"
+      "chair": "이동찬(서울시립대학교)",
+      "type": "oral"
     },
     {
       "id": "4-B",
       "block": 4,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "신제품/신기술",
       "start": "11:05",
       "end": "12:35",
       "building": "회장",
       "room": "4",
       "floor": 1,
-      "chair": "김학수(부산대학교)"
+      "chair": "김학수(부산대학교)",
+      "type": "oral"
     },
     {
       "id": "4-C",
       "block": 4,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "위생/소방/안전",
       "start": "13:25",
       "end": "14:40",
       "building": "회장",
       "room": "4",
       "floor": 1,
-      "chair": "오원석(한밭대학교)"
+      "chair": "오원석(한밭대학교)",
+      "type": "oral"
     },
     {
       "id": "4-D",
       "block": 4,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "특별세션 : 한국에너지기술평가원",
       "start": "14:45",
       "end": "15:45",
       "building": "회장",
       "room": "4",
       "floor": 1,
-      "chair": "임승빈(한국에너지기술평가원)"
+      "chair": "임승빈(한국에너지기술평가원)",
+      "type": "oral"
     },
     {
       "id": "4-E",
       "block": 4,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "특별세션 : 한국에너지기술평가원",
       "start": "15:55",
       "end": "16:55",
       "building": "회장",
       "room": "4",
       "floor": 1,
-      "chair": "임승빈(한국에너지기술평가원)"
+      "chair": "임승빈(한국에너지기술평가원)",
+      "type": "oral"
     },
     {
       "id": "5-A",
       "block": 5,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "에너지 시뮬레이션 1",
       "start": "08:50",
       "end": "10:05",
       "building": "회장",
       "room": "5",
       "floor": 1,
-      "chair": "김지혜(광운대학교)"
+      "chair": "김지혜(광운대학교)",
+      "type": "oral"
     },
     {
       "id": "5-B",
       "block": 5,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "에너지 시뮬레이션 2",
       "start": "11:05",
       "end": "12:35",
       "building": "회장",
       "room": "5",
       "floor": 1,
-      "chair": "박상훈(인천대학교)"
+      "chair": "박상훈(인천대학교)",
+      "type": "oral"
     },
     {
       "id": "5-C",
       "block": 5,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "열환경",
       "start": "13:25",
       "end": "14:40",
       "building": "회장",
       "room": "5",
       "floor": 1,
-      "chair": "김민휘(한국에너지기술연구원)"
+      "chair": "김민휘(한국에너지기술연구원)",
+      "type": "oral"
     },
     {
       "id": "5-D",
       "block": 5,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "열전달",
       "start": "14:45",
       "end": "15:45",
       "building": "회장",
       "room": "5",
       "floor": 1,
-      "chair": "전용석(아주대학교)"
+      "chair": "전용석(아주대학교)",
+      "type": "oral"
     },
     {
       "id": "5-E",
       "block": 5,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "열교환기",
       "start": "15:55",
       "end": "16:55",
       "building": "회장",
       "room": "5",
       "floor": 1,
-      "chair": "안준(국민대학교)"
+      "chair": "안준(국민대학교)",
+      "type": "oral"
     },
     {
       "id": "6-A",
       "block": 6,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "건물에너지 1",
       "start": "08:50",
       "end": "10:05",
       "building": "회장",
       "room": "6",
       "floor": 1,
-      "chair": "정웅준(가천대학교)"
+      "chair": "정웅준(가천대학교)",
+      "type": "oral"
     },
     {
       "id": "6-B",
       "block": 6,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "건물에너지 2",
       "start": "11:05",
       "end": "12:35",
       "building": "회장",
       "room": "6",
       "floor": 1,
-      "chair": "박병용(한밭대학교)"
+      "chair": "박병용(한밭대학교)",
+      "type": "oral"
     },
     {
       "id": "6-C",
       "block": 6,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "냉난방부하",
       "start": "13:25",
       "end": "14:40",
       "building": "회장",
       "room": "6",
       "floor": 1,
-      "chair": "조재완(인하대학교)"
+      "chair": "조재완(인하대학교)",
+      "type": "oral"
     },
     {
       "id": "6-D",
       "block": 6,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "에너지 생산/저장 2",
       "start": "14:45",
       "end": "15:45",
       "building": "회장",
       "room": "6",
       "floor": 1,
-      "chair": "장동수(국민대학교)"
+      "chair": "장동수(국민대학교)",
+      "type": "oral"
     },
     {
       "id": "6-E",
       "block": 6,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "제어/계측",
       "start": "15:55",
       "end": "16:55",
       "building": "회장",
       "room": "6",
       "floor": 1,
-      "chair": "허재혁(한국에너지기술연구원)"
+      "chair": "허재혁(한국에너지기술연구원)",
+      "type": "oral"
     },
     {
       "id": "7-A",
       "block": 7,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "공조설비",
       "start": "08:50",
       "end": "10:05",
       "building": "회장",
       "room": "7",
       "floor": 1,
-      "chair": "임현우(건국대학교)"
+      "chair": "임현우(건국대학교)",
+      "type": "oral"
     },
     {
       "id": "7-B",
       "block": 7,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "특별세션 : 공조부문위원회",
       "start": "11:05",
       "end": "12:20",
       "building": "회장",
       "room": "7",
       "floor": 1,
-      "chair": "김선혜(서울과학기술대학교)"
+      "chair": "김선혜(서울과학기술대학교)",
+      "type": "oral"
     },
     {
       "id": "7-C",
       "block": 7,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "특별세션 : 미래모빌리티열관리전문위원회",
       "start": "13:25",
       "end": "14:40",
       "building": "회장",
       "room": "7",
       "floor": 1,
-      "chair": "이현진(국민대학교)"
+      "chair": "이현진(국민대학교)",
+      "type": "oral"
     },
     {
       "id": "7-D",
       "block": 7,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "특별세션 : 환기부문위원회",
       "start": "14:45",
       "end": "15:45",
       "building": "회장",
       "room": "7",
       "floor": 1,
-      "chair": "최영진(경기대학교)"
+      "chair": "최영진(경기대학교)",
+      "type": "oral"
     },
     {
       "id": "7-E",
       "block": 7,
       "day": 1,
-      "date": "11/28/2025",
+      "date": "2025-11-28",
       "track_title": "설계/시공사례",
       "start": "15:55",
       "end": "16:55",
       "building": "회장",
       "room": "7",
       "floor": 1,
-      "chair": "임한솔(한밭대학교)"
+      "chair": "임한솔(한밭대학교)",
+      "type": "oral"
     }
   ],
   "papers": [
@@ -1720,5 +1755,6 @@
       "start": "16:40",
       "end": "16:55"
     }
-  ]
+  ],
+  "schema_version": 2
 }

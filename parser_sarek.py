@@ -23,6 +23,8 @@ import argparse
 import json
 import pathlib
 import re
+
+from parser_utils import finalize_v2
 import sys
 
 try:
@@ -288,9 +290,11 @@ def main():
     ap.add_argument('--date', default='2025-11-28',
                     help='학회 날짜 (YYYY-MM-DD). 기본: 2025-11-28')
     ap.add_argument('--out',  default='schedule.json')
+    ap.add_argument('--timezone', default='Asia/Seoul',
+                    help='IANA timezone (기본: Asia/Seoul)')
     args = ap.parse_args()
 
-    # 학회 JSON 스키마 호환을 위해 M/D/YYYY 형태로 저장
+    # 파싱 내부는 M/D/YYYY로 다루고, 출력 직전 finalize_v2가 ISO로 정규화
     y, m, d = args.date.split('-')
     date_us = f"{int(m)}/{int(d)}/{y}"
 
@@ -304,6 +308,8 @@ def main():
         'sessions':   sessions,
         'papers':     papers,
     }
+    # SAREK PDF는 이미 24시간제 → pm_threshold 0 (zero-pad·날짜 ISO화만)
+    finalize_v2(out, timezone=args.timezone, pm_threshold=0)
     pathlib.Path(args.out).write_text(
         json.dumps(out, ensure_ascii=False, indent=2), encoding='utf-8')
     print(f"Saved → {args.out} ({pathlib.Path(args.out).stat().st_size} bytes)")

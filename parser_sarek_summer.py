@@ -23,6 +23,8 @@ import pathlib
 import re
 import sys
 
+from parser_utils import finalize_v2
+
 try:
     import pdfplumber
 except ImportError:
@@ -291,6 +293,8 @@ def main():
     ap.add_argument('--out',  default='schedule.json')
     ap.add_argument('--day-fix', action='append', default=[],
                     help='PDF day 오타 보정: --day-fix 19:25 (반복 가능)')
+    ap.add_argument('--timezone', default='Asia/Seoul',
+                    help='IANA timezone (기본: Asia/Seoul)')
     args = ap.parse_args()
 
     print(f"Conference: {args.name}  (id={args.id})")
@@ -316,6 +320,8 @@ def main():
         'sessions':   sessions,
         'papers':     papers,
     }
+    # SAREK PDF는 이미 24시간제 → pm_threshold 0 (zero-pad·날짜 ISO화만)
+    finalize_v2(out, timezone=args.timezone, pm_threshold=0)
     pathlib.Path(args.out).write_text(
         json.dumps(out, ensure_ascii=False, indent=2), encoding='utf-8')
     print(f"Saved → {args.out} ({pathlib.Path(args.out).stat().st_size} bytes)")
