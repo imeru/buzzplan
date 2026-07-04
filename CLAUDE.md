@@ -24,6 +24,7 @@ data/<id>.json      학회별 데이터 (parser 산출물, 스키마 v2). { sche
 parser.py           IAQVEC·IBPSA 형식(세로 1단, 표) 파서
 parser_sarek.py     SAREK 동계(가로 2단 컬럼) 파서
 parser_sarek_summer.py  SAREK 하계(세로 1단, 다일자) 파서
+parser_llm.py       LLM 범용 추출기 (Tier 2). 처음 보는 레이아웃용. Claude API 필요
 parser_utils.py     파서 공통: 스키마 v2 정규화(finalize_v2)·검증(validate_v2)
 migrate_v2.py       data/*.json v1→v2 일괄 변환 (일회성; 이미 실행됨)
 build.py            PDF→JSON(+v2 검증)→conferences.json 등록 자동화
@@ -90,11 +91,18 @@ v1 레거시 데이터(12시간제 "1:30"=오후, M/D/YYYY 날짜)는 index.html
 ## 새 학회 추가
 
 ```bash
-# 형식에 맞는 파서 선택
+# Tier 1: 알려진 형식이면 규칙 파서 (무료·결정적)
 python3 build.py /path/to/new.pdf --id iaqvec-2028 --name "IAQVEC 2028"
 python3 build.py /path/to/sarek-w.pdf --parser parser_sarek.py --id sarek-2026-winter --name "..."
 python3 build.py /path/to/sarek-s.pdf --parser parser_sarek_summer.py --id sarek-2026-summer --name "..." --year 2026 --month 6
+
+# Tier 2: 처음 보는 형식이면 LLM 추출 (ANTHROPIC_API_KEY 필요, 비용 발생)
+export ANTHROPIC_API_KEY=sk-ant-...
+python3 parser_llm.py /path/to/new.pdf --id x --name "X" --max-pages 4  # 파일럿 먼저
+python3 build.py /path/to/new.pdf --parser parser_llm.py --id x --name "X" --timezone Asia/Seoul
 ```
+
+LLM 추출은 누락·오인식 가능 → --dry-run 카운트를 프로그램북 목차와 대조 + 스팟체크 필수.
 
 build.py가 data/<id>.json 생성 + conferences.json 등록까지 자동 처리.
 이후 변경된 두 파일을 git push하면 사이트에 즉시 반영. index.html은 손댈 필요 없음.
@@ -109,9 +117,7 @@ build.py가 data/<id>.json 생성 + conferences.json 등록까지 자동 처리.
 
 ## 다음에 해볼 만한 작업 (백로그)
 
-- **LLM 추출 파서 (parser_llm.py)** — 처음 보는 학회 PDF를 Claude API structured
-  output으로 표준 스키마 추출. 범용화 로드맵의 핵심 (규칙 파서는 반복 학회용 Tier 1,
-  LLM은 신규 학회용 Tier 2). build.py `--parser llm` 형태로 통합.
+- parser_llm.py **라이브 검증** — API 키로 실제 PDF 파일럿 실행 후 규칙 파서 결과와 대조 (코드는 완성, 미실행)
 - 웹 프로그램 페이지(HTML)·Excel/CSV 임포터 — PDF 외 입력 소스
 - 세 파서의 레이아웃 헬퍼(group_rows, consolidate_split_chars, is_skip_row)도 parser_utils.py로 추출 (v2 정규화는 완료)
 - SAREK 포스터 세션 전용 파서
