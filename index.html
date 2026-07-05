@@ -45,7 +45,7 @@
     background: rgba(255,255,255,0.12); padding: 4px 10px; border-radius: 14px;
     font-size: 12px; display: flex; align-items: center; gap: 8px;
   }
-  header .conf-name { font-weight: 600; cursor: pointer; }
+  header .conf-name { font-size: 17px; font-weight: 700; cursor: pointer; }
   header .conf-name:hover { text-decoration: underline; }
   header .conf-edit {
     background: transparent; border: none; color: #fff; cursor: pointer; font-size: 11px;
@@ -74,6 +74,7 @@
     header h1 { font-size: 14px; flex: 1 1 100%; }
     header .stats { flex: 1 1 100%; order: 4; font-size: 11px; }
     header .conf-chip { flex: 1 1 100%; justify-content: space-between; }
+    header .conf-name { font-size: 15px; }
     header .conf-rename-input { width: 100%; font-size: 14px; }
     header .actions { margin-left: 0; width: 100%; }
     header button { flex: 1 1 auto; min-width: 0; font-size: 11px; padding: 8px 6px; }
@@ -366,6 +367,20 @@
     .to-top { right: 14px; bottom: 18px; width: 48px; height: 48px; font-size: 20px; }
   }
 
+  /* 원격 동기화 변경 알림 토스트. #to-top 버튼 위쪽에 겹치지 않게 배치. */
+  .sync-toast {
+    position: fixed; right: 20px; bottom: 80px; z-index: 60;
+    max-width: 280px; background: #1f1f1f; color: #fff;
+    padding: 10px 14px; border-radius: 8px; font-size: 12px; line-height: 1.4;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    opacity: 0; transform: translateY(8px); pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+  }
+  .sync-toast.visible { opacity: 0.95; transform: translateY(0); }
+  @media (max-width: 720px) {
+    .sync-toast { right: 14px; bottom: 78px; max-width: calc(100% - 28px); font-size: 12px; }
+  }
+
   /* Past session: collapsed + dimmed header */
   .session.past { opacity: 0.6; }
   .session.past .session-title { color: #888; }
@@ -626,6 +641,9 @@
 <!-- Floating "맨 위로" button (둘러보기·내 일정 탭에서 스크롤이 길어지면 표시) -->
 <button id="to-top" class="to-top" title="맨 위로" aria-label="맨 위로">↑</button>
 
+<!-- 다른 기기에서의 원격 변경 반영을 알리는 토스트. alert가 아니라 포커스를 뺏지 않는다. -->
+<div id="sync-toast" class="sync-toast" role="status" aria-live="polite"></div>
+
 <!-- Firebase (compat 빌드). CDN 로드 실패(오프라인 등) 시에도 앱이 정상 동작해야 하므로
      아래 메인 스크립트의 모든 firebase 참조는 typeof firebase !== 'undefined' 가드를 거친다. -->
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -663,6 +681,7 @@ const I18N_KO = {
   no_export: '내보낼 항목이 없습니다 (선택·평점·메모 중 하나 이상 필요).',
   login: '🔑 로그인', logout_confirm: '로그아웃할까요? 이 기기의 데이터는 유지됩니다.',
   sync_title: '동기화 중 — 클릭하여 로그아웃', login_title: '구글 로그인으로 기기 간 동기화',
+  sync_last: '마지막 동기화 ',
   login_fail: '로그인 실패: ',
   sync_error: '⚠️ 동기화 오류',
   sync_perm_error: '동기화 권한 오류입니다.\n\nFirebase 콘솔 → Firestore Database → 규칙 탭에\n레포의 firestore.rules 내용을 붙여넣고 "게시"해야 합니다.\n(기본 규칙은 모든 접근을 거부합니다)',
@@ -684,6 +703,7 @@ const I18N_EN = {
   no_export: 'Nothing to export (select, rate, or note at least one paper).',
   login: '🔑 Sign in', logout_confirm: 'Sign out? Data on this device is kept.',
   sync_title: 'Syncing — click to sign out', login_title: 'Sign in with Google to sync across devices',
+  sync_last: 'Synced ',
   login_fail: 'Sign-in failed: ',
   sync_error: '⚠️ Sync error',
   sync_perm_error: 'Sync permission error.\n\nDeploy the firestore.rules from the repo in\nFirebase Console → Firestore Database → Rules.\n(The default rules deny all access)',
@@ -1936,6 +1956,26 @@ let currentUser   = null;   // 로그인한 firebase user (없으면 null)
 let syncActive    = false;  // 로그인 + 구독 중이면 true. touch()가 push 여부 판단에 사용.
 let _syncUnsub    = null;   // 현재 학회 문서 onSnapshot 구독 해제 함수
 let _pushTimer    = null;   // schedulePush 디바운스 타이머
+let _lastSyncAt   = null;   // 마지막으로 push 성공 또는 원격 스냅샷을 수신한 시각 (Date.now())
+
+// HH:MM:SS (24시간, 로컬 타임존) — 로그인 버튼 title에 마지막 동기화 시각 표시용.
+function fmtSyncTime(ts) {
+  const d = new Date(ts);
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+// ----- 동기화 토스트 (원격 변경 반영 알림) -----
+// alert가 아니라 화면 우하단에 잠시 떴다 사라지는 비강제 알림. 포커스를 뺏지 않는다.
+let _toastTimer = null;
+function showToast(msg) {
+  const el = document.getElementById('sync-toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('visible');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('visible'), 3000);
+}
 
 if (typeof firebase !== 'undefined') {
   try {
@@ -1955,7 +1995,13 @@ function updateLoginButtonUI() {
   if (currentUser) {
     const first = (currentUser.displayName || currentUser.email || '').trim().split(/\s+/)[0] || '';
     btn.textContent = `🟢 ${first}`;
-    btn.title = t('sync_title');
+    if (_lastSyncAt) {
+      const hms = fmtSyncTime(_lastSyncAt);
+      btn.title = EN ? `${t('sync_last')}${hms} — click to sign out`
+                     : `동기화 중 — ${t('sync_last')}${hms} · 클릭하여 로그아웃`;
+    } else {
+      btn.title = t('sync_title');
+    }
   } else {
     btn.textContent = t('login');
     btn.title = t('login_title');
@@ -2017,23 +2063,23 @@ function buildLocalItems() {
 
 // 원격 items를 병합. 키별로 remote.t가 로컬 stamps보다 최신일 때만 반영한다.
 // touch()는 호출하지 않는다 (원격에서 온 값이므로 로컬 stamps는 remote.t로 그대로 맞춘다).
-// 반영된 게 있으면 저장 + 재렌더링(메모 입력 중이면 지연 재시도) 후 true를 반환.
+// 반영된 키 개수를 반환한다 (0이면 변경 없음). 호출부는 이 개수로 토스트 표시 여부를 판단한다.
 function applyRemoteItems(items) {
-  let changed = false;
+  let changedCount = 0;
   for (const [key, remote] of Object.entries(items || {})) {
     if (!remote || typeof remote.t !== 'number') continue;
     const localT = state.stamps.get(key) || 0;
     if (remote.t <= localT) continue;
-    changed = true;
+    changedCount++;
     if (remote.s) state.selected.add(key); else state.selected.delete(key);
     if (remote.r || remote.n) state.notes.set(key, { rating: remote.r || 0, note: remote.n || '' });
     else state.notes.delete(key);
     state.stamps.set(key, remote.t);
   }
-  if (!changed) return false;
+  if (!changedCount) return 0;
   saveSelection(); saveNotes(); saveStamps();
   rerenderAfterRemoteChange();
-  return true;
+  return changedCount;
 }
 
 // nowTick과 같은 패턴: 메모 입력 중이면 포커스를 뺏지 않도록 잠시 후 재시도.
@@ -2059,6 +2105,9 @@ function schedulePush() {
     docRef.set({
       items: buildLocalItems(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    }).then(() => {
+      _lastSyncAt = Date.now();
+      updateLoginButtonUI();
     }).catch(reportSyncError);
   }, 800);
 }
@@ -2069,14 +2118,25 @@ function startSync(user) {
   stopSync();
   currentUser = user;
   syncActive = true;
+  // 구독 직후 첫 스냅샷(로그인/전환 시 초기 로드)에는 토스트를 띄우지 않는다 —
+  // 로그인하자마자 "N건 반영" 알림이 뜨면 소음이므로, 이후 실제 원격 변경에만 반응한다.
+  let isFirstSnapshot = true;
   const docRef = firebase.firestore()
     .collection('users').doc(user.uid)
     .collection('confs').doc(currentConfId);
   _syncUnsub = docRef.onSnapshot((snap) => {
     if (snap.metadata.hasPendingWrites) return;  // 방금 우리가 쓴 값의 echo — 무시
+    const wasFirst = isFirstSnapshot;
+    isFirstSnapshot = false;
     const data = snap.data() || {};
     const remoteItems = data.items || {};
-    applyRemoteItems(remoteItems);
+    const changedCount = applyRemoteItems(remoteItems);
+    _lastSyncAt = Date.now();
+    updateLoginButtonUI();
+    if (!wasFirst && changedCount > 0) {
+      showToast(EN ? `Applied ${changedCount} change(s) from another device`
+                   : `다른 기기의 변경 ${changedCount}건을 반영했습니다`);
+    }
     // 병합 후에도 로컬이 원격보다 최신인 키가 하나라도 있으면 업로드.
     // 첫 로그인 시(원격 문서가 비어 있음)에도 이 경로로 로컬 데이터가 자연스럽게 올라간다.
     const localItems = buildLocalItems();
@@ -2093,6 +2153,7 @@ function stopSync() {
   if (_syncUnsub) { _syncUnsub(); _syncUnsub = null; }
   clearTimeout(_pushTimer);
   syncActive = false;
+  _lastSyncAt = null;  // 로그아웃/학회 전환 시 이전 세션의 "마지막 동기화" 시각을 지운다
 }
 
 // 동기화 오류를 화면에 드러낸다 (조용한 실패 방지). 권한 오류는 규칙 미배포가
