@@ -111,6 +111,38 @@ def main():
         for o in overlaps[:5]:
             print(f"             - {o}")
 
+    # 발표번호 연속성 검사: "XX-S-001" 같은 숫자 연번 계열에서 빠진 번호를 찾는다.
+    # LLM/수동 추출의 누락을 잡는 핵심 게이트 (규칙 파서 결과에도 유효).
+    import re as _re
+    series = {}
+    for p in data['papers']:
+        m = _re.match(r'^(.*?)(\d{3,4})$', str(p.get('paper_no', '')))
+        if m:
+            series.setdefault(m.group(1), set()).add(int(m.group(2)))
+    for prefix, nums in series.items():
+        if len(nums) < 5:
+            continue  # 연번 계열로 보기 어려움
+        missing = sorted(set(range(min(nums), max(nums) + 1)) - nums)
+        label = f"{prefix}{min(nums):03d}~{max(nums)}"
+        if missing:
+            head = ', '.join(str(n) for n in missing[:10])
+            print(f"      [경고] 발표번호 결번 ({label}): {len(missing)}개 — {head}"
+                  + (' ...' if len(missing) > 10 else ''))
+        else:
+            print(f"      발표번호 연속성 OK ({label}, {len(nums)}편)")
+
+    # 세션별 발표 수 분포 (0편 세션은 키노트/행사가 아니면 파싱 누락 신호)
+    from collections import Counter
+    per_sess = Counter(p['session_id'] for p in data['papers'])
+    zero = [s['id'] for s in data['sessions']
+            if per_sess.get(s['id'], 0) == 0 and s.get('type', 'oral') == 'oral']
+    counts = sorted(per_sess.values())
+    if counts:
+        mid = counts[len(counts) // 2]
+        print(f"      세션당 발표 수: 최소 {counts[0]} / 중앙값 {mid} / 최대 {counts[-1]}")
+    if zero:
+        print(f"      [경고] 발표 0편인 oral 세션 {len(zero)}개: {zero[:8]} — 파싱 누락 가능성")
+
     if args.dry_run:
         try: tmp_path.unlink()
         except OSError: pass

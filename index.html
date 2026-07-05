@@ -467,6 +467,16 @@
   .share-qr img { width: 220px; height: 220px; }
   .share-qr .err { font-size: 11px; color: #888; text-align: center; }
 
+  /* Session type badges (poster/keynote/social/break; oral은 뱃지 없음) */
+  .type-badge {
+    display: inline-block; font-size: 10px; font-weight: 600; padding: 1px 6px;
+    border-radius: 3px; margin-left: 4px; color: #fff;
+  }
+  .type-badge.type-poster  { background: #7b4fb5; }
+  .type-badge.type-keynote { background: #b8860b; }
+  .type-badge.type-social  { background: #3a8f6a; }
+  .type-badge.type-break   { background: #999; }
+
   /* Mobile: bigger tap targets and font-size ≥16px on inputs to prevent iOS auto-zoom */
   @media (max-width: 720px) {
     body { font-size: 15px; }
@@ -503,6 +513,7 @@
   </div>
   <div class="stats" id="stats"></div>
   <div class="actions">
+    <button id="btn-lang" title="Language">🌐 EN</button>
     <button id="btn-help" title="사용법">❓ 도움말</button>
     <button id="btn-clear">선택 초기화</button>
     <button id="btn-share">🔗 공유 링크</button>
@@ -667,6 +678,55 @@
 // ====== Data (loaded at boot from data/<conf>.json) ======
 let DATA = null;
 let CONFERENCES_REG = null;
+
+// ====== i18n ======
+// 기본 언어는 한국어(소스 문자열이 곧 한국어). ?lang=en 또는 저장된 설정이면 영어.
+// JS 생성 문자열은 t(key), 정적 HTML은 applyStaticLang()이 부팅 시 치환.
+const LANG = (() => {
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q === 'en' || q === 'ko') { localStorage.setItem('cs:lang', q); return q; }
+  return localStorage.getItem('cs:lang') === 'en' ? 'en' : 'ko';
+})();
+const EN = LANG === 'en';
+const I18N_KO = {
+  status_current: '진행 중', status_upcoming: '예정', status_past: '종료',
+  type_poster: '🪧 포스터', type_keynote: '🎤 키노트', type_social: '🎉 행사', type_break: '☕ 휴식',
+  collapse_btn: '접기/펴기', no_papers: '발표 정보 없음', no_papers_event: '발표 없는 일정 항목 (행사/휴식)',
+  sel: '선택', all: '전체', all_days: '전체 일정',
+  hint_current: '현재 진행 중인 세션이 있습니다.', hint_next: '다음 예정 세션으로 이동합니다.',
+  hint_before: '아직 학회 시작 전입니다.', hint_ended: '이미 종료된 학회입니다.',
+  hint_notoday: '오늘은 학회 일정이 없습니다.', hint_none_today: '오늘 진행 중이거나 예정된 세션이 없습니다.',
+  itin_empty: '발표를 선택하면 여기에 일정과 동선이 표시됩니다.',
+  list: '📋 리스트', grid: '🗓️ 시간표', now: '🔴 지금',
+  fold_all: '📕 모두 접기', unfold_all: '📖 모두 펴기',
+  remove: '제거', note_ph: '메모...', clear_rating: '평점 지우기', hop_plan: '↔ 방 사이 이동 계획',
+  etal: ' 외', cnt_suffix: '개', switch_conf: '↕ 다른 학회로 전환', loading: '데이터를 불러오는 중...',
+  clear_confirm: '선택을 모두 해제할까요?', no_selected: '선택된 발표가 없습니다.',
+  no_export: '내보낼 항목이 없습니다 (선택·평점·메모 중 하나 이상 필요).',
+  no_export_state: '내보낼 선택이나 메모가 없습니다.',
+  share_none: '공유할 선택이 없습니다. 먼저 발표를 선택해 주세요.',
+  copied: '복사됨', copy: '복사',
+};
+const I18N_EN = {
+  status_current: 'Now', status_upcoming: 'Next', status_past: 'Ended',
+  type_poster: '🪧 Poster', type_keynote: '🎤 Keynote', type_social: '🎉 Social', type_break: '☕ Break',
+  collapse_btn: 'Fold/unfold', no_papers: 'No papers listed', no_papers_event: 'Schedule item (social/break)',
+  sel: 'selected', all: 'All', all_days: 'All days',
+  hint_current: 'A session is in progress now.', hint_next: 'Jumps to the next upcoming session.',
+  hint_before: 'The conference has not started yet.', hint_ended: 'This conference has ended.',
+  hint_notoday: 'No sessions scheduled today.', hint_none_today: 'No current or upcoming sessions today.',
+  itin_empty: 'Select papers in Browse to see your schedule and walking plan here.',
+  list: '📋 List', grid: '🗓️ Timetable', now: '🔴 Now',
+  fold_all: '📕 Fold all', unfold_all: '📖 Unfold all',
+  remove: 'Remove', note_ph: 'Notes...', clear_rating: 'Clear rating', hop_plan: '↔ Room-to-room moves',
+  etal: ' et al.', cnt_suffix: '', switch_conf: '↕ Switch conference', loading: 'Loading data...',
+  clear_confirm: 'Clear all selections?', no_selected: 'No papers selected.',
+  no_export: 'Nothing to export (select, rate, or note at least one paper).',
+  no_export_state: 'No selections or notes to export.',
+  share_none: 'Nothing to share yet. Select some papers first.',
+  copied: 'Copied', copy: 'Copy',
+};
+function t(key) { return (EN ? I18N_EN : I18N_KO)[key] ?? key; }
 // ====== Walking time matrix (minutes), simple building/floor model ======
 // Data-driven (schema v2): reads DATA.venue.walk if present, else defaults.
 //   { same_room: 0, same_floor: 2, same_building: 4, cross_building: 8,
@@ -912,26 +972,56 @@ function sessionFor(paper) { return sessionById(paper.session_id); }
 //   'current'   : today and happening now
 //   'upcoming'  : today and not started yet
 // Returns 'none' if the date can't be parsed.
-function sessionStatus(s, now = new Date()) {
+// ── 학회 현지 "지금" ──
+// conference.timezone(IANA)이 있으면 그 시간대 기준으로 {y,m,d,min}을 계산.
+// 해외 학회를 다른 시간대에서 열람해도 past/current/upcoming이 현지 기준으로 맞는다.
+// Intl 호출 비용 절약을 위해 1초 메모이즈 (statusSignature가 전 세션을 훑으므로).
+let _nowPartsCache = null, _nowPartsAt = 0;
+function nowParts() {
+  const t = Date.now();
+  if (_nowPartsCache && t - _nowPartsAt < 1000) return _nowPartsCache;
+  const tz = DATA && DATA.conference && DATA.conference.timezone;
+  let parts = null;
+  if (tz) {
+    try {
+      const fmt = new Intl.DateTimeFormat('en-CA', {
+        timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+      });
+      const o = {};
+      for (const p of fmt.formatToParts(new Date())) o[p.type] = p.value;
+      parts = { y: +o.year, m: +o.month, d: +o.day, min: (+o.hour) * 60 + (+o.minute) };
+    } catch (_) { /* 알 수 없는 시간대 → 기기 로컬로 폴백 */ }
+  }
+  if (!parts) {
+    const n = new Date();
+    parts = { y: n.getFullYear(), m: n.getMonth() + 1, d: n.getDate(),
+              min: n.getHours() * 60 + n.getMinutes() };
+  }
+  _nowPartsCache = parts; _nowPartsAt = t;
+  return parts;
+}
+
+function sessionStatus(s) {
   const dp = parseDateParts(s.date);
   if (!dp) return 'none';
-  const sDay   = new Date(dp.y, dp.m - 1, dp.d).setHours(0,0,0,0);
-  const today  = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-  if (sDay < today) return 'past-day';
-  if (sDay > today) return 'future-day';
-  // Same calendar day → compare times. now in 24h minutes.
-  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const now = nowParts();
+  const sKey = dp.y * 10000 + dp.m * 100 + dp.d;
+  const nKey = now.y * 10000 + now.m * 100 + now.d;
+  if (sKey < nKey) return 'past-day';
+  if (sKey > nKey) return 'future-day';
+  // Same calendar day (학회 현지 기준) → compare times.
   const startMin = s.start ? timeToMin(s.start) : 0;
   const endMin   = s.end   ? timeToMin(s.end)   : 24 * 60;
-  if (endMin <= nowMin)   return 'past';
-  if (startMin > nowMin)  return 'upcoming';
+  if (endMin <= now.min)   return 'past';
+  if (startMin > now.min)  return 'upcoming';
   return 'current';
 }
 
-// True if today (real-world) is one of this conference's dates.
-function conferenceIsToday(now = new Date()) {
+// True if today (학회 현지 기준) is one of this conference's dates.
+function conferenceIsToday() {
   return DATA.sessions.some(s => {
-    const st = sessionStatus(s, now);
+    const st = sessionStatus(s);
     return st === 'past' || st === 'current' || st === 'upcoming';
   });
 }
@@ -958,25 +1048,21 @@ let _nowTimer = null;
 // 전환이 오늘 안에 없으면 자정에 깨서 다시 평가 (날짜가 바뀐 뒤 새 세션이 today가 되는 경우).
 // 이전엔 30초 setInterval로 폴링했지만, 활성 학회 중에도 paper 단위 ~15분 간격이라
 // 99% 호출은 "변화 없음" 즉시 반환. 모바일 배터리·CPU 절약을 위해 setTimeout으로 전환.
-function nextStatusTransitionMs(now = Date.now()) {
-  const today = new Date(now);
-  today.setHours(0, 0, 0, 0);
-  const todayStart = today.getTime();
-  const todayEnd   = todayStart + 24 * 60 * 60 * 1000;
-  let next = Infinity;
+function nextStatusTransitionDelayMs() {
+  const now = nowParts();  // 학회 현지 기준
+  const nKey = now.y * 10000 + now.m * 100 + now.d;
+  let nextMin = Infinity;
   for (const s of DATA.sessions) {
     const dp = parseDateParts(s.date);
     if (!dp) continue;
-    const sDay = new Date(dp.y, dp.m - 1, dp.d).setHours(0, 0, 0, 0);
-    if (sDay !== todayStart) continue;
+    if (dp.y * 10000 + dp.m * 100 + dp.d !== nKey) continue;
     const startMin = s.start ? timeToMin(s.start) : 0;
     const endMin   = s.end   ? timeToMin(s.end)   : 24 * 60;
-    const startMs  = todayStart + startMin * 60000;
-    const endMs    = todayStart + endMin   * 60000;
-    if (startMs > now) next = Math.min(next, startMs);
-    if (endMs   > now) next = Math.min(next, endMs);
+    if (startMin > now.min) nextMin = Math.min(nextMin, startMin);
+    if (endMin   > now.min) nextMin = Math.min(nextMin, endMin);
   }
-  return isFinite(next) ? next : todayEnd;  // 오늘 전환 없음 → 자정에 재평가
+  const target = isFinite(nextMin) ? nextMin : 24 * 60;  // 오늘 전환 없음 → 자정에 재평가
+  return (target - now.min) * 60000;
 }
 
 function startNowTimer() {
@@ -986,7 +1072,7 @@ function startNowTimer() {
 }
 
 function scheduleNextTick() {
-  const delay = Math.max(1000, nextStatusTransitionMs() - Date.now() + 1000);
+  const delay = Math.max(1000, nextStatusTransitionDelayMs() + 1000);
   _nowTimer = setTimeout(nowTick, delay);
 }
 
@@ -1037,7 +1123,7 @@ function paperTime(session, paper, paperIndex, totalPapers) {
     const startMin = timeToMin(m[1]), endMin = timeToMin(m[2]);
     return { start: m[1], end: m[2], startMin, endMin, durationMin: endMin - startMin, kind: 'explicit' };
   }
-  if (SHARED_TIME_TRACKS.test(session.track_title || '')) {
+  if (session.type === 'poster' || SHARED_TIME_TRACKS.test(session.track_title || '')) {
     return {
       start: session.start, end: session.end,
       startMin: timeToMin(session.start), endMin: timeToMin(session.end),
@@ -1121,7 +1207,7 @@ function renderFilters() {
     const sel = document.createElement('select');
     sel.className = 'day-select';
     const optAll = document.createElement('option');
-    optAll.value = 'all'; optAll.textContent = '전체 일정';
+    optAll.value = 'all'; optAll.textContent = t('all_days');
     sel.appendChild(optAll);
     days.forEach(d => {
       const s = DATA.sessions.find(x => x.day === d);
@@ -1146,7 +1232,7 @@ function renderFilters() {
       b.onclick = () => { state.dayFilter = key; renderAll(); };
       return b;
     };
-    dt.appendChild(mkBtn('all', '전체'));
+    dt.appendChild(mkBtn('all', t('all')));
     days.forEach(d => {
       const s = DATA.sessions.find(x => x.day === d);
       dt.appendChild(mkBtn(d, `Day ${d}`, shortDate(s.date)));
@@ -1262,9 +1348,12 @@ function renderSessions() {
     // 현재 시각 기준 상태 반영
     const status = sessionStatus(s);
     let statusBadge = '';
-    if (status === 'current')  { div.classList.add('current'); div.dataset.now = '1'; statusBadge = '<span class="current-badge">진행 중</span>'; }
-    else if (status === 'upcoming') { div.dataset.next = '1'; statusBadge = '<span class="upcoming-badge">예정</span>'; }
-    else if (status === 'past') { div.classList.add('past'); statusBadge = '<span class="past-badge">종료</span>'; }
+    if (status === 'current')  { div.classList.add('current'); div.dataset.now = '1'; statusBadge = `<span class="current-badge">${t('status_current')}</span>`; }
+    else if (status === 'upcoming') { div.dataset.next = '1'; statusBadge = `<span class="upcoming-badge">${t('status_upcoming')}</span>`; }
+    else if (status === 'past') { div.classList.add('past'); statusBadge = `<span class="past-badge">${t('status_past')}</span>`; }
+    // 세션 타입 뱃지 (oral은 표시하지 않음)
+    const typeBadge = (s.type && s.type !== 'oral' && I18N_KO['type_' + s.type])
+      ? `<span class="type-badge type-${s.type}">${t('type_' + s.type)}</span>` : '';
     // 접힘 판정: 사용자가 명시적으로 접은 경우 OR ('지난 세션 접기' ON + 종료된 세션)
     const collapsedByUser = state.collapsedSessions.has(s.id);
     if (collapsedByUser || (state.collapsePast && status === 'past')) {
@@ -1275,11 +1364,11 @@ function renderSessions() {
     div.innerHTML = `
       <div class="session-header">
         <div>
-          <div class="session-id">Session ${hi(s.id)} · Day ${s.day} ${s.start}–${s.end} ${bldgTag}${statusBadge}</div>
+          <div class="session-id">Session ${hi(s.id)} · Day ${s.day} ${s.start}–${s.end} ${bldgTag}${typeBadge}${statusBadge}</div>
           <div class="session-title">${hi(s.track_title)}</div>
           <div class="session-meta">${chair}</div>
         </div>
-        <button class="toggle-collapse">접기/펴기</button>
+        <button class="toggle-collapse">${t('collapse_btn')}</button>
       </div>
       <div class="paper-list"></div>
     `;
@@ -1301,7 +1390,9 @@ function renderSessions() {
 
     const pl = div.querySelector('.paper-list');
     if (matchingPapers.length === 0) {
-      pl.innerHTML = '<div class="empty">발표 정보 없음</div>';
+      // 발표 0개 세션: 키노트·행사·휴식이면 "원래 발표가 없는 항목"임을 안내
+      const evt = ['break', 'social', 'keynote'].includes(s.type);
+      pl.innerHTML = `<div class="empty">${t(evt ? 'no_papers_event' : 'no_papers')}</div>`;
     }
     const sPapersOrdered = papersForSession(s.id);
     for (const p of matchingPapers) {
@@ -1340,16 +1431,22 @@ function renderSessions() {
     if (state.timeFrom != null || state.timeTo != null) {
       const fmt = (min) => min == null ? '' :
         `${String(Math.floor(min/60)).padStart(2,'0')}:${String(min%60).padStart(2,'0')}`;
-      const from = state.timeFrom != null ? fmt(state.timeFrom) : '시작';
-      const to   = state.timeTo   != null ? fmt(state.timeTo)   : '끝';
-      trHint.textContent = `${from}~${to}와 겹치는 세션 ${shownCount}개`;
+      const from = state.timeFrom != null ? fmt(state.timeFrom) : (EN ? 'start' : '시작');
+      const to   = state.timeTo   != null ? fmt(state.timeTo)   : (EN ? 'end' : '끝');
+      trHint.textContent = EN
+        ? `${shownCount} sessions overlap ${from}–${to}`
+        : `${from}~${to}와 겹치는 세션 ${shownCount}개`;
     } else {
       trHint.textContent = '';
     }
   }
 
-  document.getElementById('stats').textContent =
-    `${DATA.sessions.length} sessions · ${DATA.papers.length} papers · 선택: ${state.selected.size}`;
+  document.getElementById('stats').textContent = statsText();
+}
+
+// 헤더 통계 문자열 (4곳에서 사용)
+function statsText() {
+  return `${DATA.sessions.length} sessions · ${DATA.papers.length} papers · ${t('sel')}: ${state.selected.size}`;
 }
 
 // Scroll the session list to the current (or next upcoming) session.
@@ -1380,15 +1477,15 @@ function renderNowControls() {
   if (isToday) {
     btn.disabled = false;
     const hasCurrent = DATA.sessions.some(s => sessionStatus(s) === 'current');
-    hint.textContent = hasCurrent ? '현재 진행 중인 세션이 있습니다.' : '다음 예정 세션으로 이동합니다.';
+    hint.textContent = t(hasCurrent ? 'hint_current' : 'hint_next');
   } else {
     btn.disabled = true;
     // 학회가 과거인지 미래인지 안내
     const anyFuture = DATA.sessions.some(s => sessionStatus(s) === 'future-day');
     const anyPast   = DATA.sessions.some(s => sessionStatus(s) === 'past-day');
-    if (anyFuture && !anyPast)      hint.textContent = '아직 학회 시작 전입니다.';
-    else if (anyPast && !anyFuture) hint.textContent = '이미 종료된 학회입니다.';
-    else                            hint.textContent = '오늘은 학회 일정이 없습니다.';
+    if (anyFuture && !anyPast)      hint.textContent = t('hint_before');
+    else if (anyPast && !anyFuture) hint.textContent = t('hint_ended');
+    else                            hint.textContent = t('hint_notoday');
   }
 }
 
@@ -1396,9 +1493,8 @@ function renderNowControls() {
 function renderItinerary() {
   const root = document.getElementById('itinerary');
   if (state.selected.size === 0) {
-    root.innerHTML = '<div class="empty">발표를 선택하면 여기에 일정과 동선이 표시됩니다.</div>';
-    document.getElementById('stats').textContent =
-      `${DATA.sessions.length} sessions · ${DATA.papers.length} papers · 선택: 0`;
+    root.innerHTML = `<div class="empty">${t('itin_empty')}</div>`;
+    document.getElementById('stats').textContent = statsText();
     return;
   }
 
@@ -1434,13 +1530,13 @@ function renderItinerary() {
   const showCollapseAll = state.itineraryView === 'list';
   let html = `<div class="iv-header">
     <div class="iv-toggle">
-      <button class="${state.itineraryView==='list'?'active':''}" data-iv="list">📋 리스트</button>
-      <button class="${state.itineraryView==='grid'?'active':''}" data-iv="grid">🗓️ 시간표</button>
+      <button class="${state.itineraryView==='list'?'active':''}" data-iv="list">${t('list')}</button>
+      <button class="${state.itineraryView==='grid'?'active':''}" data-iv="grid">${t('grid')}</button>
     </div>
-    ${showNow ? '<button id="btn-now-itin" class="now-btn">🔴 지금</button>' : ''}
+    ${showNow ? `<button id="btn-now-itin" class="now-btn">${t('now')}</button>` : ''}
     ${showCollapseAll ? `<span class="collapse-all">
-      <button id="btn-collapse-all-itin" title="보이는 모든 세션 접기">📕 모두 접기</button>
-      <button id="btn-expand-all-itin" title="보이는 모든 세션 펴기">📖 모두 펴기</button>
+      <button id="btn-collapse-all-itin">${t('fold_all')}</button>
+      <button id="btn-expand-all-itin">${t('unfold_all')}</button>
     </span>` : ''}
   </div>`;
 
@@ -1449,8 +1545,7 @@ function renderItinerary() {
     html += renderTimetable(byDay);
     document.getElementById('itinerary').innerHTML = html;
     wireItineraryToggle();
-    document.getElementById('stats').textContent =
-      `${DATA.sessions.length} sessions · ${DATA.papers.length} papers · 선택: ${state.selected.size}`;
+    document.getElementById('stats').textContent = statsText();
     return;
   }
 
@@ -1477,18 +1572,18 @@ function renderItinerary() {
       // 현재 시각 기준 상태 (날짜 + 발표 시간으로 판정). 접지 않고 강조/흐림만.
       const st = pt ? sessionStatus({date: it.s.date, start: pt.start, end: pt.end}) : 'none';
       let pickCls = '', pickBadge = '', nowAttr = '';
-      if (st === 'current')  { pickCls = ' current'; pickBadge = '<span class="pick-badge cur">진행 중</span>'; nowAttr = ' data-now="1"'; }
-      else if (st === 'upcoming') { pickBadge = '<span class="pick-badge up">예정</span>'; nowAttr = ' data-next="1"'; }
-      else if (st === 'past') { pickCls = ' past'; pickBadge = '<span class="pick-badge done">종료</span>'; }
+      if (st === 'current')  { pickCls = ' current'; pickBadge = `<span class="pick-badge cur">${t('status_current')}</span>`; nowAttr = ' data-now="1"'; }
+      else if (st === 'upcoming') { pickBadge = `<span class="pick-badge up">${t('status_upcoming')}</span>`; nowAttr = ' data-next="1"'; }
+      else if (st === 'past') { pickCls = ' past'; pickBadge = `<span class="pick-badge done">${t('status_past')}</span>`; }
       return `<div class="pick${pickCls}"${nowAttr}>
         <div class="ptitle">${timeBadge}${escapeHtml(it.p.title)}${pickBadge}</div>
         <div class="pauthors">${escapeHtml(it.p.authors)}</div>
         <div class="pmeta">${escapeHtml(it.s.track_title)} · #${escapeHtml(it.p.paper_no)}
-          <a href="#" data-key="${it.key}" class="rm" style="margin-left:6px;color:#d0021b;">제거</a></div>
+          <a href="#" data-key="${it.key}" class="rm" style="margin-left:6px;color:#d0021b;">${t('remove')}</a></div>
         <div class="rating" data-key="${it.key}">${stars}
-          <span class="star clear-star" data-key="${it.key}" data-val="0" title="평점 지우기" style="color:#ccc;font-size:13px;margin-left:6px;">✕</span>
+          <span class="star clear-star" data-key="${it.key}" data-val="0" title="${t('clear_rating')}" style="color:#ccc;font-size:13px;margin-left:6px;">✕</span>
         </div>
-        <textarea class="note-input" data-key="${it.key}" placeholder="메모..." rows="1">${escapeHtml(n.note)}</textarea>
+        <textarea class="note-input" data-key="${it.key}" placeholder="${t('note_ph')}" rows="1">${escapeHtml(n.note)}</textarea>
       </div>`;
     };
 
@@ -1501,7 +1596,9 @@ function renderItinerary() {
         const gap = timeToMin(picks[0].s.start) - timeToMin(prev.s.end);
         const w = walkMinutes(prev.s, picks[0].s);
         const tight = gap < w;
-        html += `<div class="walk ${tight?'tight':''}">↓ 이동 ${prev.s.building} ${prev.s.room} → ${picks[0].s.building} ${picks[0].s.room} · 도보 ~${w}분 · 여유 ${gap}분${tight?'  ⚠️ 시간 부족':''}</div>`;
+        html += EN
+          ? `<div class="walk ${tight?'tight':''}">↓ Move ${prev.s.building} ${prev.s.room} → ${picks[0].s.building} ${picks[0].s.room} · ~${w} min walk · ${gap} min buffer${tight?'  ⚠️ too tight':''}</div>`
+          : `<div class="walk ${tight?'tight':''}">↓ 이동 ${prev.s.building} ${prev.s.room} → ${picks[0].s.building} ${picks[0].s.room} · 도보 ~${w}분 · 여유 ${gap}분${tight?'  ⚠️ 시간 부족':''}</div>`;
       }
 
       const byRoom = new Map();
@@ -1513,7 +1610,7 @@ function renderItinerary() {
       const isMulti = byRoom.size > 1;
 
       html += `<div class="slot ${isMulti?'multi-room':''}">`;
-      html += `<div class="time">${picks[0].s.start}–${picks[0].s.end}${isMulti ? ` · 병행 ${byRoom.size}개 방` : ''}</div>`;
+      html += `<div class="time">${picks[0].s.start}–${picks[0].s.end}${isMulti ? (EN ? ` · ${byRoom.size} rooms in parallel` : ` · 병행 ${byRoom.size}개 방`) : ''}</div>`;
 
       // ----- ROOM CARDS: 각 방 = 하나의 세션. 접기/펴기 가능, 세션장은 강하게 강조.
       const roomEntries = [...byRoom.entries()].sort((a,b) => natCompare(a[0], b[0]));
@@ -1536,8 +1633,8 @@ function renderItinerary() {
               ${floor ? `<span class="room-floor">${escapeHtml(String(floor))}F</span>` : ''}
             </span>
             <span class="room-meta">
-              <span class="room-count">${roomPicks.length}개</span>
-              <button class="room-toggle" title="접기/펴기" aria-label="접기/펴기">${collapsed?'▶':'▼'}</button>
+              <span class="room-count">${roomPicks.length}${t('cnt_suffix')}</span>
+              <button class="room-toggle" title="${t('collapse_btn')}" aria-label="${t('collapse_btn')}">${collapsed?'▶':'▼'}</button>
             </span>
           </div>
           <div class="room-body">
@@ -1558,15 +1655,15 @@ function renderItinerary() {
             const w   = walkMinutes(prevPick.s, it.s);
             const tight = gap < w;
             const cls = tight ? 'tight' : (gap < w + 3 ? 'ok-tight' : 'ok');
-            const note = tight
-              ? `⚠️ 시간 부족 (도보 ${w}분, 여유 ${gap}분)`
-              : `도보 ~${w}분 · 여유 ${gap}분`;
+            const note = EN
+              ? (tight ? `⚠️ too tight (${w} min walk, ${gap} min buffer)` : `~${w} min walk · ${gap} min buffer`)
+              : (tight ? `⚠️ 시간 부족 (도보 ${w}분, 여유 ${gap}분)` : `도보 ~${w}분 · 여유 ${gap}분`);
             hops.push(`<div class="hop ${cls}">↻ ${it.pt.start} · ${escapeHtml(prevPick.s.building)} ${escapeHtml(prevPick.s.room)} → ${escapeHtml(it.s.building)} ${escapeHtml(it.s.room)} · ${note}</div>`);
           }
           prevPick = it;
         }
         if (hops.length) {
-          html += `<div class="hop-list"><div class="info">↔ 방 사이 이동 계획</div>${hops.join('')}</div>`;
+          html += `<div class="hop-list"><div class="info">${t('hop_plan')}</div>${hops.join('')}</div>`;
         }
       }
       html += `</div>`;
@@ -1618,8 +1715,7 @@ function renderItinerary() {
   // Toggle works in both views
   wireItineraryToggle();
 
-  document.getElementById('stats').textContent =
-    `${DATA.sessions.length} sessions · ${DATA.papers.length} papers · 선택: ${state.selected.size}`;
+  document.getElementById('stats').textContent = statsText();
 }
 
 // Wire the list/grid toggle inside the itinerary panel.
@@ -1680,7 +1776,7 @@ function firstAuthorLabel(authors) {
   // Last word ≈ family name (works for the bulk of Western-format names; for CJK
   // authors the full first token is also reasonable).
   const tokens = first.split(/\s+/);
-  return tokens[tokens.length - 1] + (authors.match(/,|\sand\s/i) ? ' 외' : '');
+  return tokens[tokens.length - 1] + (authors.match(/,|\sand\s/i) ? t('etal') : '');
 }
 
 // Build the timetable grid for all selected items. Each day is a separate grid.
@@ -1753,12 +1849,17 @@ function renderConfChip() {
   // Selecting an option navigates to ?conf=<id> so the URL stays shareable.
   const sel = document.getElementById('conf-switch');
   const list = (CONFERENCES_REG && CONFERENCES_REG.conferences) || [];
-  const others = list.filter(c => c.id !== currentConfId);
+  // 최신 연도 학회가 위로 오도록 정렬 (id의 4자리 연도 기준, 같으면 이름순)
+  const others = list.filter(c => c.id !== currentConfId).sort((a, b) => {
+    const ya = +((String(a.id).match(/20\d\d/) || [0])[0]);
+    const yb = +((String(b.id).match(/20\d\d/) || [0])[0]);
+    return (yb - ya) || natCompare(a.name, b.name);
+  });
   if (others.length === 0) {
     sel.style.display = 'none';
   } else {
     sel.style.display = '';
-    sel.innerHTML = '<option value="">↕ 다른 학회로 전환</option>' +
+    sel.innerHTML = `<option value="">${t('switch_conf')}</option>` +
       others.map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`).join('');
     sel.onchange = () => {
       const id = sel.value;
@@ -1842,7 +1943,7 @@ function hi(s) {
 
 // ====== Buttons ======
 document.getElementById('btn-clear').onclick = () => {
-  if (!confirm('선택을 모두 해제할까요?')) return;
+  if (!confirm(t('clear_confirm'))) return;
   state.selected.clear();
   saveSelection();
   renderAll();
@@ -1854,7 +1955,7 @@ function icsEscape(s) {
 }
 
 document.getElementById('btn-export-ics').onclick = () => {
-  if (state.selected.size === 0) { alert('선택된 발표가 없습니다.'); return; }
+  if (state.selected.size === 0) { alert(t('no_selected')); return; }
   const dateToIso = (str) => {
     const dp = parseDateParts(str);
     return dp ? `${dp.y}${String(dp.m).padStart(2,'0')}${String(dp.d).padStart(2,'0')}` : '';
@@ -1909,7 +2010,7 @@ function csvCell(v) {
 document.getElementById('btn-export-csv').onclick = () => {
   // Collect candidate keys
   const keys = new Set([...state.selected, ...state.notes.keys()]);
-  if (keys.size === 0) { alert('내보낼 항목이 없습니다 (선택·평점·메모 중 하나 이상 필요).'); return; }
+  if (keys.size === 0) { alert(t('no_export')); return; }
 
   const header = ['Day','Date','PaperStart','PaperEnd','SessionStart','SessionEnd','Building','Room','SessionID','Track','PaperNo','Title','Authors','Selected','Rating','Notes'];
   const rows = [header.map(csvCell).join(',')];
@@ -2007,7 +2108,7 @@ function applyImportedState(p) {
 // ===== JSON state export =====
 document.getElementById('btn-export-state').onclick = () => {
   if (state.selected.size === 0 && state.notes.size === 0) {
-    alert('내보낼 선택이나 메모가 없습니다.'); return;
+    alert(t('no_export_state')); return;
   }
   const payload = {
     version: 1,
@@ -2049,7 +2150,7 @@ function buildShareUrl() {
 }
 
 document.getElementById('btn-share').onclick = () => {
-  if (state.selected.size === 0) { alert('공유할 선택이 없습니다. 먼저 발표를 선택해 주세요.'); return; }
+  if (state.selected.size === 0) { alert(t('share_none')); return; }
   const url = buildShareUrl();
   document.getElementById('share-url').value = url;
   // QR via free public service. If offline, the img onerror handler shows a fallback message.
@@ -2069,8 +2170,8 @@ document.getElementById('share-copy').onclick = () => {
   inp.select();
   try {
     navigator.clipboard.writeText(inp.value);
-    document.getElementById('share-copy').textContent = '복사됨';
-    setTimeout(() => { document.getElementById('share-copy').textContent = '복사'; }, 1500);
+    document.getElementById('share-copy').textContent = t('copied');
+    setTimeout(() => { document.getElementById('share-copy').textContent = t('copy'); }, 1500);
   } catch (_) {
     document.execCommand('copy');
   }
@@ -2135,7 +2236,7 @@ document.getElementById('btn-now').onclick = () => {
   if (!scrollToNow(true)) {
     // 현재/예정 세션이 없으면 안내
     const hint = document.getElementById('now-hint');
-    if (hint) hint.textContent = '오늘 진행 중이거나 예정된 세션이 없습니다.';
+    if (hint) hint.textContent = t('hint_none_today');
   }
 };
 document.getElementById('toggle-collapse-past').onchange = (e) => {
@@ -2246,11 +2347,116 @@ document.getElementById('btn-expand-all-browse').onclick   = expandAllVisible;
   update();
 })();
 
+// ====== 정적 HTML 국제화 + 언어 토글 ======
+// 소스 HTML은 한국어. LANG === 'en'이면 부팅 시 한 번 텍스트를 치환한다.
+function applyStaticLang() {
+  // 언어 토글 버튼: 현재 언어의 "반대"를 라벨로 표시
+  const langBtn = document.getElementById('btn-lang');
+  if (langBtn) {
+    langBtn.textContent = EN ? '🌐 한국어' : '🌐 EN';
+    langBtn.onclick = () => {
+      const next = EN ? 'ko' : 'en';
+      localStorage.setItem('cs:lang', next);
+      const url = new URL(location.href);
+      url.searchParams.set('lang', next);
+      location.assign(url.toString());
+    };
+  }
+  if (!EN) return;
+
+  document.title = 'BuzzPlan — Conference Schedule Planner';
+  const set = (sel, fn) => { const el = document.querySelector(sel); if (el) fn(el); };
+  set('#btn-help',  el => { el.textContent = '❓ Help'; el.title = 'How to use'; });
+  set('#btn-clear', el => el.textContent = 'Clear selections');
+  set('#btn-share', el => el.textContent = '🔗 Share link');
+  set('#btn-export-state', el => el.textContent = '💾 Export my data');
+  set('#btn-load-json',    el => el.textContent = '📂 Load');
+  set('#conf-chip', el => el.title = 'Current conference (click name to rename)');
+  set('#conf-name', el => el.title = 'Click to rename');
+  set('#conf-edit', el => el.title = 'Rename conference');
+  set('#conf-switch', el => el.title = 'Switch to another conference');
+  set('.panel h2', el => el.textContent = 'Filters');
+  set('#search', el => el.placeholder = '🔍 Search title · author · keyword');
+  set('#timerange-clear', el => el.textContent = 'Reset');
+  document.querySelectorAll('.filter-head label').forEach(lb => {
+    const chev = lb.querySelector('.filter-chev');
+    const txt = lb.textContent.trim();
+    const name = txt.includes('트랙') ? 'Tracks' : txt.includes('건물') ? 'Rooms'
+               : txt.includes('참석') ? 'Available hours' : null;
+    if (!name) return;
+    lb.innerHTML = '';
+    if (chev) lb.appendChild(chev);
+    lb.appendChild(document.createTextNode((chev ? ' ' : '') + name));
+  });
+  document.querySelectorAll('.filter-toggles a[data-act="all"]').forEach(a => a.textContent = 'All');
+  document.querySelectorAll('.filter-toggles a[data-act="none"]').forEach(a => a.textContent = 'None');
+  set('.view-tab[data-view="browse"]', el => el.innerHTML = '📋 Browse');
+  set('.view-tab[data-view="itinerary"]', el =>
+    el.innerHTML = '📅 My schedule <span class="badge" id="view-badge">0</span>');
+  set('#btn-now', el => el.textContent = t('now'));
+  set('.collapse-toggle', el => {
+    const cb = el.querySelector('input');
+    el.innerHTML = ''; el.appendChild(cb); el.appendChild(document.createTextNode(' Fold past sessions'));
+  });
+  set('#btn-collapse-all-browse', el => { el.textContent = t('fold_all'); el.title = 'Fold all visible sessions'; });
+  set('#btn-expand-all-browse',   el => { el.textContent = t('unfold_all'); el.title = 'Unfold all visible sessions'; });
+  set('#to-top', el => { el.title = 'Back to top'; el.setAttribute('aria-label', 'Back to top'); });
+  set('#share-copy', el => el.textContent = 'Copy');
+
+  // Help modal (영어판 전체 치환)
+  set('#help-modal .modal-head strong', el => el.textContent = '📘 How to use BuzzPlan');
+  set('#help-modal .modal-body', el => el.innerHTML = `
+    <p class="help-p" style="font-size:12px;color:#666;margin-bottom:14px;">
+      <strong>BuzzPlan</strong> helps you pick conference talks in advance and plan
+      your walking route between rooms — like a busy bee marking its flowers.
+    </p>
+    <h4 class="help-h">① Pick talks → view your schedule</h4>
+    <p class="help-p">
+      In the <strong>Browse</strong> tab, tick the checkbox next to talks you want to attend.
+      Narrow down with the left <strong>filters</strong> (search · day · time range · track · room).
+      Then open <strong>My schedule</strong> for a time-ordered list (with walking-distance hints)
+      or a timetable grid (rooms × time). Rate and take notes right under each talk.
+    </p>
+    <h4 class="help-h">② 📱 Move between computer and phone</h4>
+    <p class="help-p">
+      Press <strong>🔗 Share link</strong> in the header to get a <strong>QR code</strong> and URL.
+      Scan the QR with your phone (or message yourself the URL) and your selections
+      and ratings apply automatically. Works in both directions.
+    </p>
+    <p class="help-note">
+      ※ The share link carries <strong>selections and ratings only</strong>.
+      To move notes too, use <em>Export my data</em>.
+    </p>
+    <h4 class="help-h">③ 💾 Keep it / send to a calendar</h4>
+    <ul class="help-ul">
+      <li><strong>💾 Export my data / 📂 Load</strong> — save and restore everything (incl. notes) as JSON.</li>
+      <li><strong>📅 ICS</strong> — import into Google Calendar, Apple Calendar, etc.</li>
+      <li><strong>📊 CSV</strong> — organize notes in Excel.</li>
+    </ul>
+    <h4 class="help-h">④ Tips</h4>
+    <ul class="help-ul">
+      <li><strong>🔴 Now</strong> — auto-scrolls to the current (or next) session.</li>
+      <li>Click a session header to <strong>fold/unfold</strong> its papers; "Fold all" too.</li>
+      <li>On mobile, <strong>track/room filters</strong> start folded (tap to open).</li>
+      <li>A <strong>↑ top</strong> button appears when you scroll down.</li>
+      <li>Click the <strong>conference name</strong> to rename; use the dropdown to switch conferences.</li>
+    </ul>`);
+
+  // Share modal
+  set('#share-modal .modal-head strong', el => el.textContent = 'Share my schedule');
+  set('#share-modal .modal-note', el => el.innerHTML =
+    'This link contains your <strong>selected talks and ratings</strong>. ' +
+    'Notes are not included (use <em>Export my data</em> for those).');
+  set('#share-modal .modal-hint', el => el.textContent =
+    'Scan the QR with your phone, or send yourself the URL and open it there — it applies automatically.');
+}
+
 // ====== Boot (async: fetch data, then initialize) ======
 async function bootApp() {
+  applyStaticLang();  // ?lang=en이면 정적 HTML(버튼·필터·모달)을 영어로 치환
   // Show a tiny loading hint while data fetches
-  document.getElementById('itinerary').innerHTML = '<div class="empty">데이터를 불러오는 중...</div>';
-  document.getElementById('session-list').innerHTML = '<div class="empty">데이터를 불러오는 중...</div>';
+  document.getElementById('itinerary').innerHTML = `<div class="empty">${t('loading')}</div>`;
+  document.getElementById('session-list').innerHTML = `<div class="empty">${t('loading')}</div>`;
 
   // 1. Load conferences index
   try {

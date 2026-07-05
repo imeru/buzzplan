@@ -45,7 +45,7 @@ python3 -m http.server 8080
 | iaqvec-2026 | IAQVEC 2026 | parser.py | 60세션/321발표. 발표 시간=세션÷15분. venue.walk 보유 |
 | sarek-2025-winter | 대한설비공학회 2025 동계 | parser_sarek.py | 34세션/159발표. 발표별 명시 시간 |
 | sarek-2025-summer | 대한설비공학회 2025 하계 | parser_sarek_summer.py | 66세션/312발표. 2일·다회장 |
-| sarek-2026-summer | 대한설비공학회 2026 하계 | parser_sarek_summer.py | default. 74세션/340발표. `--day-fix 19:25` 필요 |
+| sarek-2026-summer | 대한설비공학회 2026 하계 | parser_sarek_summer.py | default. 76세션/407발표 (포스터 2세션 67편은 Claude 직접 추출로 추가). `--day-fix 19:25` 필요 |
 
 ## 데이터 스키마 (v2)
 
@@ -81,6 +81,9 @@ v1 레거시 데이터(12시간제 "1:30"=오후, M/D/YYYY 날짜)는 index.html
 ## index.html 주요 구조 (JS)
 
 - `bootApp()` — conferences.json + data fetch → initState → renderAll → 자동 스크롤 + startNowTimer
+- **i18n** — 소스 문자열은 한국어. `?lang=en`(또는 저장된 설정)이면 `t(key)` + `applyStaticLang()`으로 영어 표시. 헤더 🌐 버튼으로 토글
+- **timezone 인지 상태** — `nowParts()`가 `conference.timezone` 기준 현지 시각을 계산 → `sessionStatus()`의 past/current/upcoming이 학회 현지 기준 (tz 없거나 무효하면 기기 로컬 폴백)
+- **세션 타입 뱃지** — `session.type`이 poster/keynote/social/break면 세션 헤더에 뱃지. poster는 `paperTime()`에서 세션 전체 시간 공유(kind=shared)
 - `state` — selected/notes/필터/뷰 등. 학회별 localStorage 네임스페이스 `cs:<confId>:*`
 - `renderSessions()` — 둘러보기 탭. 필터(검색·Day·시간범위·트랙·건물) + 현재시각 상태(past/current/upcoming)
 - `renderItinerary()` — 내 일정 탭. 리스트/시간표(grid) 토글. 다중 방 슬롯 타임라인 + hop 힌트
@@ -111,7 +114,8 @@ build.py가 data/<id>.json 생성 + conferences.json 등록까지 자동 처리.
 
 ## 알려진 제한
 
-- SAREK 하계: 일부 특별세션(9-D, 10-D 등)과 포스터 세션(25-S-240~243, 270~273)은 변형 레이아웃이라 누락 가능.
+- SAREK 하계 규칙 파서: 일부 특별세션(9-D, 10-D 등)과 포스터 세션은 변형 레이아웃이라 누락 가능.
+  (2026 하계 포스터 67편은 Tier 2 방식으로 수동 추가 완료. 2025 하계 포스터는 여전히 누락.)
 - 일부 발표는 PDF 렌더링이 글자 단위로 쪼개져 추출됨 → `consolidate_split_chars()`로 보정(gap≤0.5pt 병합).
 - 발표 시간 균등 분할이 아닌 고정 15분(PAPER_MINUTES). 발표 수 적은 세션은 일찍 종료로 표시.
 
@@ -120,11 +124,11 @@ build.py가 data/<id>.json 생성 + conferences.json 등록까지 자동 처리.
 - parser_llm.py **라이브 검증** — API 키로 실제 PDF 파일럿 실행 후 규칙 파서 결과와 대조 (코드는 완성, 미실행)
 - 웹 프로그램 페이지(HTML)·Excel/CSV 임포터 — PDF 외 입력 소스
 - 세 파서의 레이아웃 헬퍼(group_rows, consolidate_split_chars, is_skip_row)도 parser_utils.py로 추출 (v2 정규화는 완료)
-- SAREK 포스터 세션 전용 파서
+- SAREK 포스터 세션 전용 파서 (또는 Tier 2로 처리 — 2026 하계는 후자로 완료)
 - 발표 시작 5분 전 알림 (Notification API)
 - 학회 간 비교 모드 / 통합 통계
 - 시간 범위 필터 프리셋(오전만/오후만) + localStorage 기억
-- UI 다국어(en) — 국제 학회 사용자용
+- i18n 잔여: JSON 임포트 오류·공유 충돌 confirm 등 저빈도 다이얼로그는 아직 한국어 고정
 
 ## 개발 워크플로
 

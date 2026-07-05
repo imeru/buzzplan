@@ -1040,6 +1040,32 @@
       "floor": 1,
       "chair": "김동규 (중앙대학교)",
       "type": "oral"
+    },
+    {
+      "id": "P-1",
+      "day": 25,
+      "date": "2026-06-25",
+      "track_title": "포스터 세션 1부 (컨벤션센터 2층 로비)",
+      "start": "13:30",
+      "end": "14:10",
+      "building": "회장",
+      "room": "포스터",
+      "floor": 2,
+      "chair": "전용석 (아주대학교)",
+      "type": "poster"
+    },
+    {
+      "id": "P-2",
+      "day": 25,
+      "date": "2026-06-25",
+      "track_title": "포스터 세션 2부 (컨벤션센터 2층 로비)",
+      "start": "15:30",
+      "end": "16:10",
+      "building": "회장",
+      "room": "포스터",
+      "floor": 2,
+      "chair": "윤성민 (성균관대학교)",
+      "type": "poster"
     }
   ],
   "papers": [
@@ -3762,6 +3788,408 @@
       "title": "미세 냉매 유량 제어를 통한 습도 제어 기술에 대한 연구",
       "start": "10:00",
       "end": "10:15"
+    },
+    {
+      "paper_no": "26-S-304",
+      "session_id": "P-1",
+      "authors": "Hsb Thohar Ahmad*, Hyunjin Lee(Kookmin Univ.)",
+      "title": "Energy Consumption Optimization in Electric Cars Using Weather Data-Based Predictive Control Strategy"
+    },
+    {
+      "paper_no": "26-S-305",
+      "session_id": "P-1",
+      "authors": "MOTUMA LEMA YEBESSA*, Juhyeong Jeon, Hyunjin Lee(Kookmin Univ.), Donghwan Kim(Hyundai Motor Company)",
+      "title": "Impact of glass optical properties on vehicle thermal load"
+    },
+    {
+      "paper_no": "26-S-306",
+      "session_id": "P-1",
+      "authors": "ROHMAN SOPYAN ALI*, Hyunjin Lee(Kookmin Univ.)",
+      "title": "Estimation of Solar Irradiance on a Vehicle Surface Incorporating Inter-Surface View Factors"
+    },
+    {
+      "paper_no": "26-S-307",
+      "session_id": "P-1",
+      "authors": "ZHANGGUOXIN*, 김권예, 남유진(부산대학교)",
+      "title": "기후변화모델 기반 재생열원 히트펌프 시스템의 성능 및 경제성 분석"
+    },
+    {
+      "paper_no": "26-S-308",
+      "session_id": "P-1",
+      "authors": "강승희*, 윤시원(전북대학교)",
+      "title": "물리 정보 기반 신경망(PINN)을 활용한 온실 내부 온도 예측 모델 연구"
+    },
+    {
+      "paper_no": "26-S-309",
+      "session_id": "P-1",
+      "authors": "강율호*, 송해은, 우상무, 안영철(부산대학교)",
+      "title": "시내버스 실내·실외 부착형 환경센서를 활용한 버스 내부 미세먼지 농도 변화 특성 분석"
+    },
+    {
+      "paper_no": "26-S-310",
+      "session_id": "P-1",
+      "authors": "고원준*, 홍희기, 송재만(경희대학교)",
+      "title": "단계적 LSTM 기반 태양열 시스템 집열량 예측 모델의 민감도 및 운전 적용성 분석"
+    },
+    {
+      "paper_no": "26-S-311",
+      "session_id": "P-1",
+      "authors": "구나현*, 이찬, 남승현, 최혜원, 강신우, 김도현(수원대학교), 이상열, 양상호(Samwon E&B)",
+      "title": "후연 세레이션을 가지는 축류팬의 블레이드 효율 향상 연구"
+    },
+    {
+      "paper_no": "26-S-312",
+      "session_id": "P-1",
+      "authors": "구지성*, 구경모, 전용준, 박경순(동의대학교)",
+      "title": "폭우 특별재난지역 그린리모델링 사업의 추가 방재시설 도입에 따른 사업비 영향 분석"
+    },
+    {
+      "paper_no": "26-S-313",
+      "session_id": "P-1",
+      "authors": "김경원*(서울연구원)",
+      "title": "건물 온실가스 감축 촉진을 위한 녹색 전환 금융 연계 방안"
+    },
+    {
+      "paper_no": "26-S-314",
+      "session_id": "P-1",
+      "authors": "김민준*, 서정식, 기하늘, 백민철, 오준석(한국냉동공조시험연구원), 김인관(월드이엔씨)",
+      "title": "염색공정(수세기) 폐열 이용 산업용 고온수 히트펌프 실증 연구"
+    },
+    {
+      "paper_no": "26-S-315",
+      "session_id": "P-1",
+      "authors": "김성균*(한국지질자원연구원)",
+      "title": "데이터센터·산업 폐열 계간 축열을 위한 차세대 UTES 기술의 잠재 CO₂ 감축 효과 분석"
+    },
+    {
+      "paper_no": "26-S-316",
+      "session_id": "P-1",
+      "authors": "김성우*, 이주승(국방과학연구소)",
+      "title": "레이저 대기 모드에서 Hot Gas Bypass 밸브 개도에 따른 냉각기 총소비전력 최적화"
+    },
+    {
+      "paper_no": "26-S-317",
+      "session_id": "P-1",
+      "authors": "김영재*, 한슬기, 최준서, 전용준, 박경순(동의대학교)",
+      "title": "황토벽돌구조의 그린리모델링 에너지 성능평가 결과의 특성 비교분석에 관한 연구"
+    },
+    {
+      "paper_no": "26-S-318",
+      "session_id": "P-1",
+      "authors": "김은지*, 이종훈, 이환이, 백종현, 오승진(한국생산기술연구원)",
+      "title": "주택용 R32 공기열 히트펌프 축열 시스템의 난방 전기화 실증 및 운전 특성 분석"
+    },
+    {
+      "paper_no": "26-S-319",
+      "session_id": "P-1",
+      "authors": "김의성*, 김해종, 강준영, 송민석, 홍성주(전주대학교)",
+      "title": "공기 유동 조건에 따른 오픈(Open) 및 베플(Baffle) 타입 18650 리튬이온 배터리 팩의 열 성능 분석"
+    },
+    {
+      "paper_no": "26-S-320",
+      "session_id": "P-1",
+      "authors": "김종수*, 정종민, 신정환, 전용석(아주대학교)",
+      "title": "항공기 지상 계류용 핀-튜브 증발기의 냉매별 열전달 특성 분석"
+    },
+    {
+      "paper_no": "26-S-321",
+      "session_id": "P-1",
+      "authors": "김진만*, 김선창(한국생산기술연구원)",
+      "title": "계류 항공기용 냉방 시스템에서 증발기 착상 거동 및 성능 저하의 동적 해석 연구"
+    },
+    {
+      "paper_no": "26-S-322",
+      "session_id": "P-1",
+      "authors": "김해종*, 오태정, 홍성주(전주대학교)",
+      "title": "매니폴드 형상에 따른 가지관 유동 분배 불균일성에 대한 수치해석 연구"
+    },
+    {
+      "paper_no": "26-S-323",
+      "session_id": "P-1",
+      "authors": "류우영*, 남장윤, Nicholas Boafo Lamptey, 최종민(한밭대학교)",
+      "title": "에너지 절감형 열성능 평가설비의 설정온도 변화에 따른 성능 특성 연구"
+    },
+    {
+      "paper_no": "26-S-324",
+      "session_id": "P-1",
+      "authors": "류제창*, 박병용, 윤영직(한밭대학교)",
+      "title": "기계적 작물 생장모델 기반 스마트팜 국부냉각 제어변수 도출"
+    },
+    {
+      "paper_no": "26-S-325",
+      "session_id": "P-1",
+      "authors": "문재호*, 이주현, 장동수(국민대학교)",
+      "title": "히트싱크 재질 변화에 따른 배터리 냉각 성능 비교"
+    },
+    {
+      "paper_no": "26-S-326",
+      "session_id": "P-1",
+      "authors": "박성진*, 정지환(부산대학교), 정다훈(LG전자)",
+      "title": "의류 건조기 운전 중 린트 축적에 따른 필터 압력강하의 동적 해석"
+    },
+    {
+      "paper_no": "26-S-327",
+      "session_id": "P-1",
+      "authors": "박태현*, 이민성, 드엉반하우, 박찬우(전북대학교)",
+      "title": "미활용수소 혼합 연소배가스를 활용한 이코노마이저열교환기 CFD기반 최적 설계 및 성능 해석"
+    },
+    {
+      "paper_no": "26-S-328",
+      "session_id": "P-1",
+      "authors": "배민정*, 강재식, 이수인(한국건설기술연구원)",
+      "title": "폴리카보네이트 시트의 수정방사율 특성 분석"
+    },
+    {
+      "paper_no": "26-S-329",
+      "session_id": "P-1",
+      "authors": "배민정*, 강재식, 이수인(한국건설기술연구원)",
+      "title": "파장별 Haze를 이용한 광확산 폴리카보네이트 시트의 광산란 특성 분석"
+    },
+    {
+      "paper_no": "26-S-330",
+      "session_id": "P-1",
+      "authors": "배상무*, 김유진, 최현중(한국건설기술연구원), 서병모(한국에너지기술연구원)",
+      "title": "중고층 목조건축물의 열원설비 설계 최적화를 위한 데이터 기반 의사결정 에이전트 모델 구축"
+    },
+    {
+      "paper_no": "26-S-331",
+      "session_id": "P-1",
+      "authors": "서보성*, To Anh Khoa, 윤시원(전북대학교)",
+      "title": "포그 냉방 시스템의 분무 조건에 따른 온실 내부 열환경 및 광환경 변화 분석"
+    },
+    {
+      "paper_no": "26-S-332",
+      "session_id": "P-1",
+      "authors": "서유빈*, 허성수, 전용석(아주대학교)",
+      "title": "R290 냉매 적용 냉동사이클의 가연성 저감을 위한 충전량 최적화 및 성능 분석"
+    },
+    {
+      "paper_no": "26-S-333",
+      "session_id": "P-1",
+      "authors": "손병후*, 김혜기(한국건설기술연구원)",
+      "title": "공공 데이터를 활용한 어린이집의 그린리모델링 전후 에너지 사용량 변화 분석"
+    },
+    {
+      "paper_no": "26-S-334",
+      "session_id": "P-1",
+      "authors": "송왕기*, 김두산, 최태희, 김윤혁(한국원자력연구원)",
+      "title": "냉중성자실험시설 공조용 흡수식냉온수기의 진공도 변화에 따른 연료소비 특성 및 최적 운영방안"
+    },
+    {
+      "paper_no": "26-S-335",
+      "session_id": "P-1",
+      "authors": "신혜리*, 김유민(한국건설기술연구원)",
+      "title": "광역지자체 건물부문 전기화 수요와 신재생에너지 보급계획 간 정합성 분석"
+    },
+    {
+      "paper_no": "26-S-336",
+      "session_id": "P-1",
+      "authors": "오석준*, 김용기(한국건설기술연구원)",
+      "title": "공동주택 단지의 효율적 통합 관리를 위한 사전 학습 기반 강화학습 난방 제어 모델의 확장성 평가"
+    },
+    {
+      "paper_no": "26-S-337",
+      "session_id": "P-1",
+      "authors": "우상무*, 강율호, 송해은, 안영철(부산대학교)",
+      "title": "병원 실내 공간에서 환기장치 급배기구와 재실자 위치에 따른 CO2 확산 특성에 대한 해석적 연구"
+    },
+    {
+      "paper_no": "26-S-338",
+      "session_id": "P-2",
+      "authors": "유경훈*, 황준영, 이상호, 강정진, 강경태(한국생산기술연구원), 송근수((주)더금영), 정동호, 김영규, 양지석(청남공조(주)), 김춘식((주)티엔씨), 이건형(삼성디스플레이)",
+      "title": "반도체 전기클린룸의 공기 유동장 개선 수치해석"
+    },
+    {
+      "paper_no": "26-S-339",
+      "session_id": "P-2",
+      "authors": "유경훈*, 황준영, 이상호, 이혜진, 호악화, 강경태, 우주영, 송신애, 강정진(한국생산기술연구원), 송근수((주)더금영), 김춘식((주)티엔지), 이건형(삼성디스플레이)",
+      "title": "반도체 슬립유동 ALD 공정장비를 위한 가스유동장 수치해석"
+    },
+    {
+      "paper_no": "26-S-340",
+      "session_id": "P-2",
+      "authors": "윤선우*, 최원재, 차종민, 김슬기, 김현서, 박창용(서울과학기술대학교)",
+      "title": "TPMS구조 열교환기 내부의 응축 열전달 연구"
+    },
+    {
+      "paper_no": "26-S-341",
+      "session_id": "P-2",
+      "authors": "윤영원*(한국지앤씨), 이동구, 홍승민(한국생산기술연구원)",
+      "title": "매니폴드 내 균일한 유량 분배를 위한 다단 오리피스 유량 균형 장치의 설계 및 실험적 검증"
+    },
+    {
+      "paper_no": "26-S-342",
+      "session_id": "P-2",
+      "authors": "이동훈*, 김준석, 김종수, 전용석(아주대학교)",
+      "title": "공동주택 탄소중립을 위한 중앙-분산 통합형 히트펌프 시스템 적용성 검토"
+    },
+    {
+      "paper_no": "26-S-343",
+      "session_id": "P-2",
+      "authors": "이루다*, 김민우, 이준영, 윤종호, 김동수, 윤경(한밭대학교), 배상순(기후변화대응 에너지전환 협동조합)",
+      "title": "옵티마이저 적용 단면형 및 양면형 태양광 모듈의 실측 기반 발전 성능 비교 분석"
+    },
+    {
+      "paper_no": "26-S-344",
+      "session_id": "P-2",
+      "authors": "이수인*, 배상무, 김유진, 최현중(한국건설기술연구원)",
+      "title": "건물 외피 에너지 성능 향상을 위한 스마트 윈도우 기술의 적용 가능성 분석"
+    },
+    {
+      "paper_no": "26-S-345",
+      "session_id": "P-2",
+      "authors": "이슬*, 김종훈, 한광우(한국에너지기술연구원), 장길수(고려대학교)",
+      "title": "SNN-MoE를 활용한 에너지 효율적인 분전반 다채널 미래 상태값 예측·분류 동시 추론 프레임워크"
+    },
+    {
+      "paper_no": "26-S-346",
+      "session_id": "P-2",
+      "authors": "이연규*, 현재준, 이동휘(전북대학교), 김의재, 장병일(한국원자력연료), 박세현, 조항진(포항공과대학교)",
+      "title": "광섬유 온도센서를 이용한 소형모듈원자로 모사 환경에서의 임계 열유속 측정"
+    },
+    {
+      "paper_no": "26-S-347",
+      "session_id": "P-2",
+      "authors": "이예지*(인천대학교), 최두성, 정용호(청운대학교), 고명진(대림대학교)",
+      "title": "확장평균법(EXAM)에 의한 현장 열관류율 추정의 일치성 및 재현성 평가"
+    },
+    {
+      "paper_no": "26-S-348",
+      "session_id": "P-2",
+      "authors": "이용택*, 임건희, 한재혁, 정윤영(한남대학교)",
+      "title": "세포배양용 CO2 인큐베이터의 온도 및 습도분포 과도 해석"
+    },
+    {
+      "paper_no": "26-S-349",
+      "session_id": "P-2",
+      "authors": "이재안*, 정지환(부산대학교)",
+      "title": "냉장고용 진공단열패널의 내부 압력 예측 모델"
+    },
+    {
+      "paper_no": "26-S-350",
+      "session_id": "P-2",
+      "authors": "이종훈*, 송태환, 고지운, 김은지, 우성용, 백종현, 오승진(한국생산기술연구원)",
+      "title": "P2H(Power-to-Heat) 기반 잠열 축열조의 순환수 온도 및 유량에 따른 방열 성능 평가"
+    },
+    {
+      "paper_no": "26-S-351",
+      "session_id": "P-2",
+      "authors": "이주원*, 최부헌, 고범승(케이웨더)",
+      "title": "조리흄 관리를 위한 환기시스템용 ACF 복합필터의 연소성 미세먼지 및 고농도 VOCs 저감 특성 평가"
+    },
+    {
+      "paper_no": "26-S-352",
+      "session_id": "P-2",
+      "authors": "이주현*, 문재호, 장동수(국민대학교)",
+      "title": "지열 히트펌프의 제어 로직 변화에 따른 에너지 성능 분석"
+    },
+    {
+      "paper_no": "26-S-353",
+      "session_id": "P-2",
+      "authors": "이준영*, 김동수, 김재원, 윤종호(한밭대학교), 남현진, 고재윤(LG전자)",
+      "title": "창호 열성능에 따른 VRF 시스템의 EEV 제어 특성 실험 분석"
+    },
+    {
+      "paper_no": "26-S-354",
+      "session_id": "P-2",
+      "authors": "이한솔*, 최경석(한국건설기술연구원)",
+      "title": "외벽일체형 BIPV 시스템의 단열성능 향상을 위한 전열해석 및 시험 평가"
+    },
+    {
+      "paper_no": "26-S-355",
+      "session_id": "P-2",
+      "authors": "이현화*, 강재식(한국건설기술연구원)",
+      "title": "디지털 그린 리모델링 프로세스 및 효과 분석"
+    },
+    {
+      "paper_no": "26-S-356",
+      "session_id": "P-2",
+      "authors": "이형주*(강원대학교)",
+      "title": "미세액막의 젖음성 특성에 따른 증발 특성 연구"
+    },
+    {
+      "paper_no": "26-S-357",
+      "session_id": "P-2",
+      "authors": "이호근*, 김해종, 홍성주(전주대학교)",
+      "title": "세로형 18650 리튬 이온 배터리 팩의 공랭식 냉각 성능에 관한 CFD 연구"
+    },
+    {
+      "paper_no": "26-S-358",
+      "session_id": "P-2",
+      "authors": "Seung Joo Lim*, Yessika Natalia Chelsie(Korea Atomic Energy Research Institute)",
+      "title": "Influence of acoustic fields on the radioactive deposition within iodine filter media"
+    },
+    {
+      "paper_no": "26-S-359",
+      "session_id": "P-2",
+      "authors": "Seung Joo Lim*, Yessika Natalia Chelsie(Korea Atomic Energy Research Institute)",
+      "title": "Optimizing radioactive nuclide treatment using zeolite filter"
+    },
+    {
+      "paper_no": "26-S-360",
+      "session_id": "P-2",
+      "authors": "장지훈*, 강재식, 안호상, 이수인, 진인엽(한국건설기술연구원)",
+      "title": "디지털 그린리모델링 통합플랫폼 구축을 위한 프로세스 및 모듈 연계 방안"
+    },
+    {
+      "paper_no": "26-S-361",
+      "session_id": "P-2",
+      "authors": "장현규*, 김준수, 남유진(부산대학교)",
+      "title": "동적시뮬레이션을 활용한 PVT-데시컨트 하이브리드 시스템의 성능 분석"
+    },
+    {
+      "paper_no": "26-S-362",
+      "session_id": "P-2",
+      "authors": "정진만*, 박병용(한밭대학교)",
+      "title": "국립세종수목원 사계절온실 공조방식 분석의 한계점에 관한 연구"
+    },
+    {
+      "paper_no": "26-S-363",
+      "session_id": "P-2",
+      "authors": "진혜선*, 김예원, 유기형(한국건설기술연구원)",
+      "title": "공동주택 Plug-load 내부발열의 실측 기반 특성 분석 및 평가 입력체계 제안"
+    },
+    {
+      "paper_no": "26-S-364",
+      "session_id": "P-2",
+      "authors": "최부헌*, 이주원, 고범승(케이웨더)",
+      "title": "실내외 환경 데이터 연동형 지능형 공조 제어 알고리즘의 에너지 소비량 절감 성능 평가"
+    },
+    {
+      "paper_no": "26-S-365",
+      "session_id": "P-2",
+      "authors": "최유승*, 이승준, 신호민, 전용준, 박경순(동의대학교)",
+      "title": "그린리모델링 적용에 따른 공동주택 욕실 환기방식의 성능 개선 효과 분석"
+    },
+    {
+      "paper_no": "26-S-366",
+      "session_id": "P-2",
+      "authors": "최정민*, 최세영, 이수진(창원대학교)",
+      "title": "강화학습 기반 건물 냉방 설정온도 제어를 통한 에너지 절감 및 열쾌적성 유지 성능 분석"
+    },
+    {
+      "paper_no": "26-S-367",
+      "session_id": "P-2",
+      "authors": "최홍성*, 문상일, 이형래(문창), 오주, 윤미연(지식재산처)",
+      "title": "지하 저수조 노화 손상 현황 및 대책"
+    },
+    {
+      "paper_no": "26-S-368",
+      "session_id": "P-2",
+      "authors": "추찬호*, 김동규(중앙대학교)",
+      "title": "전기화학적 압축기의 응용 분야 및 적용 가능성 연구"
+    },
+    {
+      "paper_no": "26-S-369",
+      "session_id": "P-2",
+      "authors": "한혜린*, 전상현, 고배원(인테그라디앤씨)",
+      "title": "설비융복합 유닛 커튼월 기반 OSC 외벽 시스템의 3차원 열교 특성 분석"
+    },
+    {
+      "paper_no": "26-S-370",
+      "session_id": "P-2",
+      "authors": "홍기정*, 오주, 최정원(지식재산처)",
+      "title": "기체수소 저장기술의 글로벌 특허동향 분석"
     }
   ],
   "schema_version": 2
