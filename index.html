@@ -2021,6 +2021,9 @@ if (typeof firebase !== 'undefined') {
 function updateLoginButtonUI() {
   const btn = document.getElementById('btn-login');
   if (!btn) return;
+  // SDK 로드 실패(오프라인·차단) 시 동기화 불가 → 버튼 숨김
+  if (typeof firebase === 'undefined') { btn.style.display = 'none'; return; }
+  btn.style.display = '';
   if (currentUser) {
     const first = (currentUser.displayName || currentUser.email || '').trim().split(/\s+/)[0] || '';
     btn.textContent = `🟢 ${first}`;
@@ -2701,6 +2704,7 @@ function applyStaticLang() {
 // ====== Boot (async: fetch data, then initialize) ======
 async function bootApp() {
   applyStaticLang();  // ?lang=en이면 정적 HTML(버튼·필터·모달)을 영어로 치환
+  updateLoginButtonUI();  // 인증 상태 확인 전에도 "로그인" 라벨을 즉시 표시 (빈 버튼 방지)
   // Show a tiny loading hint while data fetches
   document.getElementById('itinerary').innerHTML = `<div class="empty">${t('loading')}</div>`;
   document.getElementById('session-list').innerHTML = `<div class="empty">${t('loading')}</div>`;
