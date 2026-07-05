@@ -2042,26 +2042,23 @@ function updateLoginButtonUI() {
 async function doSignIn() {
   if (typeof firebase === 'undefined') return;
   const provider = new firebase.auth.GoogleAuthProvider();
-  // 모바일(좁은 화면)은 팝업이 부자연스러우므로 바로 redirect 방식을 사용.
-  const narrow = window.matchMedia('(max-width: 720px)').matches;
-  if (narrow) {
-    try { await firebase.auth().signInWithRedirect(provider); }
-    catch (e) { alert(t('login_fail') + e.message); }
-    return;
-  }
+  // 모바일 포함 항상 팝업 우선. redirect는 호스팅 도메인(imeru.github.io)과
+  // authDomain(buzzplan.firebaseapp.com)이 달라 모바일 브라우저의 서드파티
+  // 스토리지 차단(Safari ITP, Chrome 파티셔닝)에 걸리면 돌아와도 로그인이
+  // 소실된다 — Firebase 공식 권장도 이 환경에선 popup이다.
+  // 클릭 핸들러(사용자 제스처) 안이므로 모바일에서도 팝업이 열린다.
   try {
     await firebase.auth().signInWithPopup(provider);
   } catch (e) {
     const code = e && e.code;
-    if (code === 'auth/popup-closed-by-user') return;  // 사용자가 취소 — 조용히 무시
+    if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return;
     if (code === 'auth/popup-blocked') {
+      // 팝업이 차단된 드문 경우에만 redirect 폴백 (데스크톱 구형 설정 등)
       try { await firebase.auth().signInWithRedirect(provider); }
       catch (e2) { alert(t('login_fail') + e2.message); }
       return;
     }
-    // 그 외 오류도 redirect로 한 번 더 시도해보고, 그마저 실패하면 알림.
-    try { await firebase.auth().signInWithRedirect(provider); }
-    catch (_) { alert(t('login_fail') + e.message); }
+    alert(t('login_fail') + (e.message || code || e));
   }
 }
 
