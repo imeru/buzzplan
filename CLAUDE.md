@@ -13,7 +13,11 @@
 로고: `assets/buzzplan-logo.png` (1x), `assets/buzzplan-logo@2x.png` (retina).
 
 - 배포: GitHub Pages — `https://imeru.github.io/buzzplan/`
-- 백엔드 없음. 정적 호스팅 + 브라우저 localStorage만 사용.
+- 정적 호스팅 + localStorage(게스트/오프라인) + **Firebase 계정 동기화(선택)**:
+  구글 로그인 시 Firestore `users/<uid>/confs/<confId>` 문서로 기기 간 실시간 동기화.
+  키별 LWW 병합(`state.stamps` 타임스탬프 기준, 삭제도 tombstone으로 전파).
+  로그인 안 하면 기존과 100% 동일. 보안 규칙은 `firestore.rules` (콘솔에 수동 배포).
+  Firebase 프로젝트: `buzzplan` (사용자 구글 계정 소유). 무료 티어로 수백 명까지 커버.
 
 ## 아키텍처
 

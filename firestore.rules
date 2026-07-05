@@ -1,0 +1,19 @@
+rules_version = '2';
+
+// BuzzPlan Firestore 보안 규칙
+// 배포: Firebase Console → Firestore Database → 규칙 탭에 붙여넣고 "게시"
+//
+// 원칙: 로그인한 사용자는 자기 데이터(users/<본인uid>/**)만 읽고 쓸 수 있다.
+// 수백 명이 사용해도 서로의 일정·메모는 완전히 격리된다.
+// (문서 크기는 Firestore 자체 한도 1MiB가 상한 — 학회 하나의 선택+메모는 수십 KB 수준)
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+    // 그 밖의 모든 경로는 접근 불가
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
