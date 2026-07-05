@@ -407,7 +407,7 @@
     display: inline-block; margin-left: 4px; font-size: 10px; color: #f5a623;
   }
 
-  /* Share modal */
+  /* Modal (help 등 공용) */
   .modal-bg {
     position: fixed; inset: 0; background: rgba(0,0,0,0.5);
     display: flex; align-items: center; justify-content: center; z-index: 1000;
@@ -425,8 +425,6 @@
     background: transparent; border: none; cursor: pointer; font-size: 18px; color: #888;
   }
   .modal-body { padding: 16px 18px; }
-  .modal-note { font-size: 13px; color: #444; margin: 0 0 12px; line-height: 1.5; }
-  .modal-hint { font-size: 11px; color: #888; margin: 10px 0 0; line-height: 1.5; }
 
   /* Help modal: wider + structured sections */
   .modal-help { max-width: 560px; }
@@ -451,21 +449,6 @@
     100% { box-shadow: 0 0 0 0   rgba(74,144,226,0); }
   }
   #btn-help.pulse { animation: help-pulse 1.6s ease-out infinite; }
-  .share-row { display: flex; gap: 6px; margin-bottom: 12px; }
-  .share-row input {
-    flex: 1; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px;
-    font-size: 12px; font-family: monospace; min-width: 0;
-  }
-  .share-row button {
-    background: #1f1f1f; color: #fff; border: none; padding: 0 14px;
-    border-radius: 4px; cursor: pointer; font-size: 12px;
-  }
-  .share-qr {
-    display: flex; justify-content: center; padding: 8px; background: #fafafa;
-    border-radius: 4px; min-height: 220px; align-items: center;
-  }
-  .share-qr img { width: 220px; height: 220px; }
-  .share-qr .err { font-size: 11px; color: #888; text-align: center; }
 
   /* Session type badges (poster/keynote/social/break; oral은 뱃지 없음) */
   .type-badge {
@@ -517,12 +500,8 @@
     <button id="btn-lang" title="Language">🌐 EN</button>
     <button id="btn-help" title="사용법">❓ 도움말</button>
     <button id="btn-clear">선택 초기화</button>
-    <button id="btn-share">🔗 공유 링크</button>
-    <button id="btn-export-state">💾 내 데이터 내보내기</button>
-    <button id="btn-load-json">📂 불러오기</button>
     <button id="btn-export-ics">📅 ICS</button>
     <button id="btn-export-csv">📊 CSV</button>
-    <input type="file" id="file-json" accept=".json" style="display:none">
   </div>
 </header>
 
@@ -548,18 +527,12 @@
 
       <h4 class="help-h">② 📱 컴퓨터 ↔ 모바일로 옮기기</h4>
       <p class="help-p">
-        헤더의 <strong>🔗 공유 링크</strong> 버튼을 누르면 <strong>QR 코드</strong>와 URL이
-        뜹니다. 폰 카메라로 QR을 스캔하거나 URL을 카톡으로 본인에게 전송한 뒤 폰에서 열면
-        선택한 발표와 별점이 자동 적용됩니다. 반대 방향(폰→PC)도 같은 방식입니다.
-      </p>
-      <p class="help-note">
-        ※ 공유 링크에는 <strong>선택과 별점만</strong> 담깁니다. 메모까지 옮기시려면 다음 항목의
-        <em>내 데이터 내보내기</em>를 쓰세요.
+        헤더의 <strong>🔑 로그인(구글)</strong>을 하면 모든 기기에서 선택·별점·메모가
+        자동으로 실시간 동기화됩니다. 다른 기기에서도 같은 계정으로 로그인만 하면 됩니다.
       </p>
 
-      <h4 class="help-h">③ 💾 영구 보관 / 다른 캘린더로</h4>
+      <h4 class="help-h">③ 💾 다른 캘린더로</h4>
       <ul class="help-ul">
-        <li><strong>💾 내 데이터 내보내기 / 📂 불러오기</strong> — 메모 포함 전체 상태를 JSON으로 저장·복원. 브라우저를 바꿔도 안전.</li>
         <li><strong>📅 ICS</strong> — Google Calendar·Apple Calendar 등에 임포트.</li>
         <li><strong>📊 CSV</strong> — Excel로 노트 정리.</li>
       </ul>
@@ -572,28 +545,6 @@
         <li>스크롤이 길어지면 우하단에 <strong>↑ 맨 위로</strong> 버튼이 나타남.</li>
         <li>상단 <strong>학회명</strong> 클릭으로 이름 변경, 옆 드롭다운으로 다른 학회 전환.</li>
       </ul>
-    </div>
-  </div>
-</div>
-
-<!-- Share-link modal -->
-<div class="modal-bg" id="share-modal" style="display:none;">
-  <div class="modal">
-    <div class="modal-head">
-      <strong>내 일정 공유 링크</strong>
-      <button class="modal-close" id="share-close">✕</button>
-    </div>
-    <div class="modal-body">
-      <p class="modal-note">
-        이 링크에는 본인의 <strong>선택한 발표와 별점</strong>이 포함됩니다.
-        메모는 포함되지 않습니다 (메모까지 옮기시려면 <em>내 데이터 내보내기</em>를 이용하세요).
-      </p>
-      <div class="share-row">
-        <input type="text" id="share-url" readonly>
-        <button id="share-copy">복사</button>
-      </div>
-      <div id="share-qr" class="share-qr"></div>
-      <p class="modal-hint">폰으로 QR을 스캔하거나 URL을 카톡으로 본인에게 전송해 열면 자동으로 적용됩니다.</p>
     </div>
   </div>
 </div>
@@ -710,9 +661,6 @@ const I18N_KO = {
   etal: ' 외', cnt_suffix: '개', switch_conf: '↕ 다른 학회로 전환', loading: '데이터를 불러오는 중...',
   clear_confirm: '선택을 모두 해제할까요?', no_selected: '선택된 발표가 없습니다.',
   no_export: '내보낼 항목이 없습니다 (선택·평점·메모 중 하나 이상 필요).',
-  no_export_state: '내보낼 선택이나 메모가 없습니다.',
-  share_none: '공유할 선택이 없습니다. 먼저 발표를 선택해 주세요.',
-  copied: '복사됨', copy: '복사',
   login: '🔑 로그인', logout_confirm: '로그아웃할까요? 이 기기의 데이터는 유지됩니다.',
   sync_title: '동기화 중 — 클릭하여 로그아웃', login_title: '구글 로그인으로 기기 간 동기화',
   login_fail: '로그인 실패: ',
@@ -734,9 +682,6 @@ const I18N_EN = {
   etal: ' et al.', cnt_suffix: '', switch_conf: '↕ Switch conference', loading: 'Loading data...',
   clear_confirm: 'Clear all selections?', no_selected: 'No papers selected.',
   no_export: 'Nothing to export (select, rate, or note at least one paper).',
-  no_export_state: 'No selections or notes to export.',
-  share_none: 'Nothing to share yet. Select some papers first.',
-  copied: 'Copied', copy: 'Copy',
   login: '🔑 Sign in', logout_confirm: 'Sign out? Data on this device is kept.',
   sync_title: 'Syncing — click to sign out', login_title: 'Sign in with Google to sync across devices',
   login_fail: 'Sign-in failed: ',
@@ -957,27 +902,6 @@ function touch(key) {
 
 function saveCollapsed() {
   localStorage.setItem(kCollapsed(), JSON.stringify([...state.collapsedSessions]));
-}
-
-// Swap to a different conference DATA loaded by the user:
-function switchConference(newData) {
-  DATA = newData;
-  invalidateCaches();
-  currentConfId = confIdFor(newData);
-  state.selected = new Set(JSON.parse(localStorage.getItem(kSelected()) || '[]'));
-  state.notes    = new Map(Object.entries(JSON.parse(localStorage.getItem(kNotes()) || '{}')));
-  state.collapsedSessions = new Set(JSON.parse(localStorage.getItem(kCollapsed()) || '[]'));
-  state.stamps   = new Map(Object.entries(JSON.parse(localStorage.getItem(kStamps()) || '{}')));
-  backfillStamps();
-  refreshBuildingKeyStrategy(newData);
-  state.tracks    = allTracksOf(newData);
-  state.buildings = allBuildingsOf(newData);
-  state.dayFilter = 'all'; state.search = '';
-  rememberConference(newData);
-  renderConfChip();
-  renderAll();
-  // 학회를 바꿨으면 동기화 구독도 새 학회 문서로 다시 건다.
-  if (currentUser) { stopSync(); startSync(currentUser); }
 }
 
 function getNote(key) {
@@ -2301,180 +2225,6 @@ document.getElementById('btn-export-csv').onclick = () => {
   a.click();
 };
 
-// ===== JSON import (auto-detects conference data vs personal state) =====
-document.getElementById('btn-load-json').onclick = () => document.getElementById('file-json').click();
-document.getElementById('file-json').onchange = (e) => {
-  const f = e.target.files[0]; if (!f) return;
-  const r = new FileReader();
-  r.onload = () => {
-    try {
-      const parsed = JSON.parse(r.result);
-      // Distinguish file type by content
-      if (parsed.sessions && parsed.papers) {
-        // → Conference data file: replace current conference
-        switchConference(parsed);
-      } else if (parsed.selected || parsed.notes) {
-        // → Personal state file: apply to current conference
-        applyImportedState(parsed);
-      } else {
-        alert('인식되지 않는 JSON입니다. sessions/papers 또는 selected/notes 필드가 필요합니다.');
-      }
-    } catch (err) { alert('JSON 파싱 실패: ' + err.message); }
-    finally { e.target.value = ''; }  // allow re-selecting the same file
-  };
-  r.readAsText(f);
-};
-
-function applyImportedState(p) {
-  if (p.conference_id && p.conference_id !== currentConfId) {
-    if (!confirm(
-      `이 데이터는 '${p.conference_id}' 학회의 것이고 현재 학회는 '${currentConfId}' 입니다.\n` +
-      `발표 ID가 일치하지 않으면 일부 항목이 무시될 수 있습니다. 그래도 진행할까요?`
-    )) return;
-  }
-  const hasExisting = state.selected.size > 0 || state.notes.size > 0;
-  let merge = true;
-  if (hasExisting) {
-    merge = confirm(
-      `현재 ${state.selected.size}개 선택·${state.notes.size}개 메모가 있습니다.\n` +
-      `[확인] 합치기  ·  [취소] 덮어쓰기`
-    );
-  }
-  if (!merge) { state.selected.clear(); state.notes.clear(); }
-  for (const k of (p.selected || [])) state.selected.add(k);
-  for (const [k, v] of Object.entries(p.notes || {})) {
-    const cur = state.notes.get(k) || { rating: 0, note: '' };
-    state.notes.set(k, { ...cur, ...v });
-  }
-  saveSelection(); saveNotes();
-  // 스탬프 병합: 가져온 파일에 stamps가 있으면(버전 2+) 키별로 더 큰 값(최신)을 채택.
-  // 없으면(구버전 파일) 이번에 적용된 키들을 지금 시각으로 touch한 것으로 간주한다.
-  const appliedKeys = new Set([...(p.selected || []), ...Object.keys(p.notes || {})]);
-  if (p.stamps) {
-    for (const [k, ts] of Object.entries(p.stamps)) {
-      const cur = state.stamps.get(k) || 0;
-      if (ts > cur) state.stamps.set(k, ts);
-    }
-    // 파일에 stamps가 없는 적용 키(아주 구버전 등)는 현재 시각으로 보정
-    for (const k of appliedKeys) if (!(k in p.stamps)) state.stamps.set(k, Date.now());
-  } else {
-    for (const k of appliedKeys) state.stamps.set(k, Date.now());
-  }
-  saveStamps();
-  renderAll();
-  alert(`적용 완료: ${state.selected.size}개 선택, ${state.notes.size}개 메모`);
-}
-
-// ===== JSON state export =====
-document.getElementById('btn-export-state').onclick = () => {
-  if (state.selected.size === 0 && state.notes.size === 0) {
-    alert(t('no_export_state')); return;
-  }
-  const payload = {
-    version: 2,
-    conference_id: currentConfId,
-    conference_name: confNameFor(DATA),
-    exported_at: new Date().toISOString(),
-    selected: [...state.selected],
-    notes: Object.fromEntries(state.notes),
-    // key(session_id#paper_no)별 마지막 변경 시각(ms epoch). P2(Firestore 동기화) 도입 시
-    // 이 값을 기준으로 last-write-wins 병합에 사용한다.
-    stamps: Object.fromEntries(state.stamps),
-  };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], {type: 'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `my-${currentConfId}-state.json`;
-  a.click();
-};
-
-// ===== URL share link (selection + ratings only; notes excluded due to URL length) =====
-// UTF-8 safe URL-friendly base64
-function b64UrlEncode(s) {
-  const bytes = new TextEncoder().encode(s);
-  let bin = '';
-  for (const b of bytes) bin += String.fromCharCode(b);
-  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-function b64UrlDecode(s) {
-  const padded = s.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - s.length % 4) % 4);
-  const bin = atob(padded);
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return new TextDecoder().decode(bytes);
-}
-
-function buildShareUrl() {
-  const ratings = {};
-  for (const [k, n] of state.notes) if (n.rating) ratings[k] = n.rating;
-  const payload = { c: currentConfId, s: [...state.selected], r: ratings };
-  const code = b64UrlEncode(JSON.stringify(payload));
-  return location.origin + location.pathname + '#sh=' + code;
-}
-
-document.getElementById('btn-share').onclick = () => {
-  if (state.selected.size === 0) { alert(t('share_none')); return; }
-  const url = buildShareUrl();
-  document.getElementById('share-url').value = url;
-  // QR via free public service. If offline, the img onerror handler shows a fallback message.
-  const qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(url);
-  document.getElementById('share-qr').innerHTML =
-    `<img alt="QR code" src="${qrSrc}" onerror="this.outerHTML='<div class=&quot;err&quot;>QR 생성 실패 (오프라인일 수 있음) — URL을 복사해 사용하세요.</div>'">`;
-  document.getElementById('share-modal').style.display = 'flex';
-};
-document.getElementById('share-close').onclick = () => {
-  document.getElementById('share-modal').style.display = 'none';
-};
-document.getElementById('share-modal').onclick = (e) => {
-  if (e.target.id === 'share-modal') e.currentTarget.style.display = 'none';
-};
-document.getElementById('share-copy').onclick = () => {
-  const inp = document.getElementById('share-url');
-  inp.select();
-  try {
-    navigator.clipboard.writeText(inp.value);
-    document.getElementById('share-copy').textContent = t('copied');
-    setTimeout(() => { document.getElementById('share-copy').textContent = t('copy'); }, 1500);
-  } catch (_) {
-    document.execCommand('copy');
-  }
-};
-
-// ===== Apply share param on boot =====
-function applyShareFromHash() {
-  const m = location.hash.match(/sh=([^&]+)/);
-  if (!m) return;
-  let payload;
-  try { payload = JSON.parse(b64UrlDecode(m[1])); }
-  catch (e) { alert('공유 링크 파싱 실패: ' + e.message); return; }
-
-  if (payload.c && payload.c !== currentConfId) {
-    if (!confirm(
-      `공유 링크는 '${payload.c}' 학회의 것이고 현재 학회는 '${currentConfId}' 입니다.\n` +
-      `그대로 진행하면 발표 ID가 맞지 않아 일부 항목이 빈자리로 표시될 수 있습니다. 계속할까요?`
-    )) { history.replaceState(null, '', location.pathname); return; }
-  }
-  const hasExisting = state.selected.size > 0 || state.notes.size > 0;
-  let merge = true;
-  if (hasExisting) {
-    merge = confirm(
-      `현재 ${state.selected.size}개 선택이 있습니다.\n` +
-      `[확인] 합치기  ·  [취소] 덮어쓰기`
-    );
-  }
-  if (!merge) { state.selected.clear(); state.notes.clear(); }
-  for (const k of (payload.s || [])) state.selected.add(k);
-  for (const [k, r] of Object.entries(payload.r || {})) {
-    const cur = state.notes.get(k) || { rating: 0, note: '' };
-    state.notes.set(k, { ...cur, rating: r });
-  }
-  saveSelection(); saveNotes();
-  // 공유 링크로 적용된 키들도 로컬 변경으로 취급해 스탬프를 남긴다.
-  for (const k of new Set([...(payload.s || []), ...Object.keys(payload.r || {})])) touch(k);
-  // Clean the URL so refresh doesn't re-apply
-  history.replaceState(null, '', location.pathname);
-}
-
 // ====== Search input wiring (debounced) ======
 // 한글 IME는 한 글자 조합 중에도 input 이벤트가 여러 번 발생. 180ms 디바운스로
 // 매 키 입력마다 전체 세션 리스트를 다시 그리는 부담을 줄임.
@@ -2633,9 +2383,6 @@ function applyStaticLang() {
   const set = (sel, fn) => { const el = document.querySelector(sel); if (el) fn(el); };
   set('#btn-help',  el => { el.textContent = '❓ Help'; el.title = 'How to use'; });
   set('#btn-clear', el => el.textContent = 'Clear selections');
-  set('#btn-share', el => el.textContent = '🔗 Share link');
-  set('#btn-export-state', el => el.textContent = '💾 Export my data');
-  set('#btn-load-json',    el => el.textContent = '📂 Load');
   set('#conf-chip', el => el.title = 'Current conference (click name to rename)');
   set('#conf-name', el => el.title = 'Click to rename');
   set('#conf-edit', el => el.title = 'Rename conference');
@@ -2666,7 +2413,6 @@ function applyStaticLang() {
   set('#btn-collapse-all-browse', el => { el.textContent = t('fold_all'); el.title = 'Fold all visible sessions'; });
   set('#btn-expand-all-browse',   el => { el.textContent = t('unfold_all'); el.title = 'Unfold all visible sessions'; });
   set('#to-top', el => { el.title = 'Back to top'; el.setAttribute('aria-label', 'Back to top'); });
-  set('#share-copy', el => el.textContent = 'Copy');
 
   // Help modal (영어판 전체 치환)
   set('#help-modal .modal-head strong', el => el.textContent = '📘 How to use BuzzPlan');
@@ -2684,17 +2430,12 @@ function applyStaticLang() {
     </p>
     <h4 class="help-h">② 📱 Move between computer and phone</h4>
     <p class="help-p">
-      Press <strong>🔗 Share link</strong> in the header to get a <strong>QR code</strong> and URL.
-      Scan the QR with your phone (or message yourself the URL) and your selections
-      and ratings apply automatically. Works in both directions.
+      Sign in with <strong>🔑 Google</strong> in the header and your selections, ratings,
+      and notes sync automatically in real time across all your devices. On another device,
+      just sign in with the same account.
     </p>
-    <p class="help-note">
-      ※ The share link carries <strong>selections and ratings only</strong>.
-      To move notes too, use <em>Export my data</em>.
-    </p>
-    <h4 class="help-h">③ 💾 Keep it / send to a calendar</h4>
+    <h4 class="help-h">③ 💾 Send to a calendar</h4>
     <ul class="help-ul">
-      <li><strong>💾 Export my data / 📂 Load</strong> — save and restore everything (incl. notes) as JSON.</li>
       <li><strong>📅 ICS</strong> — import into Google Calendar, Apple Calendar, etc.</li>
       <li><strong>📊 CSV</strong> — organize notes in Excel.</li>
     </ul>
@@ -2706,14 +2447,6 @@ function applyStaticLang() {
       <li>A <strong>↑ top</strong> button appears when you scroll down.</li>
       <li>Click the <strong>conference name</strong> to rename; use the dropdown to switch conferences.</li>
     </ul>`);
-
-  // Share modal
-  set('#share-modal .modal-head strong', el => el.textContent = 'Share my schedule');
-  set('#share-modal .modal-note', el => el.innerHTML =
-    'This link contains your <strong>selected talks and ratings</strong>. ' +
-    'Notes are not included (use <em>Export my data</em> for those).');
-  set('#share-modal .modal-hint', el => el.textContent =
-    'Scan the QR with your phone, or send yourself the URL and open it there — it applies automatically.');
 }
 
 // ====== Boot (async: fetch data, then initialize) ======
@@ -2772,7 +2505,6 @@ async function bootApp() {
   migrateLegacyKeys();
   renameOldIds();
   initState();
-  applyShareFromHash();
   renderAll();
 
   // 학회 당일이면 현재/다음 세션으로 자동 스크롤 (둘러보기 탭일 때)
