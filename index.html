@@ -716,6 +716,8 @@ const I18N_KO = {
   login: '🔑 로그인', logout_confirm: '로그아웃할까요? 이 기기의 데이터는 유지됩니다.',
   sync_title: '동기화 중 — 클릭하여 로그아웃', login_title: '구글 로그인으로 기기 간 동기화',
   login_fail: '로그인 실패: ',
+  sync_error: '⚠️ 동기화 오류',
+  sync_perm_error: '동기화 권한 오류입니다.\n\nFirebase 콘솔 → Firestore Database → 규칙 탭에\n레포의 firestore.rules 내용을 붙여넣고 "게시"해야 합니다.\n(기본 규칙은 모든 접근을 거부합니다)',
 };
 const I18N_EN = {
   status_current: 'Now', status_upcoming: 'Next', status_past: 'Ended',
@@ -738,6 +740,8 @@ const I18N_EN = {
   login: '🔑 Sign in', logout_confirm: 'Sign out? Data on this device is kept.',
   sync_title: 'Syncing — click to sign out', login_title: 'Sign in with Google to sync across devices',
   login_fail: 'Sign-in failed: ',
+  sync_error: '⚠️ Sync error',
+  sync_perm_error: 'Sync permission error.\n\nDeploy the firestore.rules from the repo in\nFirebase Console → Firestore Database → Rules.\n(The default rules deny all access)',
 };
 function t(key) { return (EN ? I18N_EN : I18N_KO)[key] ?? key; }
 // ====== Walking time matrix (minutes), simple building/floor model ======
@@ -2134,7 +2138,7 @@ function schedulePush() {
     docRef.set({
       items: buildLocalItems(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    }).catch(e => console.warn('동기화 업로드 실패:', e));
+    }).catch(reportSyncError);
   }, 800);
 }
 
@@ -2161,13 +2165,27 @@ function startSync(user) {
       if (!ri || (li.t || 0) > (ri.t || 0)) { localHasNewer = true; break; }
     }
     if (localHasNewer) schedulePush();
-  }, (err) => { console.warn('동기화 구독 오류:', err); });
+  }, reportSyncError);
 }
 
 function stopSync() {
   if (_syncUnsub) { _syncUnsub(); _syncUnsub = null; }
   clearTimeout(_pushTimer);
   syncActive = false;
+}
+
+// 동기화 오류를 화면에 드러낸다 (조용한 실패 방지). 권한 오류는 규칙 미배포가
+// 원인인 경우가 대부분이므로 안내 alert를 1회 띄운다.
+let _syncErrorShown = false;
+function reportSyncError(e) {
+  console.warn('동기화 오류:', e);
+  const btn = document.getElementById('btn-login');
+  if (btn && currentUser) { btn.textContent = t('sync_error'); btn.title = (e && (e.code || e.message)) || ''; }
+  const isPerm = e && (e.code === 'permission-denied' || /permission/i.test(String(e.message || '')));
+  if (isPerm && !_syncErrorShown) {
+    _syncErrorShown = true;
+    alert(t('sync_perm_error'));
+  }
 }
 
 // ====== Buttons ======
