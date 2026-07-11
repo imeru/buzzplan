@@ -7,7 +7,7 @@ import re
 import json
 from pathlib import Path
 
-from parser_utils import finalize_v2, slugify
+from parser_utils import finalize_v2, slugify, group_rows
 
 # Column x-boundaries (based on actual left-aligned column text, not centered headers).
 # Header text is centered (Author@252, Title@436), but body text is left-aligned at ~194 and ~336.
@@ -29,21 +29,6 @@ TIME_LOC_RE= re.compile(
 PAPER_NO_RE= re.compile(r'^(\d+\s*\*?)$')
 # Elsevier-style special session uses time ranges like "3:30-3:50" in the paper-no column
 SPECIAL_TIME_RE = re.compile(r'^(\d{1,2}:\d{2})\s*[-–]\s*(\d{1,2}:\d{2})$')
-
-def group_lines(words):
-    """Cluster words into rows by y-coordinate."""
-    if not words: return []
-    words = sorted(words, key=lambda w: (w['top'], w['x0']))
-    rows = []
-    cur = [words[0]]
-    for w in words[1:]:
-        if abs(w['top'] - cur[-1]['top']) <= ROW_TOL:
-            cur.append(w)
-        else:
-            rows.append(sorted(cur, key=lambda x: x['x0']))
-            cur = [w]
-    rows.append(sorted(cur, key=lambda x: x['x0']))
-    return rows
 
 def split_columns(row):
     """Split a row into (paper_no_text, author_text, title_text) by x0."""
@@ -75,7 +60,7 @@ def parse_pdf(pdf_path):
     with pdfplumber.open(pdf_path) as pdf:
         for pidx, page in enumerate(pdf.pages):
             words = page.extract_words(keep_blank_chars=False)
-            rows = group_lines(words)
+            rows = group_rows(words, ROW_TOL)
 
             cur_session = None
             in_paper_table = False

@@ -23,7 +23,10 @@ import pathlib
 import re
 import sys
 
-from parser_utils import finalize_v2
+from parser_utils import (
+    finalize_v2, group_rows, consolidate_split_chars, is_skip_row,
+    derive_session_times,
+)
 
 try:
     import pdfplumber
@@ -67,65 +70,6 @@ SKIP_TOKENS = (
     '휴 식', '휴식', '강연제목', '정기총회', '중 식', '중식',
     '질의 응답', '시상식', '경진대회', '경품 추첨', '참가자 경품',
 )
-
-
-def consolidate_split_chars(words, y_tol=0.5, x_gap_max=0.5):
-    """동계 파서와 동일한 split-char 보정. gap≤0.5pt로 인접한 토큰을 병합."""
-    by_top = {}
-    for w in words:
-        by_top.setdefault(round(w['top']), []).append(w)
-    out = []
-    for _, group in by_top.items():
-        if len(group) <= 1:
-            out.extend(group); continue
-        group = sorted(group, key=lambda w: w['x0'])
-        merged = []
-        cur = None
-        for w in group:
-            if (cur is not None
-                and abs(w['top'] - cur['top']) <= y_tol
-                and (w['x0'] - cur['x1']) <= x_gap_max):
-                cur['text'] += w['text']
-                cur['x1']    = w.get('x1', w['x0'] + 5)
-            else:
-                if cur is not None: merged.append(cur)
-                cur = dict(w)
-                if 'x1' not in cur: cur['x1'] = cur['x0'] + 5
-        if cur is not None: merged.append(cur)
-        out.extend(merged)
-    return sorted(out, key=lambda w: (w['top'], w['x0']))
-
-
-def group_rows(words, tol=ROW_TOL):
-    if not words: return []
-    words = sorted(words, key=lambda w: (w['top'], w['x0']))
-    rows, cur = [], [words[0]]
-    for w in words[1:]:
-        if abs(w['top'] - cur[-1]['top']) <= tol:
-            cur.append(w)
-        else:
-            rows.append(sorted(cur, key=lambda x: x['x0']))
-            cur = [w]
-    rows.append(sorted(cur, key=lambda x: x['x0']))
-    return rows
-
-
-def is_skip_row(text):
-    return any(tok in text for tok in SKIP_TOKENS)
-
-
-def collect_paper_words(words, skip_first=False):
-    """주어진 단어들에서 title / author 영역의 텍스트를 수집."""
-    title_parts, author_parts = [], []
-    for w in (words[1:] if skip_first else words):
-        x = w['x0']
-        if x < META_X_MAX:
-            continue
-        if x < TITLE_X_MAX:
-            title_parts.append(w['text'])
-        else:
-            author_parts.append(w['text'])
-    return title_parts, author_parts
 
 
 def process_table(table_data, year, month, state, sessions, papers):
@@ -191,7 +135,7 @@ def process_table(table_data, year, month, state, sessions, papers):
         if not tm: continue
         # 발표가 아닌 진행 항목 (질의 응답 등)은 스킵
         joined = (time_cell + ' ' + title_cell).strip()
-        if is_skip_row(joined): continue
+        if is_skip_row(joined, SKIP_TOKENS): continue
         # paper_no — time_cell 두번째 줄 또는 title_cell에서 찾기
         paper_no = ''
         for src in (time_cell, title_cell):
@@ -217,27 +161,6 @@ def process_table(table_data, year, month, state, sessions, papers):
         })
 
 
-def _t(s):
-    h, m = map(int, s.split(':'))
-    return (h + (12 if h < 8 else 0)) * 60 + m
-
-
-def derive_session_times(sessions, papers):
-    by_sid = {}
-    for p in papers:
-        by_sid.setdefault(p['session_id'], []).append(p)
-    for s in sessions:
-        ps = by_sid.get(s['id'], [])
-        if not ps: continue
-        starts = [p['start'] for p in ps if p.get('start')]
-        ends   = [p['end']   for p in ps if p.get('end')]
-        if starts: s['start'] = min(starts, key=_t)
-        if ends:   s['end']   = max(ends,   key=_t)
-        # day는 subsection 헤더에서 정해지지만, 발표가 다른 날이면 갱신
-        days = {p.get('day') for p in ps if p.get('day')}
-        # day는 paper에 없으니 session에서 유지
-
-
 def parse_pdf(pdf_path, year, month):
     sessions, papers = [], []
     state = {'day': None, 'stopped': False}
@@ -252,7 +175,7 @@ def parse_pdf(pdf_path, year, month):
             # 1) 텍스트에서 마커 찾기
             words = page.extract_words(keep_blank_chars=False)
             words = consolidate_split_chars(words)
-            rows  = group_rows(words)
+            rows  = group_rows(words, ROW_TOL)
             for row in rows:
                 rtext = ' '.join(w['text'] for w in row).strip()
                 y = min(w['top'] for w in row)

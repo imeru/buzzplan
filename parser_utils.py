@@ -135,3 +135,104 @@ def slugify(s):
     """소문자·ASCII 영숫자·하이픈만. 학회 id 생성용."""
     s = re.sub(r'[^A-Za-z0-9]+', '-', s).strip('-').lower()
     return s or 'conference'
+
+
+# ---------------------------------------------------------------------------
+# 레이아웃 헬퍼 (parser.py / parser_sarek.py / parser_sarek_summer.py 공통)
+#
+# 세 파서 모두 pdfplumber의 word 리스트를 다루는 동일 패턴을 쓴다: y좌표로 행을
+# 묶고(group_rows), 문자 단위로 쪼개진 토큰을 병합하고(consolidate_split_chars),
+# 진행성 안내 행을 걸러내고(is_skip_row), x좌표 경계로 title/author를 나눈다
+# (collect_paper_words). 상수(허용 오차·컬럼 경계·스킵 토큰)는 파서마다 달라
+# 전부 파라미터로 받는다 — 각 호출부가 기존 값을 명시적으로 넘겨 동작을 그대로
+# 보존한다.
+# ---------------------------------------------------------------------------
+
+def group_rows(words, tol):
+    """y-좌표가 비슷한 단어들을 한 행으로 묶는다."""
+    if not words:
+        return []
+    words = sorted(words, key=lambda w: (w['top'], w['x0']))
+    rows, cur = [], [words[0]]
+    for w in words[1:]:
+        if abs(w['top'] - cur[-1]['top']) <= tol:
+            cur.append(w)
+        else:
+            rows.append(sorted(cur, key=lambda x: x['x0']))
+            cur = [w]
+    rows.append(sorted(cur, key=lambda x: x['x0']))
+    return rows
+
+
+def consolidate_split_chars(words, y_tol=0.5, x_gap_max=0.5):
+    """PDF 렌더링이 시간·발표번호 등을 문자별로 쪼개 추출하는 경우가 있다.
+    같은 y이고 이전 토큰의 x1과 다음 토큰의 x0이 거의 일치(gap ≤ 0.5pt)할 때
+    같은 단어로 병합. 일반 단어는 1.5pt 정도 띄어쓰기 간격이 있어 영향 없음.
+    예: ['16', ':', '1', '0', '-1', '6', ':', '25'] → '16:10-16:25'
+    """
+    by_top = {}
+    for w in words:
+        by_top.setdefault(round(w['top']), []).append(w)
+
+    result = []
+    for top_key, group in by_top.items():
+        if len(group) <= 1:
+            result.extend(group); continue
+        group = sorted(group, key=lambda w: w['x0'])
+        merged = []
+        cur = None
+        for w in group:
+            if (cur is not None
+                and abs(w['top'] - cur['top']) <= y_tol
+                and (w['x0'] - cur['x1']) <= x_gap_max):
+                cur['text'] += w['text']
+                cur['x1']    = w.get('x1', w['x0'] + 5)
+            else:
+                if cur is not None: merged.append(cur)
+                cur = dict(w)
+                if 'x1' not in cur: cur['x1'] = cur['x0'] + 5
+        if cur is not None: merged.append(cur)
+        result.extend(merged)
+    return sorted(result, key=lambda w: (w['top'], w['x0']))
+
+
+def is_skip_row(text, tokens):
+    """휴식·초청강연·간사 등 본문에 끼어드는 행을 식별 (tokens 중 하나라도 포함되면 True)."""
+    for tok in tokens:
+        if tok in text:
+            return True
+    return False
+
+
+def collect_paper_words(words, meta_max, title_max, skip_first=False):
+    """주어진 단어들에서 title / author 영역의 텍스트를 수집."""
+    title_parts, author_parts = [], []
+    for w in (words[1:] if skip_first else words):
+        x = w['x0']
+        if x < meta_max:
+            continue
+        if x < title_max:
+            title_parts.append(w['text'])
+        else:
+            author_parts.append(w['text'])
+    return title_parts, author_parts
+
+
+def _t(s):
+    h, m = map(int, s.split(':'))
+    return (h + (12 if h < 8 else 0)) * 60 + m
+
+
+def derive_session_times(sessions, papers):
+    """각 세션의 start/end를 그 세션 발표들의 시간 범위로 채운다."""
+    by_sid = {}
+    for p in papers:
+        by_sid.setdefault(p['session_id'], []).append(p)
+    for s in sessions:
+        ps = by_sid.get(s['id'], [])
+        if not ps:
+            continue
+        starts = [p['start'] for p in ps if p.get('start')]
+        ends   = [p['end']   for p in ps if p.get('end')]
+        if starts: s['start'] = min(starts, key=_t)
+        if ends:   s['end']   = max(ends,   key=_t)

@@ -24,7 +24,10 @@ import json
 import pathlib
 import re
 
-from parser_utils import finalize_v2
+from parser_utils import (
+    finalize_v2, group_rows, consolidate_split_chars, is_skip_row,
+    collect_paper_words, derive_session_times,
+)
 import sys
 
 try:
@@ -54,55 +57,6 @@ SKIP_TOKENS  = (
 )
 
 
-def consolidate_split_chars(words, y_tol=0.5, x_gap_max=0.5):
-    """PDF 렌더링이 시간·발표번호 등을 문자별로 쪼개 추출하는 경우가 있다.
-    같은 y이고 이전 토큰의 x1과 다음 토큰의 x0이 거의 일치(gap ≤ 0.5pt)할 때
-    같은 단어로 병합. 일반 단어는 1.5pt 정도 띄어쓰기 간격이 있어 영향 없음.
-    예: ['16', ':', '1', '0', '-1', '6', ':', '25'] → '16:10-16:25'
-    """
-    by_top = {}
-    for w in words:
-        key = round(w['top'])
-        by_top.setdefault(key, []).append(w)
-
-    result = []
-    for top_key, group in by_top.items():
-        if len(group) <= 1:
-            result.extend(group); continue
-        group = sorted(group, key=lambda w: w['x0'])
-        merged = []
-        cur = None
-        for w in group:
-            if (cur is not None
-                and abs(w['top'] - cur['top']) <= y_tol
-                and (w['x0'] - cur['x1']) <= x_gap_max):
-                cur['text'] += w['text']
-                cur['x1']    = w.get('x1', w['x0'] + 5)
-            else:
-                if cur is not None: merged.append(cur)
-                cur = dict(w)
-                if 'x1' not in cur: cur['x1'] = cur['x0'] + 5
-        if cur is not None: merged.append(cur)
-        result.extend(merged)
-    return sorted(result, key=lambda w: (w['top'], w['x0']))
-
-
-def group_rows(words, tol=ROW_TOL):
-    """y-좌표가 비슷한 단어들을 한 행으로 묶는다."""
-    if not words:
-        return []
-    words = sorted(words, key=lambda w: (w['top'], w['x0']))
-    rows, cur = [], [words[0]]
-    for w in words[1:]:
-        if abs(w['top'] - cur[-1]['top']) <= tol:
-            cur.append(w)
-        else:
-            rows.append(sorted(cur, key=lambda x: x['x0']))
-            cur = [w]
-    rows.append(sorted(cur, key=lambda x: x['x0']))
-    return rows
-
-
 def split_columns(rows):
     """각 행을 AM(좌) / PM(우) 단어 리스트로 분리하여 두 컬럼의 행 시퀀스 반환."""
     am_rows, pm_rows = [], []
@@ -113,28 +67,6 @@ def split_columns(rows):
         if am: am_rows.append(am)
         if pm: pm_rows.append(pm)
     return am_rows, pm_rows
-
-
-def is_skip_row(text):
-    """휴식·초청강연·간사 등 본문에 끼어드는 행을 식별."""
-    for tok in SKIP_TOKENS:
-        if tok in text:
-            return True
-    return False
-
-
-def collect_paper_words(words, bounds, skip_first=False):
-    """주어진 단어들에서 title / author 영역의 텍스트를 수집."""
-    title_parts, author_parts = [], []
-    for w in (words[1:] if skip_first else words):
-        x = w['x0']
-        if x < bounds['meta_max']:
-            continue
-        if x < bounds['title_max']:
-            title_parts.append(w['text'])
-        else:
-            author_parts.append(w['text'])
-    return title_parts, author_parts
 
 
 def parse_column(col_rows, hall_num, bounds, date, sessions, papers):
@@ -196,7 +128,7 @@ def parse_column(col_rows, hall_num, bounds, date, sessions, papers):
         # 2) 시간 행 = 발표 경계
         tm = TIME_RE.match(text)
         if tm:
-            if is_skip_row(text):
+            if is_skip_row(text, SKIP_TOKENS):
                 flush_paper()
                 continue
             flush_paper()
@@ -210,7 +142,7 @@ def parse_column(col_rows, hall_num, bounds, date, sessions, papers):
                 'author_parts': [],
             }
             # 시간 행 자체에 제목·저자가 함께 있는 경우 흡수
-            t_parts, a_parts = collect_paper_words(row, bounds, skip_first=True)
+            t_parts, a_parts = collect_paper_words(row, bounds['meta_max'], bounds['title_max'], skip_first=True)
             cur_paper['title_parts'].extend(t_parts)
             cur_paper['author_parts'].extend(a_parts)
             continue
@@ -223,40 +155,20 @@ def parse_column(col_rows, hall_num, bounds, date, sessions, papers):
             if pn:
                 cur_paper['paper_no'] = pn.group(1)
                 # 발표번호 옆에도 텍스트가 있으면 흡수
-                t_parts, a_parts = collect_paper_words(row, bounds, skip_first=True)
+                t_parts, a_parts = collect_paper_words(row, bounds['meta_max'], bounds['title_max'], skip_first=True)
                 cur_paper['title_parts'].extend(t_parts)
                 cur_paper['author_parts'].extend(a_parts)
                 continue
 
         # 4) 그 외 연속 행 — 제목/저자 누적
         if cur_paper:
-            if is_skip_row(text):
+            if is_skip_row(text, SKIP_TOKENS):
                 continue
-            t_parts, a_parts = collect_paper_words(row, bounds)
+            t_parts, a_parts = collect_paper_words(row, bounds['meta_max'], bounds['title_max'])
             cur_paper['title_parts'].extend(t_parts)
             cur_paper['author_parts'].extend(a_parts)
 
     flush_paper()
-
-
-def derive_session_times(sessions, papers):
-    """각 세션의 start/end를 그 세션 발표들의 시간 범위로 채운다."""
-    by_sid = {}
-    for p in papers:
-        by_sid.setdefault(p['session_id'], []).append(p)
-    for s in sessions:
-        ps = by_sid.get(s['id'], [])
-        if not ps:
-            continue
-        starts = [p['start'] for p in ps if p.get('start')]
-        ends   = [p['end']   for p in ps if p.get('end')]
-        if starts: s['start'] = min(starts, key=_t)
-        if ends:   s['end']   = max(ends,   key=_t)
-
-
-def _t(s):
-    h, m = map(int, s.split(':'))
-    return (h + (12 if h < 8 else 0)) * 60 + m
 
 
 def parse_pdf(pdf_path, date):
@@ -273,7 +185,7 @@ def parse_pdf(pdf_path, date):
             words = [w for w in words if w['top'] < CONTENT_Y_MAX]
             # 일부 행에서 시간·발표번호가 문자 단위로 쪼개져 추출되는 경우 보정
             words = consolidate_split_chars(words)
-            rows  = group_rows(words)
+            rows  = group_rows(words, ROW_TOL)
             am_rows, pm_rows = split_columns(rows)
             parse_column(am_rows, hall_num, COL_BOUNDS_AM, date, sessions, papers)
             parse_column(pm_rows, hall_num, COL_BOUNDS_PM, date, sessions, papers)
