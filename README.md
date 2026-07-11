@@ -40,7 +40,6 @@ buzzplan/
 ├── parser_sarek.py               # SAREK 동계(가로 2단 컬럼) 파서
 ├── parser_sarek_summer.py        # SAREK 하계(세로 1단 컬럼) 파서
 ├── build.py                      # PDF → JSON → 학회 등록 자동화
-├── preview.command               # macOS용 로컬 서버 + Chrome 자동 실행 헬퍼
 └── README.md
 ```
 
@@ -174,8 +173,6 @@ python3 -m http.server 8080
 
 그 다음 브라우저에서 `http://localhost:8080/` 접속.
 특정 학회 검증: `http://localhost:8080/?conf=sarek-2026-summer`.
-
-macOS는 폴더에 들어있는 `preview.command`를 더블클릭하면 위 한 줄을 알아서 띄우고 Chrome도 열어 줍니다.
 
 ---
 
