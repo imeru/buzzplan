@@ -548,7 +548,7 @@
 
       <h4 class="help-h">③ 💾 다른 캘린더로</h4>
       <ul class="help-ul">
-        <li><strong>📅 ICS</strong> — Google Calendar·Apple Calendar 등에 임포트.</li>
+        <li><strong>📅 ICS</strong> — Google Calendar·Apple Calendar 등에 임포트. 각 발표 5분 전 알림 포함.</li>
         <li><strong>📊 CSV</strong> — Excel로 노트 정리.</li>
       </ul>
 
@@ -681,6 +681,7 @@ const I18N_KO = {
   no_export: '내보낼 항목이 없습니다 (선택·평점·메모 중 하나 이상 필요).',
   login: '🔑 로그인', logout_confirm: '로그아웃할까요? 이 기기의 데이터는 유지됩니다.',
   sync_title: '동기화 중 — 클릭하여 로그아웃', login_title: '구글 로그인으로 기기 간 동기화',
+  rename_title: '클릭하여 학회명 수정',
   sync_last: '마지막 동기화 ',
   login_fail: '로그인 실패: ',
   sync_error: '⚠️ 동기화 오류',
@@ -703,6 +704,7 @@ const I18N_EN = {
   no_export: 'Nothing to export (select, rate, or note at least one paper).',
   login: '🔑 Sign in', logout_confirm: 'Sign out? Data on this device is kept.',
   sync_title: 'Syncing — click to sign out', login_title: 'Sign in with Google to sync across devices',
+  rename_title: 'Click to rename',
   sync_last: 'Synced ',
   login_fail: 'Sign-in failed: ',
   sync_error: '⚠️ Sync error',
@@ -1893,7 +1895,7 @@ function enterRenameMode() {
     const span = document.createElement('span');
     span.className = 'conf-name';
     span.id = 'conf-name';
-    span.title = '클릭하여 학회명 수정';
+    span.title = t('rename_title');
     input.replaceWith(span);
     renderConfChip();
   };
@@ -2220,6 +2222,13 @@ document.getElementById('btn-export-ics').onclick = () => {
     lines.push('DESCRIPTION:' + icsEscape(descParts.join('\n')));
     lines.push('DTSTART:' + fmtMin(pt.startMin));
     lines.push('DTEND:'   + fmtMin(pt.endMin));
+    // 발표 시작 5분 전 알림. Apple 캘린더는 VALARM을 존중하고,
+    // Google Calendar는 임포트 시 자체 기본 알림으로 대체하는 경우가 있음.
+    lines.push('BEGIN:VALARM');
+    lines.push('ACTION:DISPLAY');
+    lines.push('DESCRIPTION:' + icsEscape(p.title));
+    lines.push('TRIGGER:-PT5M');
+    lines.push('END:VALARM');
     lines.push('END:VEVENT');
   }
   lines.push('END:VCALENDAR');
@@ -2497,7 +2506,7 @@ function applyStaticLang() {
     </p>
     <h4 class="help-h">③ 💾 Send to a calendar</h4>
     <ul class="help-ul">
-      <li><strong>📅 ICS</strong> — import into Google Calendar, Apple Calendar, etc.</li>
+      <li><strong>📅 ICS</strong> — import into Google Calendar, Apple Calendar, etc. Includes a 5-minute reminder per talk.</li>
       <li><strong>📊 CSV</strong> — organize notes in Excel.</li>
     </ul>
     <h4 class="help-h">④ Tips</h4>

@@ -42,7 +42,9 @@ def main():
                     help='이 학회를 conferences.json의 default로 지정')
     ap.add_argument('--dry-run', action='store_true',
                     help='검증만; 파일은 수정하지 않음')
-    args = ap.parse_args()
+    # 인식하지 못한 나머지 옵션(--year, --month, --day-fix 등)은 파서 스크립트로
+    # 그대로 전달한다. 파서별 고유 옵션을 build.py가 일일이 알 필요가 없게.
+    args, passthrough = ap.parse_known_args()
 
     here = pathlib.Path(__file__).parent
     parser_py = here / args.parser
@@ -67,6 +69,9 @@ def main():
            '--id', args.id, '--name', args.name, '--out', str(tmp_path)]
     if args.timezone:
         cmd += ['--timezone', args.timezone]
+    if passthrough:
+        print(f"      파서로 전달: {' '.join(passthrough)}")
+        cmd += passthrough
     try:
         subprocess.run(cmd, check=True)
     except subprocess.CalledProcessError as e:
