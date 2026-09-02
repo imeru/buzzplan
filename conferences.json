@@ -1,5 +1,5 @@
 {
-  "default": "sarek-2026-summer",
+  "default": "roomvent-2026",
   "conferences": [
     {
       "id": "iaqvec-2026",
@@ -20,6 +20,11 @@
       "id": "sarek-2026-summer",
       "name": "대한설비공학회 2026 하계학술발표대회",
       "data": "data/sarek-2026-summer.json"
+    },
+    {
+      "id": "roomvent-2026",
+      "name": "RoomVent 2026",
+      "data": "data/roomvent-2026.json"
     }
   ]
 }

@@ -1,0 +1,2970 @@
+{
+  "conference": {
+    "id": "roomvent-2026",
+    "name": "RoomVent 2026",
+    "timezone": "Europe/Prague"
+  },
+  "sessions": [
+    {
+      "id": "P1",
+      "track_title": "Opening + Plenary Session: Keynote by Prof. Risto Kosonen",
+      "building": "CTU",
+      "room": "B 286",
+      "type": "keynote",
+      "date": "2026-09-15",
+      "start": "16:00",
+      "end": "17:30",
+      "floor": 2,
+      "chair": "Miloš Lain, Karel Kabele",
+      "day": 1,
+      "block": 1
+    },
+    {
+      "id": "P2",
+      "track_title": "Plenary Session: Keynote by Prof. Philomena Bluyssen",
+      "building": "CTU",
+      "room": "B 286",
+      "type": "keynote",
+      "date": "2026-09-16",
+      "start": "09:00",
+      "end": "09:45",
+      "floor": 2,
+      "chair": "Daniel Adamovsky",
+      "day": 2,
+      "block": 2
+    },
+    {
+      "id": "S11",
+      "track_title": "Performance measurement and verification",
+      "building": "CTU",
+      "room": "C 215",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "10:00",
+      "end": "11:45",
+      "floor": 2,
+      "chair": "Karel Kabele, Fatos Pollozhani",
+      "day": 2,
+      "block": 3
+    },
+    {
+      "id": "S12",
+      "track_title": "School ventilation",
+      "building": "CTU",
+      "room": "C 217",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "10:00",
+      "end": "11:45",
+      "floor": 2,
+      "chair": "Vladimir Zmrhal, Guangyu Cao",
+      "day": 2,
+      "block": 3
+    },
+    {
+      "id": "S13",
+      "track_title": "Industrial and special ventilation",
+      "building": "CTU",
+      "room": "C 219",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "10:00",
+      "end": "11:45",
+      "floor": 2,
+      "chair": "Anna Bogdan, Yanqiu Huang",
+      "day": 2,
+      "block": 3
+    },
+    {
+      "id": "S14",
+      "track_title": "Computational Fluid Dynamics (CFD) for ventilation analysis",
+      "building": "CTU",
+      "room": "C 221",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "10:00",
+      "end": "11:45",
+      "floor": 2,
+      "chair": "Risto Kosonen, Diana Lemian",
+      "day": 2,
+      "block": 3
+    },
+    {
+      "id": "S15",
+      "track_title": "Energy efficient ventilation strategies and systems",
+      "building": "CTU",
+      "room": "C 223",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "10:00",
+      "end": "11:45",
+      "floor": 2,
+      "chair": "Mohamed El Mankibi, Panu Mustakallio",
+      "day": 2,
+      "block": 3
+    },
+    {
+      "id": "S17",
+      "track_title": "Thermal comfort parameters and human perception",
+      "building": "CTU",
+      "room": "A 230",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "10:00",
+      "end": "11:45",
+      "floor": 2,
+      "chair": "Zuzana Veverkova, Arturs Palcikovskis",
+      "day": 2,
+      "block": 3
+    },
+    {
+      "id": "S16",
+      "track_title": "Airflow around the human body",
+      "building": "CTU",
+      "room": "B 286",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "10:00",
+      "end": "11:45",
+      "floor": 2,
+      "chair": "Manuel Carlos Gameiro da Silva, Twan van Hooff",
+      "day": 2,
+      "block": 3
+    },
+    {
+      "id": "W11",
+      "track_title": "DOGU Workshop",
+      "building": "CTU",
+      "room": "B 168",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "10:00",
+      "end": "11:45",
+      "floor": 1,
+      "day": 2,
+      "block": 3
+    },
+    {
+      "id": "W12",
+      "track_title": "Integrating circularity into design, installation and operation of",
+      "building": "CTU",
+      "room": "B 169",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "10:00",
+      "end": "11:45",
+      "floor": 1,
+      "day": 2,
+      "block": 3
+    },
+    {
+      "id": "P3",
+      "track_title": "Plenary Session: Keynote by Prof. Tham Kwok Wai",
+      "building": "CTU",
+      "room": "B 286",
+      "type": "keynote",
+      "date": "2026-09-16",
+      "start": "12:30",
+      "end": "13:15",
+      "floor": 2,
+      "chair": "Michal Kabrhel",
+      "day": 2,
+      "block": 4
+    },
+    {
+      "id": "S21",
+      "track_title": "Thermal comfort prediction models",
+      "building": "CTU",
+      "room": "C 215",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "13:30",
+      "end": "15:00",
+      "floor": 2,
+      "chair": "Jan Hensen, Atze Boerstra",
+      "day": 2,
+      "block": 5
+    },
+    {
+      "id": "S22",
+      "track_title": "School ventilation",
+      "building": "CTU",
+      "room": "C 217",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "13:30",
+      "end": "15:00",
+      "floor": 2,
+      "chair": "Zbigniew Popiołek, Katarína Harčárová",
+      "day": 2,
+      "block": 5
+    },
+    {
+      "id": "S23",
+      "track_title": "Contaminant transport mechanisms in indoor environments",
+      "building": "CTU",
+      "room": "C 219",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "13:30",
+      "end": "15:00",
+      "floor": 2,
+      "chair": "Lada Hensen Centnerova, Inga Ehder-Gahm",
+      "day": 2,
+      "block": 5
+    },
+    {
+      "id": "S24",
+      "track_title": "Computational Fluid Dynamics (CFD) for ventilation analysis",
+      "building": "CTU",
+      "room": "C 221",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "13:30",
+      "end": "15:00",
+      "floor": 2,
+      "chair": "Szymon Caban, Saif Ahmad",
+      "day": 2,
+      "block": 5
+    },
+    {
+      "id": "S25",
+      "track_title": "Energy savings",
+      "building": "CTU",
+      "room": "C 223",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "13:30",
+      "end": "15:00",
+      "floor": 2,
+      "chair": "Michal Kabrhel, Blanka Cabovská",
+      "day": 2,
+      "block": 5
+    },
+    {
+      "id": "S27",
+      "track_title": "Contaminants and Polutants",
+      "building": "CTU",
+      "room": "A 230",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "13:30",
+      "end": "15:00",
+      "floor": 2,
+      "chair": "Pavla Dvořáková, Anna Bogdan",
+      "day": 2,
+      "block": 5
+    },
+    {
+      "id": "S26",
+      "track_title": "Flow pattern solution",
+      "building": "CTU",
+      "room": "B 286",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "13:30",
+      "end": "15:00",
+      "floor": 2,
+      "chair": "Conrad Voelker, Olena Kalyanova Larsen",
+      "day": 2,
+      "block": 5
+    },
+    {
+      "id": "W21",
+      "track_title": "ATREA - From Design Intent to Real Indoor Air Quality",
+      "building": "CTU",
+      "room": "B 168",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "13:30",
+      "end": "15:00",
+      "floor": 1,
+      "day": 2,
+      "block": 5
+    },
+    {
+      "id": "W22",
+      "track_title": "Measurement and CFD Simulation of Contaminant Transport and",
+      "building": "CTU",
+      "room": "B 169",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "13:30",
+      "end": "15:00",
+      "floor": 1,
+      "day": 2,
+      "block": 5
+    },
+    {
+      "id": "S31",
+      "track_title": "Thermal comfort prediction models",
+      "building": "CTU",
+      "room": "C 215",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "15:30",
+      "end": "17:00",
+      "floor": 2,
+      "chair": "Jun Shinoda, Zuzana Veverkova",
+      "day": 2,
+      "block": 6
+    },
+    {
+      "id": "S32",
+      "track_title": "Hospital and healthcare facility",
+      "building": "CTU",
+      "room": "C 217",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "15:30",
+      "end": "17:00",
+      "floor": 2,
+      "chair": "Sasan Sadrizadeh, Simo Kilpeläinen",
+      "day": 2,
+      "block": 6
+    },
+    {
+      "id": "S33",
+      "track_title": "Contaminant transport mechanisms in indoor environments",
+      "building": "CTU",
+      "room": "C 219",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "15:30",
+      "end": "17:00",
+      "floor": 2,
+      "chair": "Jixuan Bao, Elisabet Linden",
+      "day": 2,
+      "block": 6
+    },
+    {
+      "id": "S34",
+      "track_title": "Computational Fluid Dynamics and Zonal modeling",
+      "building": "CTU",
+      "room": "C 221",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "15:30",
+      "end": "17:00",
+      "floor": 2,
+      "chair": "Parham Ahranjani Mirzaei, Miloš Lain",
+      "day": 2,
+      "block": 6
+    },
+    {
+      "id": "S35",
+      "track_title": "Residential buildings",
+      "building": "CTU",
+      "room": "C 223",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "15:30",
+      "end": "17:00",
+      "floor": 2,
+      "chair": "Werner Stutterecker, Daniel Schmeling",
+      "day": 2,
+      "block": 6
+    },
+    {
+      "id": "S37",
+      "track_title": "Thermal comfort parameters and human perception",
+      "building": "CTU",
+      "room": "A 230",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "15:30",
+      "end": "17:00",
+      "floor": 2,
+      "chair": "Alexandre Jenft, Yan Liang",
+      "day": 2,
+      "block": 6
+    },
+    {
+      "id": "S36",
+      "track_title": "Pollutants",
+      "building": "CTU",
+      "room": "B 286",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "15:30",
+      "end": "17:00",
+      "floor": 2,
+      "chair": "Arsen Melikov, Romain Guichard",
+      "day": 2,
+      "block": 6
+    },
+    {
+      "id": "W31",
+      "track_title": "Are We Ready for Human-Centric Ventilation in Healthcare",
+      "building": "CTU",
+      "room": "B 168",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "15:30",
+      "end": "17:00",
+      "floor": 1,
+      "day": 2,
+      "block": 6
+    },
+    {
+      "id": "W32",
+      "track_title": "Greening Research Infrastructures through Digitalization and",
+      "building": "CTU",
+      "room": "B 169",
+      "type": "oral",
+      "date": "2026-09-16",
+      "start": "15:30",
+      "end": "17:00",
+      "floor": 1,
+      "day": 2,
+      "block": 6
+    },
+    {
+      "id": "S41",
+      "track_title": "Ventilation Systems and Energy Performance",
+      "building": "CTU",
+      "room": "C 215",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "09:00",
+      "end": "10:45",
+      "floor": 2,
+      "chair": "Jakub Kolarik, AnneMarie Eijkelenboom",
+      "day": 3,
+      "block": 7
+    },
+    {
+      "id": "S42",
+      "track_title": "Ventilation Systems and Energy Performance",
+      "building": "CTU",
+      "room": "C 217",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "09:00",
+      "end": "10:45",
+      "floor": 2,
+      "chair": "Ardeshir Mahdavi, Clélia Mendonca De Moraes",
+      "day": 3,
+      "block": 7
+    },
+    {
+      "id": "S43",
+      "track_title": "Office buildings",
+      "building": "CTU",
+      "room": "C 219",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "09:00",
+      "end": "10:45",
+      "floor": 2,
+      "chair": "Dušan Petráš, Jennyfer Karam",
+      "day": 3,
+      "block": 7
+    },
+    {
+      "id": "S44",
+      "track_title": "Building energy modeling and simulation",
+      "building": "CTU",
+      "room": "C 221",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "09:00",
+      "end": "10:45",
+      "floor": 2,
+      "chair": "Angui Li, Michal Krajcik",
+      "day": 3,
+      "block": 7
+    },
+    {
+      "id": "S45",
+      "track_title": "Indoor Air Quality",
+      "building": "CTU",
+      "room": "C 223",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "09:00",
+      "end": "10:45",
+      "floor": 2,
+      "chair": "Jianshun Jensen Zhang, Jiri Hirs",
+      "day": 3,
+      "block": 7
+    },
+    {
+      "id": "S47",
+      "track_title": "Indoor air quality monitoring and assessment techniques",
+      "building": "CTU",
+      "room": "A 230",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "09:00",
+      "end": "10:45",
+      "floor": 2,
+      "chair": "Chunwen Xu, Pavla Dvořáková",
+      "day": 3,
+      "block": 7
+    },
+    {
+      "id": "S46",
+      "track_title": "Thermal comfort",
+      "building": "CTU",
+      "room": "B 286",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "09:00",
+      "end": "10:45",
+      "floor": 2,
+      "chair": "Nick Kelly, Miloš Lain",
+      "day": 3,
+      "block": 7
+    },
+    {
+      "id": "W41",
+      "track_title": "SYSTEMAIR workshop",
+      "building": "CTU",
+      "room": "B 168",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "09:00",
+      "end": "10:45",
+      "floor": 1,
+      "day": 3,
+      "block": 7
+    },
+    {
+      "id": "W42",
+      "track_title": "Personal control in indoor environments as a moderator of",
+      "building": "CTU",
+      "room": "B 169",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "09:00",
+      "end": "10:45",
+      "floor": 1,
+      "day": 3,
+      "block": 7
+    },
+    {
+      "id": "S51",
+      "track_title": "Ventilation Systems and Energy Performance",
+      "building": "CTU",
+      "room": "C 215",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "11:15",
+      "end": "12:30",
+      "floor": 2,
+      "chair": "Daniel Adamovsky, Andrea Alongi",
+      "day": 3,
+      "block": 8
+    },
+    {
+      "id": "S52",
+      "track_title": "Hospital and healthcare facility",
+      "building": "CTU",
+      "room": "C 217",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "11:15",
+      "end": "12:30",
+      "floor": 2,
+      "chair": "Dominika Kwiecińska, Tani Angiero",
+      "day": 3,
+      "block": 8
+    },
+    {
+      "id": "S53",
+      "track_title": "Pollutant sources",
+      "building": "CTU",
+      "room": "C 219",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "11:15",
+      "end": "12:30",
+      "floor": 2,
+      "chair": "Ilinca Nastase, Atze Boerstra",
+      "day": 3,
+      "block": 8
+    },
+    {
+      "id": "S54",
+      "track_title": "Building energy modeling and simulation",
+      "building": "CTU",
+      "room": "C 221",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "11:15",
+      "end": "12:30",
+      "floor": 2,
+      "chair": "Pawel Wargocki, Maitreyee Saini",
+      "day": 3,
+      "block": 8
+    },
+    {
+      "id": "S55",
+      "track_title": "Energy efficient systems",
+      "building": "CTU",
+      "room": "C 223",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "11:15",
+      "end": "12:30",
+      "floor": 2,
+      "chair": "Dušan Petráš, Ashraf Mkhayber",
+      "day": 3,
+      "block": 8
+    },
+    {
+      "id": "S57",
+      "track_title": "Indoor air quality",
+      "building": "CTU",
+      "room": "A 230",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "11:15",
+      "end": "12:30",
+      "floor": 2,
+      "chair": "Jarek Kurnitski, Sarka Langer",
+      "day": 3,
+      "block": 8
+    },
+    {
+      "id": "S56",
+      "track_title": "New calculation methods",
+      "building": "CTU",
+      "room": "B 286",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "11:15",
+      "end": "12:30",
+      "floor": 2,
+      "chair": "Howard Goodfellow, Arnaud JAY",
+      "day": 3,
+      "block": 8
+    },
+    {
+      "id": "W51",
+      "track_title": "Breathing life below: Innovations and strategies for",
+      "building": "CTU",
+      "room": "B 168",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "11:15",
+      "end": "12:30",
+      "floor": 1,
+      "day": 3,
+      "block": 8
+    },
+    {
+      "id": "W52",
+      "track_title": "Demand-oriented Non-uniform Indoor Environment",
+      "building": "CTU",
+      "room": "B 169",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "11:15",
+      "end": "12:30",
+      "floor": 1,
+      "day": 3,
+      "block": 8
+    },
+    {
+      "id": "S61",
+      "track_title": "Natural and hybrid ventilation strategies",
+      "building": "CTU",
+      "room": "C 215",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "13:15",
+      "end": "14:45",
+      "floor": 2,
+      "chair": "Izabella Milto, Riku Izumiyama",
+      "day": 3,
+      "block": 9
+    },
+    {
+      "id": "S62",
+      "track_title": "Ventilation Systems and Energy Performance",
+      "building": "CTU",
+      "room": "C 217",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "13:15",
+      "end": "14:45",
+      "floor": 2,
+      "chair": "Jiri Hirs",
+      "day": 3,
+      "block": 9
+    },
+    {
+      "id": "S63",
+      "track_title": "AI and Smart Technologies in IEQ Design and Control",
+      "building": "CTU",
+      "room": "C 219",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "13:15",
+      "end": "14:45",
+      "floor": 2,
+      "chair": "Myriam Bahrar, Michal Kabrhel",
+      "day": 3,
+      "block": 9
+    },
+    {
+      "id": "S67",
+      "track_title": "Indoor air quality",
+      "building": "CTU",
+      "room": "C 221",
+      "type": "oral",
+      "date": "2026-09-17",
+      "start": "13:15",
+      "end": "14:45",
+      "floor": 2,
+      "chair": "Zuraimi Sultan",
+      "day": 3,
+      "block": 9
+    },
+    {
+      "id": "W62",
+      "track_title": "REHVA: Circular HVAC System Design. REHVA Working Meeting",
+      "building": "CTU",
+      "room": "B 168",
+      "type": "social",
+      "date": "2026-09-17",
+      "start": "13:15",
+      "end": "14:45",
+      "floor": 1,
+      "day": 3,
+      "block": 9
+    },
+    {
+      "id": "W61",
+      "track_title": "Awards Committees Meeting (members only)",
+      "building": "CTU",
+      "room": "B 169",
+      "type": "social",
+      "date": "2026-09-17",
+      "start": "13:15",
+      "end": "14:45",
+      "floor": 1,
+      "day": 3,
+      "block": 9
+    },
+    {
+      "id": "P4",
+      "track_title": "Plenary Session: Keynote by Prof. Francis Allard + Closing session",
+      "building": "CTU",
+      "room": "B 286",
+      "type": "keynote",
+      "date": "2026-09-17",
+      "start": "15:00",
+      "end": "16:30",
+      "floor": 2,
+      "chair": "Karel Kabele",
+      "day": 3,
+      "block": 10
+    },
+    {
+      "id": "TT1",
+      "track_title": "Technical Tour 1 - UCEEB (separate ticket required)",
+      "building": "CTU",
+      "room": "Off-site",
+      "type": "social",
+      "date": "2026-09-18",
+      "start": "08:30",
+      "end": "12:00",
+      "day": 4,
+      "block": 11
+    },
+    {
+      "id": "TT2",
+      "track_title": "Technical Tour 2 - National Library of Technology (separate",
+      "building": "CTU",
+      "room": "Off-site",
+      "type": "social",
+      "date": "2026-09-18",
+      "start": "08:30",
+      "end": "12:00",
+      "day": 4,
+      "block": 11
+    },
+    {
+      "id": "TT3",
+      "track_title": "Technical Tour 3 - Prague Congress Centre (separate ticket",
+      "building": "CTU",
+      "room": "Off-site",
+      "type": "social",
+      "date": "2026-09-18",
+      "start": "08:30",
+      "end": "12:00",
+      "day": 4,
+      "block": 11
+    },
+    {
+      "id": "TT4",
+      "track_title": "Technical Tour 4 - National Theatre (separate ticket required)",
+      "building": "CTU",
+      "room": "Off-site",
+      "type": "social",
+      "date": "2026-09-18",
+      "start": "08:30",
+      "end": "12:00",
+      "day": 4,
+      "block": 11
+    }
+  ],
+  "papers": [
+    {
+      "paper_no": "P1-1",
+      "session_id": "P1",
+      "authors": "Daniel Morávek (ATREA, Czech Republic)",
+      "title": "Meet ATREA, Your Main Sponsor",
+      "start": "16:00",
+      "end": "17:30"
+    },
+    {
+      "paper_no": "P1-2",
+      "session_id": "P1",
+      "authors": "Risto Kosonen (Aalto university, Finland)",
+      "title": "User-centric approach for air distribution: how enhance simultaneously indoor climate and user’s perception",
+      "start": "16:00",
+      "end": "17:30"
+    },
+    {
+      "paper_no": "P2-1",
+      "session_id": "P2",
+      "authors": "Philomena M. Bluyssen (TU Delft, Netherlands, The)",
+      "title": "What is needed to go beyond the mainly comfort-based dose-related indicators in our IEQ- guidelines?",
+      "start": "09:00",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "S11-1",
+      "session_id": "S11",
+      "authors": "Tomohiro Kameda, Yuta Takahashi, Eriko Yoshimoto, Hiroki Yokoyama, Junta Nakano (Hosei University)",
+      "title": "Field Evaluation of Under-Floor Air Distribution System with Personal and Variable Airflow Diffusers",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "S11-2",
+      "session_id": "S11",
+      "authors": "HOUHUA WU, CHUN CHEN (Department of Mechanical and Automation Engineering, The Chinese University of Hong Kong, Shatin, N.T. 999077, Hong Kong SAR China)",
+      "title": "A Novel Self-Cleaning Air Filter with On-Demand Dust Removal through Mechanical Actuation of an Elastic Membrane",
+      "start": "10:15",
+      "end": "10:30"
+    },
+    {
+      "paper_no": "S11-3",
+      "session_id": "S11",
+      "authors": "Chan Kyu Kim, Hyu San Jang, Yong Min Song, Seung Hyo Baek, Myoung Souk Yeo (Seoul National University, Department of Architecture and Architectural Engineering, Seoul, Republic of Korea)",
+      "title": "Experimental Analysis of Condensing Boiler Efficiency under Multi-Zone Conditions",
+      "start": "10:30",
+      "end": "10:45"
+    },
+    {
+      "paper_no": "S11-4",
+      "session_id": "S11",
+      "authors": "Kousei Tomita, Katsuhiro Miura (Yamaguchi University, Japan)",
+      "title": "Analysis of Operational Performance and Improvement Strategies for a Solar Thermal System with a Thermal Storage Tank",
+      "start": "10:45",
+      "end": "11:00"
+    },
+    {
+      "paper_no": "S11-5",
+      "session_id": "S11",
+      "authors": "Fatos Pollozhani, Robert Scot McLeod, Matej Gustin, Laura Villanova, Christina Johanna Hopfe (Institute of Building Physics, Services, and Construction, Graz University of Technology, Graz, Austria)",
+      "title": "Uncertainty and Sensitivity in CO2-Based Steady-State Ventilation Estimates in Classrooms",
+      "start": "11:00",
+      "end": "11:15"
+    },
+    {
+      "paper_no": "S11-6",
+      "session_id": "S11",
+      "authors": "Simon BAL-FONTAINE, Arnaud JAY, Simon ROUCHIER (Université Savoie Mont -Blanc, CNRS, LOCIE, 73000 Chambéry, France)",
+      "title": "Comfort assessment of hybrid cooling in an office building in France: comparison between measures and votes",
+      "start": "11:15",
+      "end": "11:30"
+    },
+    {
+      "paper_no": "S11-7",
+      "session_id": "S11",
+      "authors": "Karel Kabele, Zuzana Veverkova (Czech Technical University in Prague, Czech Republic)",
+      "title": "A transferable digital twin methodology for climate-risk assessment and HVAC capacity sizing under the EU Taxonomy: a case study",
+      "start": "11:30",
+      "end": "11:45"
+    },
+    {
+      "paper_no": "S12-1",
+      "session_id": "S12",
+      "authors": "John Omomoluwa Ogundiran, Richard Chanda, Manal Makkaoui, Tayyab Waheed, James Ogundiran, Hicham Mastouri, Manuel Gameiro da Silva (University of Coimbra, ADAI, Department of Mechanical Engineering, Rua Luís Reis Santos, Polo II, 3030 -788 Coimbra, Portugal)",
+      "title": "Analyzing the Indoor-Outdoor Air Quality Relation in a School Building Living Lab",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "S12-2",
+      "session_id": "S12",
+      "authors": "Aleksandra Lipczynska, Jan Kaczmarczyk, Mariusz Skwarczynski (Silesian University of Technology, Poland)",
+      "title": "Performance analysis of decentralized classroom ventilation systems with respect to indoor air quality and indoor environmental conditions under real operating conditions",
+      "start": "10:15",
+      "end": "10:30"
+    },
+    {
+      "paper_no": "S12-3",
+      "session_id": "S12",
+      "authors": "Aleksandra Lipczynska, Maria Hurnik, Zbigniew Popiołek (Department of Heating, Ventilation and Dust Removal Technology)",
+      "title": "Spatial Non- Uniformity of CO₂ Concentration in Displacement -Ventilated Classrooms: Implications for Indoor Air Quality Assessment",
+      "start": "10:30",
+      "end": "10:45"
+    },
+    {
+      "paper_no": "S12-4",
+      "session_id": "S12",
+      "authors": "Martín Draper, Matís Izquierdo, Mariana Mendina (Instituto de Mecánica de los Fluidos e Ingeniería Ambiental, Facultad de Ingeniería, Universidad de la República, Uruguay)",
+      "title": "Ventilation rate estimation from single CO₂ measurements in an elementary school classroom and its spatial variability during a two-month experimental campaign",
+      "start": "10:45",
+      "end": "11:00"
+    },
+    {
+      "paper_no": "S12-5",
+      "session_id": "S12",
+      "authors": "Matias Izquierdo, Mariana Mendina, Martin Draper (Facultad de Ingeniería, Universidad de la República de Montevideo, Uruguay)",
+      "title": "Spatial variability of CO2 in a natural ventilated school classroom and its impact on airborne infection risk estimation: an LES study",
+      "start": "11:00",
+      "end": "11:15"
+    },
+    {
+      "paper_no": "S12-6",
+      "session_id": "S12",
+      "authors": "Mona Noroozi, Nolwenn Hurel, Monika Woloszyn, Bassam Moujalled (Université Savoie Mont Blanc, CNRS, LOCIE, Solar Academy, 73000, Chambéry, France)",
+      "title": "Experimental study of the thermal behaviour of schools during hot and occupied periods: A case study of two French schools",
+      "start": "11:15",
+      "end": "11:20"
+    },
+    {
+      "paper_no": "S12-7",
+      "session_id": "S12",
+      "authors": "Sampo Saari, Kai Lindberg, Inga Ehder- Gahm, Piia Sormunen, Kimmo Teinilä, Hilkka Timonen, Topi Rönkkö (Tampere University of Applied Sciences, Finland)",
+      "title": "Indoor Air Quality and the Effectiveness of Air Cleaners in Kindergartens",
+      "start": "11:20",
+      "end": "11:25"
+    },
+    {
+      "paper_no": "S12-8",
+      "session_id": "S12",
+      "authors": "Sampo Saari (Tampere University of Applied Sciences, Finland)",
+      "title": "Ventilation Performance Assessment Using Carbon Dioxide Decay Measurements",
+      "start": "11:25",
+      "end": "11:30"
+    },
+    {
+      "paper_no": "S12-9",
+      "session_id": "S12",
+      "authors": "Youssef Saleh, Karsten Tawackolian, Martin Kriegel (Technische Universität Berlin, Hermann -Rietschel-Institute, Germany)",
+      "title": "Long Short-Term Memory (LSTM) networks for Fault Detection and Severity Predection in a Simulated Fan Coil Unit",
+      "start": "11:30",
+      "end": "11:45"
+    },
+    {
+      "paper_no": "S13-1",
+      "session_id": "S13",
+      "authors": "Zhenyu Zou, Yufeng Wei, Chun Chen (Department of Mechanical and Automation Engineering, The Chinese University of Hong Kong, Hong Kong S.A.R. (China))",
+      "title": "GPU-Accelerated Modeling of DBD Plasma for Indoor Air Purification",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "S13-2",
+      "session_id": "S13",
+      "authors": "Shengnan Guo, Yanqiu Huang, Xutao Chen, Dingwei Huang (Xi’an University of Architecture and Technology, China)",
+      "title": "CFD-DEM Simulation Study on the Impact of Particles-Droplets Collision and Coalescence on Dust Suppression Efficiency in High-Temperature Smoke-Spray Fields",
+      "start": "10:15",
+      "end": "10:30"
+    },
+    {
+      "paper_no": "S13-3",
+      "session_id": "S13",
+      "authors": "Minghui Yu, Yanqiu Huang, Fangfang Wei, Jintao He (Xi’an University of Architecture and Technology, China)",
+      "title": "Performance Analysis and Optimization of a Large-Area Uniform Side-Exhaust Capture Hood",
+      "start": "10:30",
+      "end": "10:45"
+    },
+    {
+      "paper_no": "S13-4",
+      "session_id": "S13",
+      "authors": "Petra Stavova (Trane Technologies, Czech Republic)",
+      "title": "A respiration parameter for adaptive control of refrigerated transport CA systems",
+      "start": "10:45",
+      "end": "11:00"
+    },
+    {
+      "paper_no": "S13-5",
+      "session_id": "S13",
+      "authors": "Sullivan Lechêne, Emmanuel Belut (INRS, France)",
+      "title": "Impact of operational and geometric factors on the containment performance of laboratory fume hoods in the presence of movement-induced drafts",
+      "start": "11:00",
+      "end": "11:15"
+    },
+    {
+      "paper_no": "S13-6",
+      "session_id": "S13",
+      "authors": "Ying Zhang, Zhijian Zhao, Jinhan Liu, Angui Li (Xi'an University of Architecture and Technology)",
+      "title": "Mechanical Ventilation Strategies for Controlling SF6 Dispersion in GIS Rooms: A Parametric Study",
+      "start": "11:15",
+      "end": "11:20"
+    },
+    {
+      "paper_no": "S13-7",
+      "session_id": "S13",
+      "authors": "Jiung Han, Hyunwoo Lim (Department of Architecture, Graduate school of Konkuk University, Seoul, South Korea)",
+      "title": "Data Center Waste Heat Recovery with Discharge Water Temperature Restoration using Water- to-Water Heat Pumps",
+      "start": "11:20",
+      "end": "11:35"
+    },
+    {
+      "paper_no": "S13-8",
+      "session_id": "S13",
+      "authors": "Jinkyun Cho, Sangwoo Byun, Jihyuk Ahn, Haram Kim (Hanbat National University, Korea, Republic of (South Korea))",
+      "title": "Energy-Efficient Liquid Cooling Concepts for High-Density Modular Data Centers",
+      "start": "11:35",
+      "end": "11:40"
+    },
+    {
+      "paper_no": "S14-1",
+      "session_id": "S14",
+      "authors": "risto kosonen, Humamed Ejaz, simo kilpeläinen (aalto university, Finland)",
+      "title": "Infection probability of different air distribution and exhaust strategies in classroom environments",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "S14-2",
+      "session_id": "S14",
+      "authors": "Diana Lemian, Florin Bode, Paul Danca, Matei Georgescu, Alexandru Cernei, Ilinca Nastase (Technical University of Civil Engineering of Bucharest, Romania)",
+      "title": "Bi-Directional Digital Twin of a Thermal Manikin for Real-Time CFD-Based Thermal Comfort Assessment in Vehicle Cabins",
+      "start": "10:15",
+      "end": "10:30"
+    },
+    {
+      "paper_no": "S14-3",
+      "session_id": "S14",
+      "authors": "Peng Qin, Twan van Hooff, Peter Vilhelm Nielsen, Marcel Loomans (Physics and Services, Department of the Built Environment, Eindhoven University of Technology, Eindhoven, The Netherlands)",
+      "title": "Influence of geometrical parameters of a supply terminal on its air distribution",
+      "start": "10:30",
+      "end": "10:45"
+    },
+    {
+      "paper_no": "S14-4",
+      "session_id": "S14",
+      "authors": "Houzhi Wang, Wei Ma, Jianlei Niu, Ruoyu You (Department of Building Environment and Energy Engineering, The Hong Kong Polytechnic University, Hong Kong S.A.R. (China))",
+      "title": "A General Neural Solver for Efficient Urban Wind Prediction",
+      "start": "10:45",
+      "end": "11:00"
+    },
+    {
+      "paper_no": "S14-5",
+      "session_id": "S14",
+      "authors": "Rui Zhao, Alessandro Stocchino, Ruoyu You (Department of Building Environment and Energy Engineering, The Hong Kong Polytechnic University, Hong Kong S.A.R. (China))",
+      "title": "High-Fidelity Urban Flow Reconstruction via Scanning Stereo PIV for Machine Learning-Assisted Turbulence Modelling",
+      "start": "11:00",
+      "end": "11:15"
+    },
+    {
+      "paper_no": "S14-6",
+      "session_id": "S14",
+      "authors": "Alicia Murga, Haruki Nakagawa, Rahul Bale, Makoto Tsubokura (Graduate School of System Informatics, Kobe University, Japan)",
+      "title": "Multi-objective optimization of indoor environmental quality using genetic algorithm-driven CFD simulations",
+      "start": "11:15",
+      "end": "11:30"
+    },
+    {
+      "paper_no": "S14-7",
+      "session_id": "S14",
+      "authors": "Peihang An, Douaa Al Assaad, Chen Zhang, Hilde Breesch (KU Leuven, Belgium)",
+      "title": "Exploring spatial thermal and IAQ assessment in an educational building during heatwaves: a coupled BS – CFD approach",
+      "start": "11:30",
+      "end": "11:35"
+    },
+    {
+      "paper_no": "S14-8",
+      "session_id": "S14",
+      "authors": "Rahmat Rizal Andhi, Yang Bi, Guangyu Cao, Gabriel Hanssen Kiss, Jan Gunnar Skogås, Liv Inger Stenstad (NTNU, Department Computer Science, Trondheim, Norway)",
+      "title": "From CFD to Immersive Reality: A Lagrangian-Based Immersive Workflow for Real-Time Visualization of Contaminant Dispersion in Operating Rooms",
+      "start": "11:35",
+      "end": "11:40"
+    },
+    {
+      "paper_no": "S14-9",
+      "session_id": "S14",
+      "authors": "Yuna Maruo, Yasuyuki Shiraishi, Hideaki Kido (The University of Kitakyusyu, Japan)",
+      "title": "Evaluation of Indoor Environmental Conditions in a Large Open-Plan Office with a Ducted HVAC System Using CFD Analysis",
+      "start": "11:40",
+      "end": "11:45"
+    },
+    {
+      "paper_no": "S15-1",
+      "session_id": "S15",
+      "authors": "Sanghwan Bae, Jungyeon Yu (Korea Institute of Civil Engeering and Building Technology, Korea, Republic of (South Korea))",
+      "title": "Development and evaluation of an autonomous ventilation control strategy for energy-efficient operation of residential HRV systems",
+      "start": "10:00",
+      "end": "10:05"
+    },
+    {
+      "paper_no": "S15-2",
+      "session_id": "S15",
+      "authors": "Ayumi Umetsu, Katsuhiro Miura (Yamaguchi University, Japan)",
+      "title": "Evaluation of Energy Conservation Effects of a Geothermal Outdoor Air Treatment System in Japan",
+      "start": "10:05",
+      "end": "10:20"
+    },
+    {
+      "paper_no": "S15-3",
+      "session_id": "S15",
+      "authors": "Panu Mustakallio, Emmanuel Bizien, Tuomas Kaukola (Halton Oy, Finland)",
+      "title": "Novel slim 1-way active chilled beam unit for spacious office design",
+      "start": "10:20",
+      "end": "10:35"
+    },
+    {
+      "paper_no": "S15-4",
+      "session_id": "S15",
+      "authors": "Alanis Zeoli, Anna Pacak, Vincent Lemort, Samuel Gendebien (University of Liège, Belgium)",
+      "title": "Assessing passive technologies integrated with active cooling in air-handling units under cooling design conditions: a multi-climate analysis",
+      "start": "10:35",
+      "end": "10:50"
+    },
+    {
+      "paper_no": "S15-5",
+      "session_id": "S15",
+      "authors": "Chunwen Xu, Mengxi Xie, Shuquan Yi, Long Wang, Mengzhu Dou (China University of Petroleum (East China), China, People's Republic of)",
+      "title": "Multiple swirling jets for enhanced displacement ventilation in large spaces",
+      "start": "10:50",
+      "end": "11:05"
+    },
+    {
+      "paper_no": "S15-6",
+      "session_id": "S15",
+      "authors": "Maria Justo Alonso, Hans Martin Mathisen, Rikke Bramming Jørgensen (Department of Architecture, Materials and Structures, SINTEF Community, Trondheim, Norway)",
+      "title": "Dynamic Control of Air Recirculation for Energy Efficiency and Indoor Air Quality in Cold- Climate Buildings",
+      "start": "11:05",
+      "end": "11:20"
+    },
+    {
+      "paper_no": "S15-7",
+      "session_id": "S15",
+      "authors": "Jewon OH, Hyuntae Kim (Kurume Institute of Technology, Japan)",
+      "title": "Research on Estimating Indoor Ventilation Rates Using Image Analysis Technology",
+      "start": "11:20",
+      "end": "11:25"
+    },
+    {
+      "paper_no": "S15-8",
+      "session_id": "S15",
+      "authors": "Alan Kabanshi, Mats Sandberg (Faculty of Engineering and Sustainable Development, University of Gävle, Sweden)",
+      "title": "A critical review of entropy generation minimization in building ventilation and HVAC systems",
+      "start": "11:25",
+      "end": "11:40"
+    },
+    {
+      "paper_no": "S15-9",
+      "session_id": "S15",
+      "authors": "Dania AlMarafi, Raya Katawneh, Tala malkawi, Rafat Alwaked (German Jordanian University, Jordan, Hashemite Kingdom of)",
+      "title": "Energy Efficiency Evaluation and Design Optimization of a Chalet in Umm Qais Using DesignBuilder",
+      "start": "11:40",
+      "end": "11:45"
+    },
+    {
+      "paper_no": "S17-1",
+      "session_id": "S17",
+      "authors": "Pavla Pechova, Lenka Zuská, Hana Pechova (Czech Technical University in Prague, Czech Republic)",
+      "title": "Air conditioning tests in the Regio-Shuttle RS1 railcar units",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "S17-2",
+      "session_id": "S17",
+      "authors": "Tobias Dehne, Daniel Schmeling, Pascal Lange (German Aerospace Center DLR Site Göttingen: Deutsches Zentrum fur Luft- und Raumfahrt DLR Standort Gottingen, Germany)",
+      "title": "Experimental comparison of thermal comfort measurement techniques",
+      "start": "10:15",
+      "end": "10:30"
+    },
+    {
+      "paper_no": "S17-3",
+      "session_id": "S17",
+      "authors": "Haneen AlAmirah, Kheira Tabet Aoul, Hilde Breesch, Douaa Al-Assaad (United Arab Emirates University, AlAin, United Arab Emirates)",
+      "title": "Social Influence in Shared Indoor Spaces: Application to Thermal Comfort Perception",
+      "start": "10:30",
+      "end": "10:45"
+    },
+    {
+      "paper_no": "S17-4",
+      "session_id": "S17",
+      "authors": "Thomas Schoberer, Kathrin Schuller (Hochschule für Angewandte Wissenschaften Burgenland GmbH, Austria)",
+      "title": "Evaluation of ventilation systems based on field measurements and investigation of indoor air quality in schools",
+      "start": "10:45",
+      "end": "11:00"
+    },
+    {
+      "paper_no": "S17-5",
+      "session_id": "S17",
+      "authors": "Arturs Palcikovskis, Ilja Borodinecs, Anna Petermane (Riga Technical University, Latvia)",
+      "title": "Assessment of Thermal Comfort and Indoor Air Quality in Secondary School Classrooms: Sensor Measurements and Student Survey",
+      "start": "11:00",
+      "end": "11:15"
+    },
+    {
+      "paper_no": "S17-6",
+      "session_id": "S17",
+      "authors": "Alexandru Cernei, Diana Lemian, Matei Georgescu, Paul Danca, Marie Verielle, Frédéric Thevenet, Ilinca Nastase (Technical University of Civil Engineering of Bucharest, Romania)",
+      "title": "Numerical and experimental investigation of clothing-dependent thermal plumes around a thermal manikin",
+      "start": "11:15",
+      "end": "11:30"
+    },
+    {
+      "paper_no": "S17-7",
+      "session_id": "S17",
+      "authors": "Michal Svoboda, Vojtěch Zavřel (České vysoké učení technické v Praze – Fakulta strojní, Czech Republic)",
+      "title": "Dynamic Thermal Comfort in HVAC Demand Response: Why Static Comfort Evaluation Underestimates Building Flexibility",
+      "start": "11:30",
+      "end": "11:35"
+    },
+    {
+      "paper_no": "S17-8",
+      "session_id": "S17",
+      "authors": "Laura Carnieletto, Carla Proaño, Wilmer Pasut (Department of Environmental Sciences, Informatics and Statistics, University of Venice Ca' Foscari, Italy)",
+      "title": "From measurements to perception: insights into residential indoor environments",
+      "start": "11:35",
+      "end": "11:50"
+    },
+    {
+      "paper_no": "S16-1",
+      "session_id": "S16",
+      "authors": "Dang Khoa Nguyen, Kazuki Kuga, Kazuhide Ito (Kyushu University, Japan)",
+      "title": "In silico Modeling Framework for Airway Absorption and Organ Disposition of Inhaled Indoor Particle-associated SVOCs",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "S16-2",
+      "session_id": "S16",
+      "authors": "Arsen Melikov, Detelin Markov (Technical University of Denmark, Denmark)",
+      "title": "Is CO2 appropriate tracer for assessing airborne transmission risk?",
+      "start": "10:15",
+      "end": "10:30"
+    },
+    {
+      "paper_no": "S16-3",
+      "session_id": "S16",
+      "authors": "Bin Zhou, Bin Yang, Arsen Melikov (Xi’an University of Architecture and Technology, Xi’an, China)",
+      "title": "IMPACT OF BREATHING BOUNDARY CONDITIONS AND CFD MODELING APPROACHES ON SIMULATIONS OF EXHALED VIRUS TRANSPORT",
+      "start": "10:30",
+      "end": "10:45"
+    },
+    {
+      "paper_no": "S16-4",
+      "session_id": "S16",
+      "authors": "Yuichiro Suda, Kazuki Kuga, Kunio Hashimoto, Kazuhide Ito (Kyushu University, Japan)",
+      "title": "A comparative analysis of breathing zone formations in indoor environments between a two- year-old child and an adult",
+      "start": "10:45",
+      "end": "11:00"
+    },
+    {
+      "paper_no": "S16-5",
+      "session_id": "S16",
+      "authors": "Wenhui Yuan, Chen Zhang, Peter Vilhelm Nielsen, Li Liu, Chunwen Xu, Simon Pommerencke Melgaard (Department of the Built Environment, Aalborg University, Copenhagen, 2450, Denmark)",
+      "title": "Effect of body thermal plume and exhaled air temperature on exhalation flow dynamic: A PIV based experimental study",
+      "start": "11:00",
+      "end": "11:15"
+    },
+    {
+      "paper_no": "S16-6",
+      "session_id": "S16",
+      "authors": "Er Ding, Anneloes de Lange, Karin Kompatscher, Philomena M. Bluyssen (Faculty of Architecture and the Built Environment, Delft University of Technology, Delft, the Netherlands)",
+      "title": "Effects of ventilation rate, layout, and source location on aerosol dispersion and decay in long- term care common spaces",
+      "start": "11:15",
+      "end": "11:30"
+    },
+    {
+      "paper_no": "S16-7",
+      "session_id": "S16",
+      "authors": "Peter V Nielsen, Chen Zhang, Chunwen Xu, Wenhui Yuan, Christoffer M Brødsgaard, Anastasia K Hansen, Jonas H Iversen, Oscar K M Pedersen, Thomas Juul (Aalborg University, Denmark, Denmark)",
+      "title": "The importance of nose and mouth exhalation on airborne cross-infection",
+      "start": "11:30",
+      "end": "11:45"
+    },
+    {
+      "paper_no": "W11-1",
+      "session_id": "W11",
+      "authors": "Murat Akyar (DOGU, Turkiye)",
+      "title": "DOGU Workshop",
+      "start": "10:00",
+      "end": "11:45"
+    },
+    {
+      "paper_no": "W12-1",
+      "session_id": "W12",
+      "authors": "Atze Boerstra, Mikael Börjesson, Jacopo Famiglietti, Chalotte Nyholm, Pablo Carero Melero (TU Delft, The Netherlands)",
+      "title": "Integrating circularity into design, installation and operation of HVAC systems",
+      "start": "10:00",
+      "end": "11:45"
+    },
+    {
+      "paper_no": "P3-1",
+      "session_id": "P3",
+      "authors": "Kwok Wai Tham (National University of SIngapore, Singapore)",
+      "title": "Partnership Within and Across Scales: Trilogue among Technology, Data and Humans",
+      "start": "12:30",
+      "end": "13:15"
+    },
+    {
+      "paper_no": "S21-1",
+      "session_id": "S21",
+      "authors": "Atze Boerstra, Alessandra Luna Navarro, Wei Wei (TU Delft, Netherlands, The)",
+      "title": "Expanding the office-comfortzone with ceiling fans",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "S21-2",
+      "session_id": "S21",
+      "authors": "Agnes Psikuta, Zhuqiang Hu, Anna Bogdan, Stanisław Kocik, Cheng Gao, Yan Liang (Swiss Federal Laboratories for Materials Science and Technology - Empa, Laboratory for Biomimetic Membranes and Textiles, St. Gallen, Switzerland)",
+      "title": "Opportunities and constraints of multi-sensor passive manikins for expanding research in built and outdoor environments, occupational safety and medtech",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "S21-3",
+      "session_id": "S21",
+      "authors": "Joanna Ferdyn-Grygierek, Agnes Psikuta, Aleksandra Lipczynska, Stanislaw Kocik, Mirella Fuhrmann, Krzysztof Grygierek, Cheng Gao (Silesian University of Technology, Poland)",
+      "title": "How Model Selection Affects Thermal Comfort Assessment in Naturally Ventilated Buildings",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "S21-4",
+      "session_id": "S21",
+      "authors": "Yunqing Fan, Takuya Furuhashi, Kazuhide Ito (Mitsubishi Electric Corporation, Japan)",
+      "title": "Mitigating Draft Discomfort in unsteady indoor Environments: An Occupant-Centric Control Strategy Using the Transient Effective Draft Temperature for Packaged Air Conditioning Systems",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "S21-5",
+      "session_id": "S21",
+      "authors": "Monika Pendaroska, Michele De Carli (University of Padova, Italy)",
+      "title": "Assessment of window retrofit strategies for energy and thermal comfort improvement: a case study simulation of a fully glazed office building",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "S21-6",
+      "session_id": "S21",
+      "authors": "Krzysztof Grygierek, Ibrahim Tajuddeen, Joanna Ferdyn-Grygierek, Stanislaw Kocik (Silesian University of Technology, Poland)",
+      "title": "ANN-Based View Factor Estimation for Efficient Human Thermal Comfort Analysis in Indoor Environments",
+      "start": "14:45",
+      "end": "15:00"
+    },
+    {
+      "paper_no": "S22-1",
+      "session_id": "S22",
+      "authors": "Zsofia Deme Belafi, Edit Barna (Department of Building Services and Process Engineering, Faculty of Mechanical Engineering, Budapest University of Technology and Economics, Műegyetem rkp. 3., H -1111 Budapest, Hungary)",
+      "title": "Investigating health- and occupant behaviour related IAQ risks in a naturally ventilated child- care facility",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "S22-2",
+      "session_id": "S22",
+      "authors": "Renate Jaanus, Alo Mikola, Karl- Villem Võsa, Martin Kiil, Jarek Kurnitski (Tallinn University on Technology, Estonia)",
+      "title": "On-site Measurements of Ventilation Effectiveness in Two Newly Constructed School Buildings",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "S22-3",
+      "session_id": "S22",
+      "authors": "Zbigniew Popiołek, Maria Hurnik, Aleksandra Lipczyńska (Silesian University of Technology in Gliwice, Poland)",
+      "title": "Indoor Environment in a Classroom with Respect to Draft Risk for Different Air Distribution Systems",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "S22-4",
+      "session_id": "S22",
+      "authors": "Birgit Mueller, Felix Held, Pilipp Krimmel, Olaf Zeidler, Kathrin Richter-Kowalewski, Manuel Bagans (HTW Berlin Germany and KTH Stockholm Sweden, Germany)",
+      "title": "CO2-monitoring as a benchmark for future Berlin school ventilation systems",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "S22-5",
+      "session_id": "S22",
+      "authors": "Katarína Harčárová, Silvia Vilčeková, Eva Kridlová Burdová, Jana Budajová (Technical University of Košice, Slovakia)",
+      "title": "School Classrooms as Exposure Environments from an Indoor Environmental Quality Perspective",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "S22-6",
+      "session_id": "S22",
+      "authors": "Zuzana Veverkova, Adam Palkovič (Czech Technical University in Prague, Czech Republic)",
+      "title": "Beyond Temperature and CO₂: Integrated Thermal Comfort Assessment in a Mechanically Ventilated University Lecture Hall",
+      "start": "14:45",
+      "end": "15:00"
+    },
+    {
+      "paper_no": "S23-1",
+      "session_id": "S23",
+      "authors": "Inga Ehder-Gahm, Jani Hakala, Mikko Kultanen, Ilpo Kulmala, Mohamed Elsayed, Hilkka Timonen, Sami Harni, Laura Salo, Topi Rönkkö, Sampo Saari, Arto Säämänen (VTT Technical Research Centre of Finland Ltd, Finland)",
+      "title": "Indoor Air Quality Intervention Study – The Impact of Supply Air Route and Filtration on Indoor Air Quality",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "S23-2",
+      "session_id": "S23",
+      "authors": "Mikael Sundberg, Elisabet Linden, Dario Senkic, Mats Sandberg, Ryu Itokazu, Mikael Björling, Alan Kabanshi (Department of Building Engineering, Energy Systems and Sustainability Science, University of Gävle, Sweden)",
+      "title": "Beyond Averages: Dynamic Exposure Metrics for Improved Ventilation Resilience",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "S23-3",
+      "session_id": "S23",
+      "authors": "Alan Kabanshi, Elisabet Linden, Mikael Sundberg, Mikael Bjorling, Dario Senkic, Ryu Itokazu, Kazuhide Ito, Mats Sandberg (Faculty of Engineering and Sustainable Development, University of Gävle, Sweden)",
+      "title": "Exhaust Possibilities: A Preliminary Experimental Study on Exhaust Optimization for Indoor Airborne Infection Control.",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "S23-4",
+      "session_id": "S23",
+      "authors": "Toshio Yamanaka, Tomohiro Kobayashi, Narae Choi, Haruna Yamasawa, Noriaki Kobayashi, Taiki Nonaka, Nobuki Matsui, Tetsuya Okamoto, Mari Kuranaga, Yuta Nagai (The University of Osaka, Japan)",
+      "title": "A Study on Ventilation Effectiveness of Ceiling-Supplied Displacement Ventilation from Theoretical Viewpoint of Buoyant Jet and Impinging Jets",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "S23-5",
+      "session_id": "S23",
+      "authors": "Mari Kuranaga, Tomohiro Kobayashi, Toshio Yamanaka, Narae Choi, Haruna Yamasawa, Noriaki Kobayashi, Taiki Nonaka, Minari Tanaka, Nobuki Matsui, Tetsuya Okamoto (Daikin Industries LTD, Japan)",
+      "title": "Thermal Comfort of Ceiling-Supplied Displacement Ventilation System by Full-scale Experiment using Thermal Manikin",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "S23-6",
+      "session_id": "S23",
+      "authors": "Yuki Yamoto, Tomohiro Kobayashi, Toshio Yamanaka, Haruna Yamasawa, Narae Choi, Noriaki Kobayashi, Ryoyo Kato, Nobuki Matsui, Tetsuya Okamoto, Shogo Otaka (Daikin Industries, Ltd., Japan)",
+      "title": "Ventilation Effectiveness of Ceiling-Supplied Displacement Ventilation System for Office Room (Part 3) Comparison of Temperature and Contaminant Concentration Distributions under Different Heating Load Countermeasures using Full-Scale Experimental Chamber and CFD Analysis",
+      "start": "14:45",
+      "end": "15:00"
+    },
+    {
+      "paper_no": "S24-1",
+      "session_id": "S24",
+      "authors": "Saif Ahmad, Stefanie Gillmeier, Twan van Hooff (Unit Building Physics and Services, Department of the Built Environment, Eindhoven University of Technology, the Netherlands)",
+      "title": "RANS based modeling of infiltration of airflow in buildings using porous media.",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "S24-2",
+      "session_id": "S24",
+      "authors": "Szymon Caban, Arsen Melikov, Mariya Bivolarova, Anna Bulińska, Zbigniew Buliński (Silesian University of Technology, Poland)",
+      "title": "Does standalone air purifier decrease airborne transmission of respiratory viruses for all room occupants?",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "S24-3",
+      "session_id": "S24",
+      "authors": "Mana Kobayashi, Sihwan Lee, Hong Hu (Tokyo University of Science, Japan)",
+      "title": "Multi- objective optimization of flexible PV façade systems and outdoor wind environment assessment",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "S24-4",
+      "session_id": "S24",
+      "authors": "Peng Qin, Anneloes de Lange, Twan van Hooff, Roberto Traversari, Marcel Loomans (Physics and Services, Department of the Built Environment, Eindhoven University of Technology, Eindhoven, The Netherlands)",
+      "title": "CFD analysis of particle distribution in a large room: Impact of source location",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "S24-5",
+      "session_id": "S24",
+      "authors": "Arghyanir Giri, Clara García - Sánchez, Philomena Bluyssen (Delft University of Technology, The Netherlands)",
+      "title": "Understanding indoor airflow patterns to reduce airborne transmission: A comparative study of hospital and face-to-face restaurant settings",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "S24-6",
+      "session_id": "S24",
+      "authors": "Ryu Itokazu, Naoki Ikegaya, Kazuki Kuga, Alan Kbanshi, Mats Sandberg, Kazuhide Ito (Interdisciplinary Graduate School of Engineering Sciences, Kyushu University, Japan)",
+      "title": "Understanding the Scalar Dispersion Mechanisms within Enclosed Space through CFD-based Ventilation Efficiency Analysis",
+      "start": "14:45",
+      "end": "15:00"
+    },
+    {
+      "paper_no": "S25-1",
+      "session_id": "S25",
+      "authors": "Blanka Cabovská, Despoina Teli, Jan- Olof Dalenbäck (Chalmers University of Technology, Sweden)",
+      "title": "Impact of the EPBD implementation in Swedish educational buildings",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "S25-2",
+      "session_id": "S25",
+      "authors": "Michaela Karlová, Michal Kabrhel (CTU in Prague, Czech Republic)",
+      "title": "Sustainability assessment focused on ventilation systems in residential buildings",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "S25-3",
+      "session_id": "S25",
+      "authors": "Hsing-Yu Ou, Philomena M. Bluyssen, Er Ding (Faculty of Architecture and the Built Environment, Delft University of Technology, Delft, the Netherlands)",
+      "title": "Effects of ventilation regimes on IAQ and thermal conditions of school classrooms: a pilot study",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "S25-4",
+      "session_id": "S25",
+      "authors": "Pascal Lange, Daniel Schmeling, Tobias Dehne, André Volkmann, Felix Werner (German Aerospace Center (DLR), Germany)",
+      "title": "Thermal Comfort Evaluation in a Densely Occupied Multi-Purpose Railway Compartment under Seasonal Conditions",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "S25-5",
+      "session_id": "S25",
+      "authors": "Christian Friebe (Institut für Luft - und Kältetechnik gemeinnützige Gesellschaft mbH, Germany)",
+      "title": "Human-centred air conditioning technology – wishful thinking or reality?",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "S25-6",
+      "session_id": "S25",
+      "authors": "Hyeonseong Yuk, Won Duk Suh, Jae Hyuck Jung, Sumin Kim (Department of Architecture and Architectural Engineering, Yonsei University, Seoul 03722, Republic of Korea)",
+      "title": "Energy retrofit priorities for historic buildings under climate change",
+      "start": "14:45",
+      "end": "15:00"
+    },
+    {
+      "paper_no": "S27-1",
+      "session_id": "S27",
+      "authors": "Shohei Yasuda, Takashi Asawa, Tsuyoshi Ueno (Central Research Institute of Electric Power Industry, Japan)",
+      "title": "Thermal Comfort Evaluation by Estimating Convective and Radiative Heat Flux on a Human Body Using a Thermal Manikin and Spherical Thermography",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "S27-2",
+      "session_id": "S27",
+      "authors": "Anna Bogdan, Ewa Zender- Świercz, Marcin Michalski, Dominika Kwiecińska (Warsaw University of Technology, Poland)",
+      "title": "Thermal insulation performance of medical drapes used during surgical procedures",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "S27-3",
+      "session_id": "S27",
+      "authors": "Cheng Gao, Agnes Psikuta, René Rossi (Swiss Federal Laboratories for Materials Science and Technology (Empa), Laboratory for Biomimetic Membranes and Textiles, St. Gallen, Switzerland)",
+      "title": "Influence of body postures on clothing insulation and thermal sensation prediction in building simulation",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "S27-4",
+      "session_id": "S27",
+      "authors": "Christiane Berger, Antje Heyselberghs, Irene Martínez - Muñoz, Ardeshir Mahdavi (Department of Architecture, Design and Media Technology, Aalborg University, Aalborg, Denmark)",
+      "title": "Exploring the influence of the acoustic landscape on people's perception of indoor environmental quality",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "S27-5",
+      "session_id": "S27",
+      "authors": "Kätriin Onemar, Martin Kiil, Raimo Simson, Jarek Kurnitski (Tallinn University of Technology, Estonia)",
+      "title": "Supply-Air-Based Cooling as a Retrofit Strategy for Overheating Control",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "S27-6",
+      "session_id": "S27",
+      "authors": "Daniel Adamovský, Jan Smejkal, Dalimil Petrilák (ČVUT, Czech Republic)",
+      "title": "Aeroseal-technology for sealing ventilation ducts",
+      "start": "14:45",
+      "end": "15:00"
+    },
+    {
+      "paper_no": "S26-1",
+      "session_id": "S26",
+      "authors": "Alexandre Jenft, Nicolas Veith (INRS, France)",
+      "title": "Influence of air shower design on the risk of inhaling toxic dust",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "S26-2",
+      "session_id": "S26",
+      "authors": "Maria Hurnik, Zbigniew Popiołek, Jan Kaczmarczyk (Silesian University of Technology in Gliwice, Poland)",
+      "title": "Non-Isothermal Radial Wall Jets: CFD Calculation Results",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "S26-3",
+      "session_id": "S26",
+      "authors": "Fei Liu, Peilin Li, Zhiyong Zhang, Wei Liu (Key Lab of Industrial Fluid Energy Conservation and Pollution Control (Ministry of Education), Qingdao University of Technology, Qingdao, 266033, China)",
+      "title": "Inverse design the shape of local exhaust hoods for flow resistance reduction with adjoint methods",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "S26-4",
+      "session_id": "S26",
+      "authors": "Jonathan Chéron, Alexandre Jenft, Jean-Arthur Schaeffer, Lucas Simonklein, Alexandre Baudet (Institut National de Recherche et de Sécurité, Department of Process Engineering, 54500 Vandœuvre - lès -Nancy, France)",
+      "title": "Optimizing Aerosol Control in Dental Operatories: Emission Mapping and Source Capture Efficiency during High-Speed Drilling",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "S26-5",
+      "session_id": "S26",
+      "authors": "Chen Zhang, Olena Kalyanova Larsen, Anastasia Kjærlund Hansen, Just Salling Buchhave, Sui Hoi (Aalborg University, Department of the Built Environment, Denmark)",
+      "title": "Towards a Design Tool for Diffuse Ceiling Ventilation: Mapping Performance Evidence and Design Parameters",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "S26-6",
+      "session_id": "S26",
+      "authors": "Sullivan Lechêne, Nicolas Veith (INRS, France)",
+      "title": "How to measure airflow rate in a duct with reduced straight-length requirements and improved reliability",
+      "start": "14:45",
+      "end": "14:50"
+    },
+    {
+      "paper_no": "S26-7",
+      "session_id": "S26",
+      "authors": "Martin Kováč (Technical university of Kosice, Slovak Republic)",
+      "title": "The impact of non-green roof and green roof on the air temperature entering the air handling unit",
+      "start": "14:50",
+      "end": "14:55"
+    },
+    {
+      "paper_no": "S26-8",
+      "session_id": "S26",
+      "authors": "Axel Mossberg, Hans Nyman, David Ronstad (Brandskyddslaget, Sweden)",
+      "title": "The effects of cold temperatures when pressurizing fire fighter elevators – Problem identification and possible solutions",
+      "start": "14:55",
+      "end": "15:00"
+    },
+    {
+      "paper_no": "W21-1",
+      "session_id": "W21",
+      "authors": "Bohumil Cimbál (Atrea s.r.o)",
+      "title": "ATREA Workshop",
+      "start": "13:30",
+      "end": "15:00"
+    },
+    {
+      "paper_no": "W22-1",
+      "session_id": "W22",
+      "authors": "Chunwen Xu, Yanqiu Huang (China University of Petroleum (East China), China, People's Republic of)",
+      "title": "Measurement and CFD Simulation of Contaminant Transport and Control in Indoor Environments",
+      "start": "13:30",
+      "end": "15:00"
+    },
+    {
+      "paper_no": "S31-1",
+      "session_id": "S31",
+      "authors": "Jun Shinoda, Kan Shindo, Mizuho Akimoto, Futa Watanabe, Kazuhiro Minami, Takahiro Mochizuki, Takayoshi Iida, Bjarne W. Olesen, Shin-ichi Tanabe, Ongun B. Kazanci (Technical University of Denmark, Denmark)",
+      "title": "Development of a local thermal sensation chart based on total heat loss",
+      "start": "15:30",
+      "end": "15:45"
+    },
+    {
+      "paper_no": "S31-2",
+      "session_id": "S31",
+      "authors": "Anas Hussin, Kai Rewitz, Dirk Müller (RWTH Aachen University, E.ON Energy Research Center, Institute for Energy Efficient Buildings and Indoor Climate, Mathieustraße 10, 52074 Aachen, Germany)",
+      "title": "Evaluating an Equivalent Temperature Sensor System for Assessment of Local and Overall Thermal Sensation",
+      "start": "15:45",
+      "end": "16:00"
+    },
+    {
+      "paper_no": "S31-3",
+      "session_id": "S31",
+      "authors": "Zuzana Veverkova, Karel Kabele (Czech Technical University in Prague, Czech Republic)",
+      "title": "Discrepancies between PMV Predictions and Subjective Thermal Sensation: A Gender- Differentiated Climate Chamber Study",
+      "start": "16:00",
+      "end": "16:15"
+    },
+    {
+      "paper_no": "S31-4",
+      "session_id": "S31",
+      "authors": "Shivani Dolas, Philomena M Bluyssen, AnneMarie Eijkelenboom (TU Delft, Netherlands, The)",
+      "title": "Assessing Overheating Risk in Terraced Houses in the Netherlands",
+      "start": "16:15",
+      "end": "16:30"
+    },
+    {
+      "paper_no": "S31-5",
+      "session_id": "S31",
+      "authors": "Jihee Nam, Dongchan Jin, Yongjun Choi, Sumin Kim (Yonsei University, Korea, Republic of (South Korea))",
+      "title": "Influence of building envelope materials on outdoor thermal comfort and urban heat exposure",
+      "start": "16:30",
+      "end": "16:45"
+    },
+    {
+      "paper_no": "S31-6",
+      "session_id": "S31",
+      "authors": "Jaberswamy S, Aakash C. Rai (Department of Sustainable Energy Engineering, Indian Institute of Technology (IIT), Kanpur, Uttar Pradesh, 208016, India)",
+      "title": "Assessment of Mould Growth Risk in Externally Insulated Brick Masonry Walls Using In-Situ Measurements",
+      "start": "16:45",
+      "end": "17:00"
+    },
+    {
+      "paper_no": "S32-1",
+      "session_id": "S32",
+      "authors": "Simo Kilpeläinen, Minzhou Chen, Weixin Zhao, Risto Kosonen (Department of Civil Engineering, School of Engineering, Aalto University, Finland)",
+      "title": "Combined Effect of Ionizer and Ventilation on Protecting Occupants from PM1 Particles and Pathogens in a Hospital Patient Room Setting",
+      "start": "15:30",
+      "end": "15:45"
+    },
+    {
+      "paper_no": "S32-2",
+      "session_id": "S32",
+      "authors": "Hassan Ali, Yunus Emre Cetin, Martin Kriegel (Hermann-Riestchel- Institut, Technische Universität Berlin, Berlin, Germany, Germany)",
+      "title": "Effect of Room Pressure Difference on Air-Curtain Performance During Door-Opening Events",
+      "start": "15:45",
+      "end": "16:00"
+    },
+    {
+      "paper_no": "S32-3",
+      "session_id": "S32",
+      "authors": "Renate Jaanus, Margus Must, Alo Mikola, Jarek Kurnitski (Tallinn University of Technology, Estonia)",
+      "title": "Ventilation Effectiveness in Hospital Patient Rooms: Zoning with Curtains and Extract Locations",
+      "start": "16:00",
+      "end": "16:15"
+    },
+    {
+      "paper_no": "S32-4",
+      "session_id": "S32",
+      "authors": "Mingrui Jiang, Xinda Zhou, Weiwei Huang, Xiaohong Zheng, Hua Qian (School of Energy and Environment, Southeast University, Nanjing, China)",
+      "title": "Multi-zone indoor pollutant source localization with sparse sensors: an inverse optimization framework based on SFIFM model",
+      "start": "16:15",
+      "end": "16:30"
+    },
+    {
+      "paper_no": "S32-5",
+      "session_id": "S32",
+      "authors": "Jun Yoshihara, Toshio Yamanaka, Tomohiro Kobayashi, Haruna Yamasawa, Noriaki Kobayashi, Hisako Nagata, Sigeru Okamoto, Saori Yasui, Kazuki Sugita, Aoi Fujiwara (The University of Osaka, Japan)",
+      "title": "Experimental Evaluation of Local Exhaust Ventilation Combined with Different Air Distribution Systems for Airborne Infection Risk Reduction",
+      "start": "16:30",
+      "end": "16:45"
+    },
+    {
+      "paper_no": "S32-6",
+      "session_id": "S32",
+      "authors": "Dorsa Sadat Rabizadeh, Kunal Bairwa, Laurent Georges, Guangyu Cao (Norwegian University of Science and Technology(NTNU), Norway)",
+      "title": "Characterizing Particulate Matter Emissions from Surgical Personnel in the Surgical Microenvironment of Operating Rooms: Effects of Staff Movements and Ventilation Modes",
+      "start": "16:45",
+      "end": "17:00"
+    },
+    {
+      "paper_no": "S33-1",
+      "session_id": "S33",
+      "authors": "Mikael Björling, Alan Kabanshi, Elisabet Linden, Mikael Sundberg, Dario Senkic, Mats Sandberg, Ryu Itokazu, Ito Kazuhide (University of Gävle, Sweden)",
+      "title": "Local tracer emission mimicking air-borne disease spreading in an office space with mixing ventilation",
+      "start": "15:30",
+      "end": "15:45"
+    },
+    {
+      "paper_no": "S33-2",
+      "session_id": "S33",
+      "authors": "Jun Jiang, Kai Rewitz, Dirk Müller (RWTH Aachen University, E.ON Energy Research Center, Institute for Energy Efficient Buildings and Indoor Climate, Aachen, Germany)",
+      "title": "Impact of airflow model accuracy on model-based control in natural and mixed-mode ventilation",
+      "start": "15:45",
+      "end": "16:00"
+    },
+    {
+      "paper_no": "S33-3",
+      "session_id": "S33",
+      "authors": "Elisabet Linden, Mikael Sundberg, Dario Senkic, Mats Sandberg, Ryu Itokazu, Mikael Björling, Alan Kabanshi (Department of Building engineering, Energy Systems and Sustainability Science, University of Gävle, Sweden)",
+      "title": "Influence of Thermal Stratification and Occupant Plumes on Contaminant Exposure",
+      "start": "16:00",
+      "end": "16:15"
+    },
+    {
+      "paper_no": "S33-4",
+      "session_id": "S33",
+      "authors": "Jixuan Bao, Risto Kosonen, Simo Kilpeläinen, Kim Hagström, Jukka Vasara (Department of Civil Engineering, Aalto University, Finland)",
+      "title": "Assessing airborne transmission risk in a simulated patient room during visiting activities: A chamber study",
+      "start": "16:15",
+      "end": "16:30"
+    },
+    {
+      "paper_no": "S33-5",
+      "session_id": "S33",
+      "authors": "Mateja Dovjak, Bruno Kovač, Janja Vaupotič (University of Ljubljana, Faculty of Civil and Geodetic Engineering, Slovenia)",
+      "title": "Impacts of Air Infiltration and Occupant-Driven Natural Ventilation on Indoor Air Quality in a Rural Single-Family Dwelling during a One-Year Study",
+      "start": "16:30",
+      "end": "16:45"
+    },
+    {
+      "paper_no": "S33-6",
+      "session_id": "S33",
+      "authors": "Chanhyung Shim, Goopyo Hong (Kanagwon National University, Korea, Republic of (South Korea))",
+      "title": "Assessment of indoor air quality and heating and cooling energy impacts of room-level ventilation control in residential buildings",
+      "start": "16:45",
+      "end": "16:50"
+    },
+    {
+      "paper_no": "S34-1",
+      "session_id": "S34",
+      "authors": "Hans Nyman, Johan Nilsen, Alexander M. Elias (Brandskyddslaget, Sweden)",
+      "title": "Smoke spread in Swedish Office Building Ventilation system – a comparison between hand calculation models and CFD of fire induced flows.",
+      "start": "15:30",
+      "end": "15:45"
+    },
+    {
+      "paper_no": "S34-2",
+      "session_id": "S34",
+      "authors": "Xue Tian, Haiguo Yin, Jiamin Du (Xi´an University of Architecture and Technology, China, People's Republic of)",
+      "title": "Vertical thermal stratification and directional airflow attenuation of non-uniform environments created by column attachment ventilation in large-space buildings",
+      "start": "15:45",
+      "end": "16:00"
+    },
+    {
+      "paper_no": "S34-3",
+      "session_id": "S34",
+      "authors": "Omkar Pawar, Philipp Ostmann, Dirk Müller (RWTH Aachen University, Germany)",
+      "title": "Energy-Efficient Ventilation Strategies for Indoor Pools: A Flow Simulation Study",
+      "start": "16:00",
+      "end": "16:15"
+    },
+    {
+      "paper_no": "S34-4",
+      "session_id": "S34",
+      "authors": "Nisrine LAGHMICH, Zaid Romani, Abdeslam Draoui (Laboratory of Intelligent Systems and Applications, LSIA Team, Moroccan School of Engineering Sciences (EMSI), Tangier, Morocco)",
+      "title": "Impact of HVAC system placement on building energy demand: an integrated zonal modeling approach in BES",
+      "start": "16:15",
+      "end": "16:30"
+    },
+    {
+      "paper_no": "S34-5",
+      "session_id": "S34",
+      "authors": "Dalibor Vytlačil (Czech Technical University in Prague, Czech Republic)",
+      "title": "The Sensitivity Analysis of Air Ventilation Rate Elements in Thermal Dynamic Models",
+      "start": "16:30",
+      "end": "16:45"
+    },
+    {
+      "paper_no": "S34-6",
+      "session_id": "S34",
+      "authors": "Tong Lin, Ian Herrmann, Meng Kong, Jianshun Zhang (Department of Mechanical and Aerospace Engineering, Syracuse University, United States of America)",
+      "title": "Effects of Make-up Supply on Capture Effectiveness of Commercial Kitchen Hood",
+      "start": "16:45",
+      "end": "17:00"
+    },
+    {
+      "paper_no": "S35-1",
+      "session_id": "S35",
+      "authors": "Daniel Schmeling, Panja Goerke, Oliver Zierke, Pascal Lange, Tobias Dehne, André Volkmann, Claudia Marggraf-Micheel, Julia Maier (German Aerospace Center (DLR), Institute of Aerodynamics and Flow Technology, Göttingen, Germany)",
+      "title": "Ventilation of a Densely Occupied Multi-Purpose Railway Compartment: Subjective Thermal Comfort Assessment",
+      "start": "15:30",
+      "end": "15:45"
+    },
+    {
+      "paper_no": "S35-2",
+      "session_id": "S35",
+      "authors": "Sébastien A. Brideau, Adam D. Wills (Natural Resources Canada, CanmetENERGY-Ottawa, 1 Haanel Drive, Ottawa, ON, K1A 1M1, Canada)",
+      "title": "Overheating Risks in Canadian Code-Built Single-Detached Houses: Role of Design Features",
+      "start": "15:45",
+      "end": "16:00"
+    },
+    {
+      "paper_no": "S35-3",
+      "session_id": "S35",
+      "authors": "Yoshihiro Toriumi (Tokyo Denki University, Japan)",
+      "title": "Evaluation Method for Building Air Leakage and Long-Term Airtightness Performance: A 13- Year Study of Two Detached Houses",
+      "start": "16:00",
+      "end": "16:15"
+    },
+    {
+      "paper_no": "S35-4",
+      "session_id": "S35",
+      "authors": "Hassam ur Rehman, Rakesh Ramesh, Suvisanna Correia (VTT Technical Research Centre of Finland, Finland)",
+      "title": "Techno-economic analysis of residential building energy resilience in cold climates using thresholds developed through a human-centered survey",
+      "start": "16:15",
+      "end": "16:30"
+    },
+    {
+      "paper_no": "S35-5",
+      "session_id": "S35",
+      "authors": "Franck ALESSI, François Machefert, Nicolas Négri, Ophélie Ouvrier_Bonnaz, Vincent Chanal -Bertaud, Bassam Moujalled, Sylvain Berthault, Nolwenn Hurel, Chloé Martin (CEA, France)",
+      "title": "A global performance assessment of three ventilation systems in an experimental, retrofitted, single-family home.",
+      "start": "16:30",
+      "end": "16:45"
+    },
+    {
+      "paper_no": "S35-6",
+      "session_id": "S35",
+      "authors": "Luděk Špidla (ATREA, Czech Republic)",
+      "title": "From Design Intent to Real Indoor Air Quality",
+      "start": "16:45",
+      "end": "17:00"
+    },
+    {
+      "paper_no": "S37-1",
+      "session_id": "S37",
+      "authors": "Hyemin Ha, Gil-Tae Kim, Byung-Hee Lee, Young-Ae Lee, Young Kwon Yang (Center for Housing Environment Research and Innovation, Korea Land & Housing Corporation, South Korea)",
+      "title": "Impact of Autonomous PMV- Based Cooling Control on Occupants’ Thermal Comfort and Physiological Response in Residential Buildings",
+      "start": "15:30",
+      "end": "15:45"
+    },
+    {
+      "paper_no": "S37-2",
+      "session_id": "S37",
+      "authors": "Yan Liang, Agnes Psikuta, Dolaana Khovalyg (Empa, Swiss Federal Laboratories for Materials Science and Technology, Laboratory for Biomimetic Mem-branes and Textiles, CH-9014, St. Gallen, Switzerland)",
+      "title": "From Heat Flux to Heat Transfer Coefficients: A Human-Level Framework for Evaluating Personalized Environmental Control Systems",
+      "start": "15:45",
+      "end": "16:00"
+    },
+    {
+      "paper_no": "S37-3",
+      "session_id": "S37",
+      "authors": "Xinzi XU, Yichen YU, Hao HONG, Gang HU, Jianlei NIU (Department of Building Environment and Energy Engineering, The Hong Kong Polytechnic University, Hung Hom, Kowloon, Hong Kong)",
+      "title": "Convective heat transfer coefficients over human body under non-uniform approaching airflow conditions",
+      "start": "16:00",
+      "end": "16:15"
+    },
+    {
+      "paper_no": "S37-4",
+      "session_id": "S37",
+      "authors": "Jan Říha, Karel Kabele (Czech Technical University in Prague, Faculty of Civil Engineering, Czech Republic)",
+      "title": "Dynamic Thermal Comfort",
+      "start": "16:15",
+      "end": "16:20"
+    },
+    {
+      "paper_no": "S37-5",
+      "session_id": "S37",
+      "authors": "Yujin Kang, Ji Hun Park, Seong Taek Kang, Sumin Kim (Department of Architecture and Architectural Engineering, Yonsei University, Seoul 03722, Republic of Korea)",
+      "title": "Indoor thermal environment and energy performance implications of CLT- based façade systems in public buildings",
+      "start": "16:20",
+      "end": "16:35"
+    },
+    {
+      "paper_no": "S36-1",
+      "session_id": "S36",
+      "authors": "Arsen Melikov, Detelin Markov (Technical University of Denmark, Denmark)",
+      "title": "Ventilation strategies for reduction risk of airborne transmission",
+      "start": "15:30",
+      "end": "15:45"
+    },
+    {
+      "paper_no": "S36-2",
+      "session_id": "S36",
+      "authors": "Chen Zhang, Philip Kjettinge Thomsen, Wenhui Yuan, Alireza Afshari, Peter V. Nielsen (Department of the Built Environment, Aalborg University, Denmark)",
+      "title": "Experimental exploration of Enterobacterales transmission and exposure in hospital toilets",
+      "start": "15:45",
+      "end": "16:00"
+    },
+    {
+      "paper_no": "S36-3",
+      "session_id": "S36",
+      "authors": "Romain Guichard, Laurence Robert, Jennifer Klingler (Process Engineering department, National Institute for Research and Safety (INRS), France)",
+      "title": "Emission rates of stored tires: effects of the indoor environment and scale changes from a ventilated chamber to a logistics warehouse",
+      "start": "16:00",
+      "end": "16:15"
+    },
+    {
+      "paper_no": "S36-4",
+      "session_id": "S36",
+      "authors": "Arto Säämänen, Niko Siilin, Inga Ehder-Gahm, Mikko Kultanen, Jani Hakala, Aku Karvinen, Ilpo Kulmala (VTT Technical Research Centre of Finland, Finland)",
+      "title": "Fine and ultrafine outdoor particle penetration and deposition in a residential building",
+      "start": "16:15",
+      "end": "16:30"
+    },
+    {
+      "paper_no": "S36-5",
+      "session_id": "S36",
+      "authors": "Denise D'Elia, Elena Reigadas, Jesus Guinea, Itsaso Artetxe, Emilio Bouza, Patricia Munoz (Instituto de Investigación Sanitaria Hospital Gregorio Marañón, Madrid, Spain)",
+      "title": "Instant Fungal Detection: Evaluation of a Rapid Method for Early Contamination Assessment",
+      "start": "16:30",
+      "end": "16:45"
+    },
+    {
+      "paper_no": "S36-6",
+      "session_id": "S36",
+      "authors": "Jing Xiong, Ziqi Guo, Huiying Wang, Weisha Du, Changqing Yang, Yin Xia, Yu Ma (School of Building Services Science and Engineering, Xi’an University of Architecture and Technology)",
+      "title": "Emission characteristics of pollutants during the restoration of ceramic cultural relics",
+      "start": "16:45",
+      "end": "17:00"
+    },
+    {
+      "paper_no": "W31-1",
+      "session_id": "W31",
+      "authors": "Risto Kosonen, Guangyu Cao, Yunus Emre Cetin, Hassan Kotb, Dorsa Rabizadeh, Vasco Vasconcelos, Kunal Bairwa, Jixuan Bao, Fang Hou, Kim Hagstrom, Denise D'Elia, Muhammad Tayyab Waheed, Jiyeong Jung, Manuel Gamerio da Silva, Simo Kilpelainen, Sasan Sadrizadeh, Marcin Michalski, Dominika Kwiecińska, Peter Hojerback, Tani Angiero, Anna Bogdan (Warsaw University of Technology, Poland)",
+      "title": "Are We Ready for Human-Centric Ventilation in Healthcare Facilities? Bridging Research, Practice, and Implementation",
+      "start": "15:30",
+      "end": "17:00"
+    },
+    {
+      "paper_no": "W32-1",
+      "session_id": "W32",
+      "authors": "Patrícia Bugáňová, Jakub Urban (ELI ERIC, Czech Republic)",
+      "title": "Greening Research Infrastructures through Digitalization and Smart Facility Management",
+      "start": "15:30",
+      "end": "17:00"
+    },
+    {
+      "paper_no": "S41-1",
+      "session_id": "S41",
+      "authors": "AnneMarie Eijkelenboom (TU Delft, Netherlands, The)",
+      "title": "Long term adaptability of buildings to increasing hot weather in temperate climate",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "S41-2",
+      "session_id": "S41",
+      "authors": "Sasja van Andel, Vincent Gruis, Atze Boerstra (Delft University of Technology, The Netherlands)",
+      "title": "Exploring Interventions For More Circular HVAC Design",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "S41-3",
+      "session_id": "S41",
+      "authors": "Jakub Kolarik, Martin Kotol (Technical University of Denmark, Denmark)",
+      "title": "Inspections of mechanical ventilation systems in Greenlandic dwellings",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "S41-4",
+      "session_id": "S41",
+      "authors": "Young-Ae Lee, Gil-Tae Kim, Byung-Hee Lee, Hyemin Ha, Young Kwon Yang (Center for Housing Environment Research and Innovation, Korea Land Housing Institute, Sejong, South Korea)",
+      "title": "A framework for assessing BEMS readiness in existing apartment buildings based on historical apartment design standards",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "S41-5",
+      "session_id": "S41",
+      "authors": "Arjan Schrauwen, Paul Chan, Atze Boerstra (TU Delft, Netherlands, The)",
+      "title": "Next-generation circular ventilation systems, conceptualising an integrated design framework",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "S41-6",
+      "session_id": "S41",
+      "authors": "Pierre Bernaud, Arnaud Jay, Simon Bal-Fontaine (CEA Liten, France)",
+      "title": "How to help buildings occupants in the use of windows openings and solar shading to optimize thermal comfort, IAQ and energy consumption? Principle of the coach Wind’ose and feedbacks on a real case in summer",
+      "start": "10:15",
+      "end": "10:30"
+    },
+    {
+      "paper_no": "S41-7",
+      "session_id": "S41",
+      "authors": "Poorya Shaghaghi, Nicola Mingotti, Andrew W. Woods (Institute for Energy and Environmental Flows, University of Cambridge, Madingley Road, Cambridge, UK)",
+      "title": "Precooling energy savings from variable-airflow displacement ventilation for a representative UK theatre",
+      "start": "10:30",
+      "end": "10:45"
+    },
+    {
+      "paper_no": "S42-1",
+      "session_id": "S42",
+      "authors": "Nick Kelly, Graeme Flett, Gavin Lavery, Mohamad Rida, Carol-Anne Duthie, John Farquhar (University of Strathclyde, Glasgow, Scotland)",
+      "title": "Characterising building fabric leakage magnitude and directionality using a novel contaminant- based approach",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "S42-2",
+      "session_id": "S42",
+      "authors": "Ülar Palmiste, Joosep Heinla, Martin Thalfeldt, Kalle Kuusk (Department of Civil Engineering and Architecture, Tallinn University of Technology, Estonia)",
+      "title": "Experimental study of the impact of ventilation on the in situ performance of portable air cleaners (PACs)",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "S42-3",
+      "session_id": "S42",
+      "authors": "Björn Berggren, Ulla Janson (Public Housing Sweden, Sweden)",
+      "title": "Climate Impact of Ventilation Systems in Renovation Projects under Swedish Conditions",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "S42-4",
+      "session_id": "S42",
+      "authors": "Hong Hu, Sihwan Lee, Yuka Egashira, Makiko Ukai, Kiho Tanaka (Tokyo university of Science, Japan)",
+      "title": "Buoyancy-Driven Ventilation and Heat Transfer in Double- Skin Façades: CFD Validation and Full-Scale Seasonal Analysis",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "S42-5",
+      "session_id": "S42",
+      "authors": "Amar Aganovic, Mehrdad Rabani, Maria Justo Alonso (UiT The Arctic University of Norway, Norway)",
+      "title": "Coupling IDA ICE with a Quanta-Based Infection-Risk Model for Economizer – Recirculation Optimization in a School Sports Hall",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "S42-6",
+      "session_id": "S42",
+      "authors": "Benjamin Rembold, Andrin Landolt (streamwise gmbh, 8708 Männedorf, Switzerland)",
+      "title": "Real-time sensor tracking velocimetry (STV): Use cases in room ventilation",
+      "start": "10:15",
+      "end": "10:30"
+    },
+    {
+      "paper_no": "S42-7",
+      "session_id": "S42",
+      "authors": "Clélia Mendonca De Moraes, Sara Zamprogno Barbieri, Everson de Castro Rodrigues, Anderson André Lima de Souza, GabrIela de Franca Fernanda (City Hall Araraquara Brazil)",
+      "title": "RIO 40°C: Adaptive and integrated technologies for the building envelope",
+      "start": "10:30",
+      "end": "10:45"
+    },
+    {
+      "paper_no": "S43-1",
+      "session_id": "S43",
+      "authors": "Mariusz Skwarczynski (Polish Association of Sanitary Engineers and Technicians, Poland)",
+      "title": "Analysis of the heating output of a trench convector with fresh air supply",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "S43-2",
+      "session_id": "S43",
+      "authors": "Fatemeh Nabilou, Anna Deriks, Kai Rewitz, Marc Syndicus, Christoph van Treeck, Dirk Müller (RWTH Aachen University, E.ON Energy Research Center, Institute for Energy Efficient Buildings and Indoor Climate)",
+      "title": "Development of an agent-based control for personalized environmental control systems (PECS) in an office environment",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "S43-3",
+      "session_id": "S43",
+      "authors": "Jennifer Karam, Ihab Jabbar Al-Rikabi, Conrad Voelker, Hayder Alsaad (Bauhaus-University, Weimar, Germany)",
+      "title": "Experimental investigation of the influence of a desk mounted push-pull system on thermal sensation and comfort",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "S43-4",
+      "session_id": "S43",
+      "authors": "Clothilde Brochot, Ali Bahloul (Institut de recherche Robert- Sauvé en santé et en sécurité du travail (IRSST), Canada)",
+      "title": "Evaluating Filtration Performance Beyond Standard Metrics: Insights for Indoor Air Quality and COVID-19 Guidelines",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "S43-5",
+      "session_id": "S43",
+      "authors": "Giobertti Morantes, Akshit Gupta, Francesco Babich, Pawel Wargocki (Eurac Research, Italy)",
+      "title": "A DALY-Based Harm Assessment of Non-Optimal Indoor Temperatures in Offices",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "S43-6",
+      "session_id": "S43",
+      "authors": "Ihab Al-Rikabi, Jennifer Karam, Nesreen Ghaddar, Conrad Voelker, Hayder Alsaad (Bauhaus Universität Weimar, Germany)",
+      "title": "Numerical Optimisation of a Novel Desk-Mounted Push – Pull System for Cross-Contamination Control",
+      "start": "10:15",
+      "end": "10:30"
+    },
+    {
+      "paper_no": "S43-7",
+      "session_id": "S43",
+      "authors": "Aleksandra Lipczynska, Stanisław Kocik, Mirella Fuhrmann, Joanna Ferdyn -Grygierek, Krzysztof Grygierek, Agnes Psikuta (Silesian University of Technology)",
+      "title": "Local Thermal Sensations as Predictors of Overall Thermal Perception and Acceptability: A Multi-Season Field Study in Office Buildings",
+      "start": "10:30",
+      "end": "10:45"
+    },
+    {
+      "paper_no": "S44-1",
+      "session_id": "S44",
+      "authors": "Beatrice Riccardi, Andrea Giuliano, Alessandro Salmaso, Giacomo Tognon, Marco Marigo, Michele De Carli (Department of Industrial Engineering, University of Padova, Italy)",
+      "title": "Comparative assessment of air- and water-dominant heating systems: comfort perception and energy performance in a controlled environment",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "S44-2",
+      "session_id": "S44",
+      "authors": "Nicola Borgato, Giacomo Tognon, Beatrice Riccardi, Jacopo Vivian, Michele De Carli (Department of Industrial Engineering - Applied Physics Section, University of Padova, Via Venezia 1 35131, Italy)",
+      "title": "Physics-informed behavioural modeling: a hybrid framework to differentiate Natural and Mechanical Ventilation driven behaviours",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "S44-3",
+      "session_id": "S44",
+      "authors": "Angelika Václavová, Karel Kabele, Michal Krajčík (Slovak University of Technology in Bratislava, Slovak Republic)",
+      "title": "Assessing the impact of renovating a typical family house on its indoor environmental conditions",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "S44-4",
+      "session_id": "S44",
+      "authors": "Tobias Jacobskoetter, Felix Held, Olaf Zeidler, Birgit Mueller, Katja Biek, Joël Czarny, Miriam Ziebarth, Dave Morgenthaler, Maria Kuzminskaia (Hochschule für Technik und Wirtschaft Berlin, Germany)",
+      "title": "A Predictive Control Framework for Complex Buildings with Dynamic User Requirements: Balancing Indoor Conditions and Rapid Solar Dynamics",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "S44-5",
+      "session_id": "S44",
+      "authors": "Zohreh kiani, Kátia Cordeiro Mendonça, Ali Alexander Nour Eddine, Marc Abadie (Eurovent Certita Certification, Paris, France)",
+      "title": "A multizone indoor air quality modeling for multifamily buildings: comparison with experimental data",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "S44-6",
+      "session_id": "S44",
+      "authors": "Takumi Ishizawa, Yasuyuki Shiraishi (Kitakyusyu Univercity, Japan)",
+      "title": "Operational Control of Ceiling-suspended PCM Radiant Panels Using MPC",
+      "start": "10:15",
+      "end": "10:20"
+    },
+    {
+      "paper_no": "S44-7",
+      "session_id": "S44",
+      "authors": "Bohye Choi (Department of Architectural & Urban Systems Engineering / Ewha Womans University, Korea, Republic of (South Korea))",
+      "title": "An Evaluation of the Thermal Performance of Floor Structures in Apartment Buildings using Dynamic Energy Analysis",
+      "start": "10:20",
+      "end": "10:25"
+    },
+    {
+      "paper_no": "S44-8",
+      "session_id": "S44",
+      "authors": "Krzysztof Grygierek, Joanna Ferdyn-Grygierek, Mirella Fuhrmann, Aleksandra Lipczynska, Stanislaw Kocik (Silesian University of Technology, Poland)",
+      "title": "Performance Assessment of Passive and Hybrid Cooling Strategies in Temperate Climate Office Buildings",
+      "start": "10:25",
+      "end": "10:30"
+    },
+    {
+      "paper_no": "S44-9",
+      "session_id": "S44",
+      "authors": "Kundra Oosthuizen, Anton Basson, Gerhard Venter, Clint Steed (Stellenbosch University, South Africa)",
+      "title": "Zone aggregation errors in grey-box models of commercial building air-conditioning energy consumption",
+      "start": "10:30",
+      "end": "10:35"
+    },
+    {
+      "paper_no": "S44-10",
+      "session_id": "S44",
+      "authors": "Haneen Daradkeh, Nassar Telfah, Mohammad Smadi, Rafat Alwaked (German Jordanian University, Jordan, Hashemite Kingdom of Jordan)",
+      "title": "ENERGY PERFORMANCE ANALYSIS AND SUSTAINABILITY ASSESSMENT OF A GUEST HOUSE IN JORDAN USING DESIGNBUILDER SIMULATION",
+      "start": "10:35",
+      "end": "10:40"
+    },
+    {
+      "paper_no": "S45-1",
+      "session_id": "S45",
+      "authors": "Chengbo Du, Jianshun Zhang (Syracuse University, United States of America)",
+      "title": "Transient and Steady-State Assessment of Cubicle Office Airflow and Exposure under PECS and Background Ventilation",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "S45-2",
+      "session_id": "S45",
+      "authors": "Jean- paul kapuya Bulaba Nyembwe, Léon Balekelayi Mulumba, Maurice Samuntu Sakaji Tshibola, Gael Majambo Kamenga, Gloria Mukajimuenyi Ntumba, fortunat Ngandu Maweja, John Omomoluwa Ogundiran, Manuel Gameiro da Silva (University Official of Mbuji-Mayi, Department of Civil Engineering, Congo, Democratic Republic of the)",
+      "title": "Toward a Regulatory Framework for Indoor Air Quality Management in the Democratic Republic of Congo",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "S45-3",
+      "session_id": "S45",
+      "authors": "Jean- Paul Kapuya Bulaba Nyembwe, Oliver Kayembe Nyembwe, Manuel Gameiro da Silva (University Official of Mbuji-Mayi, Department of Civil Engineering, Av Kalonji no 27, Q/ Kansele, 8330 Mbuji-Mayi Kasai- Oriental, Congo, Democratic Republic of the)",
+      "title": "Improving Building Resilience to Climate-Driven Air Quality Hazards in Eastern DRC",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "S45-4",
+      "session_id": "S45",
+      "authors": "Therese Nitter Moazami, Ingrid Bakke, Rikke Bramming Jørgensen, Pål Graff, Maria Justo -Alonso (Department of Built Environment, Oslo Metropolitan University (OsloMet), Oslo, Norway)",
+      "title": "Indoor air quality in four exhibition rooms of a cultural center using recirculated air",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "S45-5",
+      "session_id": "S45",
+      "authors": "Daniel Schmeling, Florian Webner, Andrei Shishkin, Philipp Bahavar (German Aerospace Center (DLR), Institute of Aerodynamics and Flow Technology, Göttingen, Germany)",
+      "title": "Application of an Infection Risk Model to Train and Aircraft Travel: a Comparison",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "S45-6",
+      "session_id": "S45",
+      "authors": "Mauro D'Angelo, Giorgio Buonanno, Yamila Falero, Silvana D'Intino, José Cataldo (Instituto de Mecánica de los Fluidos e Ingeniería Ambiental, Facultad de Ingeniería, Universidad de la República, Uruguay)",
+      "title": "Indoor PM2.5 emission rates from domestic wood heating estimation based on laboratory measurements – A preliminary pilot study for Uruguay",
+      "start": "10:15",
+      "end": "10:30"
+    },
+    {
+      "paper_no": "S45-7",
+      "session_id": "S45",
+      "authors": "Candida Duarte Manuel, Carla S. Cordeiro, Diogo Mendes, Kalina Samardjieva (BioRG - Bioengineering and Sustainability Research Group, FCNET - Faculty of Natural Sciences, Engineering and Technology, Lusófona University, Portugal)",
+      "title": "An Integrated Ventilation and Bioaerosol Risk Framework for Indoor Air Quality Assessment",
+      "start": "10:30",
+      "end": "10:35"
+    },
+    {
+      "paper_no": "S45-8",
+      "session_id": "S45",
+      "authors": "James Bennett (Bennett Air Engineering)",
+      "title": "Applying Equivalent Clean Airflow to Infection Control in a Historic Hotel",
+      "start": "10:35",
+      "end": "10:40"
+    },
+    {
+      "paper_no": "S47-1",
+      "session_id": "S47",
+      "authors": "Muhammad Tayyab Waheed, John O. Ogundira, Adélio Manuel Rodrigues Gaspar, Manuel Gameiro Da Silva (University of Coimbra, Portugal)",
+      "title": "Improved indoor climate and reduced infection risk in health care settings via ventilation strategies and informed decisions based on a continuous monitoring system",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "S47-2",
+      "session_id": "S47",
+      "authors": "Ali Abuelnour, Conrad Voelker, Hayder Alsaad (Bauhaus- Universität Weimar, Germany)",
+      "title": "Effect of Honeycomb Design on Turbulence and Aerosol Transmission in Personalized Ventilation",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "S47-3",
+      "session_id": "S47",
+      "authors": "Xavier Faure, Lucile Soudani, Amandine Piot, Francois Demouge (CSTB, Santé, Ambiance et Mobilité, 44323 Nantes, France)",
+      "title": "Hygrothermal risk assessment of building envelop retrofitting measures",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "S47-4",
+      "session_id": "S47",
+      "authors": "Ziming Tu, Chun Chen, Kangqi Guo, Wenjie Huang (The Chinese University of Hong Kong, Hong Kong S.A.R. (China))",
+      "title": "Design and Deployment of an Automated ATP Bioluminescence System for Real-Time Airborne Microbial Detection",
+      "start": "09:45",
+      "end": "10:00"
+    },
+    {
+      "paper_no": "S47-5",
+      "session_id": "S47",
+      "authors": "Antti Mäkinen, Sampo Saari, Liv-Inger Stenstad, Guangyu Cao (Faculty of Built Environment and Bioeconomy, Tampere University of Applied Sciences, Tampere, Finland)",
+      "title": "Comparative Analysis of Indoor Air Quality in Hospital and Educational Spaces Using Long-Term Environmental Monitoring",
+      "start": "10:00",
+      "end": "10:15"
+    },
+    {
+      "paper_no": "S47-6",
+      "session_id": "S47",
+      "authors": "Karolína Gábrišová, Zuzana Straková (Slovak University of Technology in Bratislava, Faculty of Civil Engineering, Slovak Republic)",
+      "title": "Seasonal IEQ in sports halls: Measurements and future simulations",
+      "start": "10:15",
+      "end": "10:30"
+    },
+    {
+      "paper_no": "S47-7",
+      "session_id": "S47",
+      "authors": "Peter V Nielsen, Alireza Afshari, Chen Zhang, Hua Qian, Jianchao Ma (Aalborg University, Denmark)",
+      "title": "The influence of surrounding temperatures on cross-infection risks in cold climates",
+      "start": "10:30",
+      "end": "10:45"
+    },
+    {
+      "paper_no": "S46-1",
+      "session_id": "S46",
+      "authors": "Jia Du, Ardeshir Mahdavi (Department of Civil Engineering, Dalian University of Technology, China)",
+      "title": "Exploring building occupants' cross-individual diversity of thermal comfort preferences",
+      "start": "09:00",
+      "end": "09:15"
+    },
+    {
+      "paper_no": "S46-2",
+      "session_id": "S46",
+      "authors": "Pei-Lun Fang, Wen-Mei Shih, Ruey-Lung Hwang, Kuo-Tsang Huang (Department of Bioenvironmental Systems Engineering, National Taiwan University, Taipei, Taiwan)",
+      "title": "Linking LAI and Solar Attenuation to UTCI-Based Thermal Comfort on Tree-Shaded Outdoor Environment",
+      "start": "09:15",
+      "end": "09:30"
+    },
+    {
+      "paper_no": "S46-3",
+      "session_id": "S46",
+      "authors": "Majid Sapar, Zuraimi Sultan (Singapore University of Social Sciences, Singapore)",
+      "title": "A literature review on alternative cooling technologies for buildings in tropical climates.",
+      "start": "09:30",
+      "end": "09:45"
+    },
+    {
+      "paper_no": "S46-4",
+      "session_id": "S46",
+      "authors": "Urara Yoshimatsu, Ryoichi Kuwahara (Yamaguchi University, Japan)",
+      "title": "Study on the Natural Ventilation Performance of City Halls with the Atriums",
+      "start": "09:45",
+      "end": "09:50"
+    },
+    {
+      "paper_no": "S46-5",
+      "session_id": "S46",
+      "authors": "Laurence ROBERT, François -Xavier KELLER (INRS, France)",
+      "title": "Comparison between CFD calculations and experimental tests of a black globe to develop a predictive model as a function of solar load",
+      "start": "09:50",
+      "end": "10:05"
+    },
+    {
+      "paper_no": "S46-6",
+      "session_id": "S46",
+      "authors": "Yun-Jie Zeng, Pei-Lun Fang, Ruey-Lung Hwang, Wei-An Chen, Kuo-Tsang Huang (Department of Industrial Technology Education, National Kaohsiung Normal University, Kaohsiung, Taiwan)",
+      "title": "Evaluating Indoor Environmental Quality and Health Risk Implications in Mixed-Mode Ventilated Primary School Classrooms in Taiwan",
+      "start": "10:05",
+      "end": "10:20"
+    },
+    {
+      "paper_no": "S46-7",
+      "session_id": "S46",
+      "authors": "Despoina Teli, Kleoniki Axarli, Runa Hellwig, Patrick James, Rajan Rawal, Susan Roaf, Antonio Serrano- Jiménez, Jonathon Taylor, Cecilia J Bergstad, Martine Buser, Paula Femenias, Kaj Granath, Mats Persson, Joel André Slunitschek, Marli Swanepoel (Chalmers University, Sweden)",
+      "title": "Historical and sociocultural drivers of overheating regulations in residential buildings: cross- country comparison",
+      "start": "10:20",
+      "end": "10:25"
+    },
+    {
+      "paper_no": "S46-8",
+      "session_id": "S46",
+      "authors": "Jonathan Chéron, Francis Bonthoux, Kévin Bance, Ludovic Hainoz, Dorothée Lesouef, Vincent Corlier (Department of Process Engineering, Institut National de Recherche et de Sécurité, 54500 Vandœuvre - lès -Nancy, France)",
+      "title": "Evaluation of the Performance of Ventilated Embalming Tables",
+      "start": "10:25",
+      "end": "10:30"
+    },
+    {
+      "paper_no": "S46-9",
+      "session_id": "S46",
+      "authors": "Stanislaw Kocik, Krzysztof Grygierek, Joanna Ferdyn-Grygierek, Agnes Psikuta, Aleksandra Lipczynska (Silesian University of Technology, Poland)",
+      "title": "Improving the accuracy of building simulations through calibration: a case study of a passively cooled office with an open-door policy.",
+      "start": "10:30",
+      "end": "10:45"
+    },
+    {
+      "paper_no": "W41-1",
+      "session_id": "W41",
+      "authors": "Dominik Flikweert, Rikard Lindborn, Khoa Ngo, Karel Kabele (Systemair AB, Sweden)",
+      "title": "Going beyond efficiency: Energy recovery for healthy, low-energy, and resilient indoor climates",
+      "start": "09:00",
+      "end": "10:45"
+    },
+    {
+      "paper_no": "W42-1",
+      "session_id": "W42",
+      "authors": "Runa T. Hellwig, Atze Boerstra, Despoina Teli (Technische Universität Berlin, Chair of Building Physics, Germany)",
+      "title": "Personal control in indoor environments as a moderator of comfort and health and in extreme events: learnings for building design and experimental set-ups",
+      "start": "09:00",
+      "end": "10:45"
+    },
+    {
+      "paper_no": "S51-1",
+      "session_id": "S51",
+      "authors": "Everyn Mieler, Raimo Simson, Martin Thalfeldt, Jarek Kurnitski (Tallinn University of Technology, Estonia)",
+      "title": "Modelling Energy Need and Perceived Indoor Air Quality with Demand Controlled Ventilation",
+      "start": "11:15",
+      "end": "11:30"
+    },
+    {
+      "paper_no": "S51-2",
+      "session_id": "S51",
+      "authors": "Andrea Alongi, Adriana Angelotti, Alice Cereda, Livio Mazzarella (Politecnico di Milano, Italy)",
+      "title": "Experimental study of the convective heat transfer in a ventilated cavity inside a Breathing Wall component",
+      "start": "11:30",
+      "end": "11:45"
+    },
+    {
+      "paper_no": "S51-3",
+      "session_id": "S51",
+      "authors": "Alper Mete Genç (Bosch Thermotechnology, Turkiye)",
+      "title": "Investigation heat transfer performance of gyroid structure as regenerative heat exchanger",
+      "start": "11:45",
+      "end": "12:00"
+    },
+    {
+      "paper_no": "S51-4",
+      "session_id": "S51",
+      "authors": "Tobias Froehlingsdorf, Jonathan Lutz, Katja Wenselau, Tim Klebig, Philipp Ostmann, Dirk Müller (RWTH Aachen University, Germany)",
+      "title": "Towards climate-friendly ventilation: Efficiency measures for R744-driven heat pumps in AHUs",
+      "start": "12:00",
+      "end": "12:15"
+    },
+    {
+      "paper_no": "S51-5",
+      "session_id": "S51",
+      "authors": "Daniel Adamovsky, Jan Vitouš, Martin Kny, Aleš Vodička, Pavel Mlejnek (Czech Technical University in Prague, Czech Republic)",
+      "title": "Thermoelectric exchanger for heat recovery and thermal comfort control in a meeting room",
+      "start": "12:15",
+      "end": "12:30"
+    },
+    {
+      "paper_no": "S52-1",
+      "session_id": "S52",
+      "authors": "Tani Angiero, Stefano Discetti, Andrea Ianiro (Department of Aerospace Engineering - Universidad Carlos III de Madrid, Spain)",
+      "title": "Development and commissioning of a buoyancy-preserving scaled operating-room facility for PIV measurements",
+      "start": "11:15",
+      "end": "11:30"
+    },
+    {
+      "paper_no": "S52-2",
+      "session_id": "S52",
+      "authors": "Vasco de Vasconcelos, Anna Bogdan (Warsaw University of Technology, Poland)",
+      "title": "Thermal Environment and Surgeon Comfort: A Review of Environmental and Physiological Determinants in the Operating Rooms",
+      "start": "11:30",
+      "end": "11:45"
+    },
+    {
+      "paper_no": "S52-3",
+      "session_id": "S52",
+      "authors": "Marcin Michalski, Anna Bogdan, Dominika Kwiecińska (Warsaw University of Technology, Dept. of Envionmental Engineering, Poland)",
+      "title": "Disruption of the Surgical Microenvironment by Human Presence in Unidirectional and Mixing Ventilation systems.",
+      "start": "11:45",
+      "end": "11:50"
+    },
+    {
+      "paper_no": "S52-4",
+      "session_id": "S52",
+      "authors": "Dominika Kwiecińska, Anna Bogdan, Marcin Michalski (Warsaw University of Technology, Poland)",
+      "title": "Effect of operating room ventilation on patient’s physiological parameters",
+      "start": "11:50",
+      "end": "11:55"
+    },
+    {
+      "paper_no": "S52-5",
+      "session_id": "S52",
+      "authors": "Takeru Ito, Ryu Itokazu, Kazuhide Ito (Interdisciplinary Graduate School of Engineering Sciences, Kyushu University, Japan)",
+      "title": "A CFD Framework for Evaluating the Chemical Reactions of Hexamethyldisilazane (HMDS) with Water Vapor in a Cleanroom Environment",
+      "start": "11:55",
+      "end": "12:10"
+    },
+    {
+      "paper_no": "S53-1",
+      "session_id": "S53",
+      "authors": "Jeanne Malet, Evelyne Géhin, Pierre Haen, Corinne Prevost, Lyes Ait Ali Yahia (ASNR, France)",
+      "title": "Experimental Assessment of Bioaerosol Emissions during Surgical and Percutaneous Tracheostomy in a Controlled Indoor Environment",
+      "start": "11:15",
+      "end": "11:30"
+    },
+    {
+      "paper_no": "S53-2",
+      "session_id": "S53",
+      "authors": "Mohamed M. Abdelraziq, Marcel G.L.C. Loomans, Peng Qin, Matias Duran Matute, Twan van Hooff (Eindhoven University of Technology, The Netherlands)",
+      "title": "Indoor airborne infection control through localized ventilation: A literature review",
+      "start": "11:30",
+      "end": "11:45"
+    },
+    {
+      "paper_no": "S53-3",
+      "session_id": "S53",
+      "authors": "Atze Boerstra, Elham Maghsoudi Nia (TU Delft, Netherlands, The)",
+      "title": "Effective Mitigation Strategies for Airborne Infection Control",
+      "start": "11:45",
+      "end": "12:00"
+    },
+    {
+      "paper_no": "S53-4",
+      "session_id": "S53",
+      "authors": "Hana Kabrhelová, Eliška Srbová, Veronika - Natálie Lopourová (CTU in Prague, Czech Republic)",
+      "title": "Microbial Monitoring of the Indoor Environment",
+      "start": "12:00",
+      "end": "12:05"
+    },
+    {
+      "paper_no": "S53-5",
+      "session_id": "S53",
+      "authors": "Giobertti Morantes, Akshit Gupta, Francesco Babich, Benjamin Jones (Eurac Research, Italy)",
+      "title": "Attributing acute harm to short-term particulate exposures in office settings",
+      "start": "12:05",
+      "end": "12:20"
+    },
+    {
+      "paper_no": "S54-1",
+      "session_id": "S54",
+      "authors": "Maitreyee Saini, Yan Liang, Agnes Psikuta, Dolaana Khovalyg (Laboratory of Integrated Comfort Engineering (ICE), School of Architecture, Civil and Environmental Engineering (ENAC), Ecole Polytechnique Fédérale de Lausanne (EPFL), Fribourg, Switzerland)",
+      "title": "Rethinking Personal Environmental Control Systems (PECS) Effectiveness Through Multi-Level Energy Quantification",
+      "start": "11:15",
+      "end": "11:30"
+    },
+    {
+      "paper_no": "S54-2",
+      "session_id": "S54",
+      "authors": "Junghyun Cho, Hyunwoo Lim (Department of Architecture, Graduate school of Konkuk University, Seoul, South Korea, Korea, Republic of (South Korea))",
+      "title": "Impact of the elevator shaft cooling system on the heating load of high-rise office buildings",
+      "start": "11:30",
+      "end": "11:45"
+    },
+    {
+      "paper_no": "S54-3",
+      "session_id": "S54",
+      "authors": "Manea-Andrei Damian, Tiberiu Catalina, Ana Andreea Vartires, Dragos Mihai (Technical University of Civil Engineering Bucharest, Romania)",
+      "title": "Analysis of possible overheating countermeasures applied to a Romanian military tent by means of numerical simulations",
+      "start": "11:45",
+      "end": "12:00"
+    },
+    {
+      "paper_no": "S55-1",
+      "session_id": "S55",
+      "authors": "Ashraf MKHAYBER, David CHALET, Matisse LESAGE, Georges SALAMEH (Nantes Université,Ecole Centrale Nantes,CNRS, LHEEA,UMR 6598,F-44000 Nantes, France)",
+      "title": "Energy Optimization of Ship HVAC Systems: Analysis of Marine Aerosol Effects on Filter Performance",
+      "start": "11:15",
+      "end": "11:30"
+    },
+    {
+      "paper_no": "S55-2",
+      "session_id": "S55",
+      "authors": "David STANĚK, Michal KABRHEL (Czech Technical University in Prague, Czech Republic)",
+      "title": "Data Centre Cooling and Waste Heat Utilization",
+      "start": "11:30",
+      "end": "11:45"
+    },
+    {
+      "paper_no": "S55-3",
+      "session_id": "S55",
+      "authors": "Martin Šimko, Michal Krajčík, Dušan Petráš, Martin Sokol, Daniel Szabó (Department of Building Services, Slovak University of technology, Faculty of Civil Engineering, Slovak Republic)",
+      "title": "Comparison of vertical temperature distribution for three radiant cooling systems under actual outdoor conditions",
+      "start": "11:45",
+      "end": "12:00"
+    },
+    {
+      "paper_no": "S55-4",
+      "session_id": "S55",
+      "authors": "Chen Zhang, Yuqing Bai, Zhixiang Cao, Yi Wang (School of Building Services Science and Engineering, Xi'an University of Architecture and Technology, Xi'an, PR China)",
+      "title": "Study on the Influence of Vortex-Zone Parameters on the Performance of Vortex Ventilation Systems",
+      "start": "12:00",
+      "end": "12:15"
+    },
+    {
+      "paper_no": "S55-5",
+      "session_id": "S55",
+      "authors": "Arnaud BOIRON, Jerome DUCOS (CEA, France)",
+      "title": "SPHINX - THE HYDRAULIC FIRE VALVE",
+      "start": "12:15",
+      "end": "12:30"
+    },
+    {
+      "paper_no": "S57-1",
+      "session_id": "S57",
+      "authors": "Sarka Langer, Despoina Teli, Lars Ekberg (IVL Swedish Environmental Research Institute, Göteborg, Sweden)",
+      "title": "Natural ventilation in residential buildings in Nordic countries: Challenges and solutions for indoor air quality and thermal comfort",
+      "start": "11:15",
+      "end": "11:30"
+    },
+    {
+      "paper_no": "S57-2",
+      "session_id": "S57",
+      "authors": "Stephan Zuber, Simone Dugaria, Heinrich Huber (Lucerne School of Engineering and Architechture, Switzerland)",
+      "title": "VOC transfer in rotary heat exchangers: experimental validation of a new test methods",
+      "start": "11:30",
+      "end": "11:45"
+    },
+    {
+      "paper_no": "S57-3",
+      "session_id": "S57",
+      "authors": "Guna Bebre, Anatolijs BORODINECS, Kristina Lebedeva, Arturs Palcikovskis (Riga Technical University, Latvia)",
+      "title": "Preliminary assessment of overheating Risks in Recently Built Multi-Apartment Buildings in Latvia",
+      "start": "11:45",
+      "end": "12:00"
+    },
+    {
+      "paper_no": "S57-4",
+      "session_id": "S57",
+      "authors": "Raimonds Bogdanovics, Arturs Palcikovskis, Jurgis Zemitis (Riga Technical University, Latvia)",
+      "title": "Impact of ventilation airflow rates on indoor air quality and electricity consumption in a new mechanically ventilated residential apartment",
+      "start": "12:00",
+      "end": "12:15"
+    },
+    {
+      "paper_no": "S57-5",
+      "session_id": "S57",
+      "authors": "Teddy Gresse, Myriam Bahrar, Mohamed El Mankibi (ENTPE LTDS UMR CNRS 5513 Univ Lyon Vaulx-en-Velin Cedex France)",
+      "title": "Experimental Assessment of Ventilation Strategies to Enhance Indoor Air Quality and Energy Efficiency",
+      "start": "12:15",
+      "end": "12:30"
+    },
+    {
+      "paper_no": "S56-1",
+      "session_id": "S56",
+      "authors": "Mohammad Hamdan, Hanen Ibdah, Parham Mirzaei (Middle East University, Jordan)",
+      "title": "Building Energy Performance Under Future Climate Scenarios: Comparing Community – Scale and Building – Scale Retrofit Effectiveness",
+      "start": "11:15",
+      "end": "11:30"
+    },
+    {
+      "paper_no": "S56-2",
+      "session_id": "S56",
+      "authors": "Mengtao Han, Hideki Kikumoto, Ryozo Ooka (Huazhong University of Science and Technology, China, People's Republic of)",
+      "title": "Octree grid refinement for lattice Boltzmann method-based LES in non-isothermal turbulent indoor convective airflow",
+      "start": "11:30",
+      "end": "11:45"
+    },
+    {
+      "paper_no": "S56-3",
+      "session_id": "S56",
+      "authors": "Zhenyu Sun, Wei Liu (Tianjin Key Laboratory of Indoor Air Environmental Quality Control, School of Environmental Science and Engineering, Tianjin University, 92 Weijin Road, Tianjin 300072, China)",
+      "title": "Reconstruction of three-dimensional outdoor airflow using super resolution",
+      "start": "11:45",
+      "end": "12:00"
+    },
+    {
+      "paper_no": "S56-4",
+      "session_id": "S56",
+      "authors": "Matthieu Chaigneau, Shafi Shaik, Awwab Hassan, Sven Auerswald, Olaf Knospe (Fraunhofer-Institut fur Solare Energiesysteme ISE, Germany)",
+      "title": "Multi-agent path finding for facade-integrated ductwork",
+      "start": "12:00",
+      "end": "12:05"
+    },
+    {
+      "paper_no": "S56-5",
+      "session_id": "S56",
+      "authors": "Arnaud JAY, Ahmad FOUANI, Simon BAL-FONTAINE, Aurelie FOUCQUIER (Univ. Grenoble Alpes, CEA LITEN, INES, Le Bourget du Lac, France)",
+      "title": "Quantification of energy stored and released in walls and slabs when coupled to natural ventilation. Impact of thermal inertia materials and furnitures",
+      "start": "12:05",
+      "end": "12:10"
+    },
+    {
+      "paper_no": "S56-6",
+      "session_id": "S56",
+      "authors": "Stefano Agnoli, Agnese Chiucchiù, Martina Botticelli, Michele Zinzi (ENEA, Italy)",
+      "title": "Assessing the potential of energy savings with personalised environment control systems: combining field data with building simulation",
+      "start": "12:10",
+      "end": "12:25"
+    },
+    {
+      "paper_no": "W51-1",
+      "session_id": "W51",
+      "authors": "Angui Li, Arsen Melikov, Alan Kabanshi, Haiguo Yin, Ying Zhang, Jing Xiong (Xi'an University of Architecture and Technology)",
+      "title": "Breathing life below: Innovations and strategies for underground space environment control",
+      "start": "11:15",
+      "end": "12:30"
+    },
+    {
+      "paper_no": "W52-1",
+      "session_id": "W52",
+      "authors": "Xianting Li, Zhang Lin, Risto Kosonen, Guangyu Cao, Bin Yang, Haiguo Yin, Haidong Wang, Xiaoliang Shao, Sheng Zhang, Huan Wang (Tsinghua, China)",
+      "title": "Demand-oriented Non-uniform Indoor Environment",
+      "start": "11:15",
+      "end": "12:30"
+    },
+    {
+      "paper_no": "S61-1",
+      "session_id": "S61",
+      "authors": "Riku Izumiyama, Yoshihiro Toriumi, Shin Iwasaki (Tokyo Denki University, Japan)",
+      "title": "Impact of Building Airtightness and Ventilation Systems on Planned Ventilation in Japanese Wooden Houses",
+      "start": "13:15",
+      "end": "13:30"
+    },
+    {
+      "paper_no": "S61-2",
+      "session_id": "S61",
+      "authors": "Izabella Milto, Michał Przybylski, Andrea Sangalli, Shayan Shahrestani, Abdelaalim Mabrouki, Jose Ary Da Silva Junior, Roberto Armani, Stefano Schiavon, Lorenzo Pagliano (Polytechnic University of Milan, Italy)",
+      "title": "Using Natural Ventilation with Ceiling Fans in Retrofitted Office Buildings in Italy: From Implementation to Optimization and Thermal Comfort Assessment.",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "S61-3",
+      "session_id": "S61",
+      "authors": "Ryuichiro Yoshie, Napoleon Enteria (Tokyo Polytechnic University, Japan)",
+      "title": "Effects of Wing Walls on Single-Sided Ventilation Performance in Apartment Units: Wind Tunnel Experiments Using a Movable Measurement Unit",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "S61-4",
+      "session_id": "S61",
+      "authors": "Haruna Yamasawa, Tomohiro Kobayashi, Narae Choi, Ryota Kago (The University of Osaka, Japan)",
+      "title": "Experimental Investigation of Temperature and Flow Characteristics of a Double-roof Natural Ventilation Device",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "S61-5",
+      "session_id": "S61",
+      "authors": "Feilong Chen, Zhaoju Duan, Dong Yang (School of Resources and Safety Engineering, Chongqing University, Chongqing, 400045, China)",
+      "title": "Numerical study on the diversity of mixed convection airflow patterns in a vented enclosure based on the buoyancy-velocity field synergy principle",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "S61-6",
+      "session_id": "S61",
+      "authors": "Eliane Assy, Olivier Ramalho, Emma Lafaurie, Vincent Binot, Anthony Grégoire, Virginie Desvignes, Xavier Faure (Scientific and Technical Center for Building (France))",
+      "title": "The ventilation system in French dwellings",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "S62-1",
+      "session_id": "S62",
+      "authors": "Jiri Hirs, Twiza Sichone, Jan Smejka (Brno University of Technology, Faculty of Civil Engineering, Czech Republic)",
+      "title": "1.Ventilation analysis during the energy deep renovation of municipal residential buildings in South Moravia",
+      "start": "13:15",
+      "end": "13:30"
+    },
+    {
+      "paper_no": "S62-2",
+      "session_id": "S62",
+      "authors": "MinSung KIM, Dong Kyu Lee, Woong June Chung (Gachon University, Korea, Republic of (South Korea))",
+      "title": "A Novel Solid-Attachment Method for Measuring Linear Thermal Transmittance at Building Wall-Floor Junctions",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "S62-3",
+      "session_id": "S62",
+      "authors": "Beatrice Riccardi, Alessandro Salmaso, Giacomo Tognon, Marco Marigo, Angelo Zarrella (Department of Industrial Engineering, University of Padova, Italy)",
+      "title": "Numerical and experimental analysis of a Fixed-Bed Regenerator for decentralized residential ventilation",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "S62-4",
+      "session_id": "S62",
+      "authors": "Jiri Hirs, Twiza Sichone, Milan Kubín, Lenka Maurerová (Brno University of Technology, Faculty of Civil Engineering, Czech Republic)",
+      "title": "Ventilation energy and global warming potential",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "S62-5",
+      "session_id": "S62",
+      "authors": "Haruka Kitagawa, Tianxing Zhang, Muhammad Emir Hanif Rasyadi, Takashi Asawa (Shimizu Corporation, Japan)",
+      "title": "A novel PCM-based radiant floor cooling system using hybrid cooling mode in the hot and humid climate of Indonesia",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "S63-1",
+      "session_id": "S63",
+      "authors": "Thomas Oppelt (Institut für Luft - und Kältetechnik gemeinnützige Gesellschaft mbH, Germany)",
+      "title": "Machine learning for predicting indoor airflows: State-of-the-art methods and future challenges",
+      "start": "13:15",
+      "end": "13:30"
+    },
+    {
+      "paper_no": "S63-2",
+      "session_id": "S63",
+      "authors": "Doyeon LEE, Hyunwoo Lim (Department of Architecture, Graduate school of Konkuk University, Seoul, South Korea)",
+      "title": "Development of Representative Forms of Office Buildings in Seoul",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "S63-3",
+      "session_id": "S63",
+      "authors": "Chengzhong Deng, Chun Chen (The Chinese University of Hong Kong, Hong Kong S.A.R. (China))",
+      "title": "Superhydrophobic Condensation-Driven Self-Cleaning of Electrostatic Precipitators",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "S63-4",
+      "session_id": "S63",
+      "authors": "Joud Aldakheel, Mohamed El Mankibi, Myriam Bahrar, Nassim Sebaibi (BUILDERS Ecole d'ingénieurs, Unité de Recherche \"Builders Lab\", Campus Lyon, Vaulx -En-Velin, France)",
+      "title": "Experimental Characterization of Sensors and Mechanical Ventilation Systems’ Faults Under Respective Control Strategies",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "S63-5",
+      "session_id": "S63",
+      "authors": "Michael Tesfaye Solomon, Giorgio Buonanno, Luca Stabile, Raul Simonetti, Biagio Lamanna, Miriam Solana (University of Cassino and Southern Lazio, Italy)",
+      "title": "Assessment of Indoor Environmental Quality and Sustained Attention in Office Environments: A Multi-Site Field Study",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "S63-6",
+      "session_id": "S63",
+      "authors": "Michal Kabrhel (CVUT FSV TZB, Czech Republic)",
+      "title": "Optimizing Ventilative Cooling in Temperate Climates using AI-Based Predictive Control",
+      "start": "14:30",
+      "end": "14:45"
+    },
+    {
+      "paper_no": "S67-1",
+      "session_id": "S67",
+      "authors": "Irene Martínez - Muñoz, Christiane Berger, Ardeshir Mahdavi (TU Graz, Austria)",
+      "title": "Impact of personal factors on people's perception of indoor-environmental quality",
+      "start": "13:15",
+      "end": "13:30"
+    },
+    {
+      "paper_no": "S67-2",
+      "session_id": "S67",
+      "authors": "Zuraimi Sultan, Irvan Luhung (Singapore University of Social Sciences, Singapore)",
+      "title": "The Impact of Ventilation on Microorganism Sterilisation Using Gaseous Disinfectants",
+      "start": "13:30",
+      "end": "13:45"
+    },
+    {
+      "paper_no": "S67-3",
+      "session_id": "S67",
+      "authors": "Xudong Wang (The Chinese University of Hong Kong)",
+      "title": "Experimental Validation and CFD Modeling of Far-UVC Disinfection under High Ventilation Conditions in Railway Cabins",
+      "start": "13:45",
+      "end": "14:00"
+    },
+    {
+      "paper_no": "S67-4",
+      "session_id": "S67",
+      "authors": "Jelle Laverge (Ghent University, Belgium)",
+      "title": "Applying absolute and cost-based approaches to setting acceptable limits to harm from exposure to indoor air",
+      "start": "14:00",
+      "end": "14:15"
+    },
+    {
+      "paper_no": "S67-5",
+      "session_id": "S67",
+      "authors": "Zuzana Smoláriková, Michal Krajčík, Rastislav Ingeli (Stavebná fakulta STU v Bratislave, Slovak Republic)",
+      "title": "Experimental Residential Module for Testing Integrated Innovative Building Services and Predictive Data Models: Introduction and Pilot Measurements",
+      "start": "14:15",
+      "end": "14:30"
+    },
+    {
+      "paper_no": "S67-6",
+      "session_id": "S67",
+      "authors": "Huiling Zeng, Huixiu Wang, Lijun Liang, Hui Li, Dawei Guan, Li Liu (Guangdong Provincial Center for Disease Control and Prevention, Guangzhou, China)",
+      "title": "Distance- and Size-Resolved Experimental Characterization of Airborne H1N1 Virus Release and Transport",
+      "start": "14:30",
+      "end": "14:35"
+    },
+    {
+      "paper_no": "P4-1",
+      "session_id": "P4",
+      "authors": "Francis Allard (Tipee /La Rochelle Univ., France)",
+      "title": "What do we know of Indoor Air Quality in Indoor Environments? 25 years experience of the Indoor Air Observatory in France.",
+      "start": "15:00",
+      "end": "16:30"
+    }
+  ],
+  "schema_version": 2
+}

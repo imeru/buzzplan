@@ -11,12 +11,13 @@
 
 | ID | 이름 | 일시 | 회장 | 세션 | 발표 |
 |---|---|---|---|---|---|
+| `roomvent-2026` | RoomVent 2026 | 2026/9/15–18 (프라하 CTU) | A 230, B 168/169/286, C 215~223 | 59 | 269 |
 | `sarek-2026-summer` | 대한설비공학회 2026 하계학술발표대회 | 2026/6/24–26 (평창 알펜시아) | 제1~제13회장 | 76 | 407 |
 | `iaqvec-2026` | IAQVEC 2026 | 2026/5/19–21 (USC) | SGM·GFS·VHE | 60 | 321 |
 | `sarek-2025-winter` | 대한설비공학회 2025 동계학술발표대회 | 2025/11/28 (한국과학기술회관) | 제1~제7회장 | 34 | 159 |
 | `sarek-2025-summer` | 대한설비공학회 2025 하계학술발표대회 | 2025/6/19–20 (평창 알펜시아) | 제1~제12회장 | 66 | 312 |
 
-기본 학회는 SAREK 2026 하계이며, URL 끝에 `?conf=<id>`를 붙이면 다른 학회로 전환됩니다. 헤더 드롭다운으로도 즉시 전환 가능합니다.
+기본 학회는 RoomVent 2026이며, URL 끝에 `?conf=<id>`를 붙이면 다른 학회로 전환됩니다. 헤더 드롭다운으로도 즉시 전환 가능합니다.
 
 ---
 
@@ -33,12 +34,14 @@ buzzplan/
 │   └── buzzplan-logo@2x.png
 ├── data/
 │   ├── iaqvec-2026.json
+│   ├── roomvent-2026.json
 │   ├── sarek-2025-winter.json
 │   ├── sarek-2025-summer.json
 │   └── sarek-2026-summer.json
 ├── parser.py                     # IAQVEC·IBPSA 형식 PDF 파서
 ├── parser_sarek.py               # SAREK 동계(가로 2단 컬럼) 파서
 ├── parser_sarek_summer.py        # SAREK 하계(세로 1단 컬럼) 파서
+├── parser_roomvent.py            # RoomVent(ConfTool 인쇄 프로그램) 파서
 ├── build.py                      # PDF → JSON → 학회 등록 자동화
 └── README.md
 ```
@@ -53,8 +56,9 @@ buzzplan/
 
 | 접근 방식 | URL |
 |---|---|
-| 기본 학회 (SAREK 2026 하계) | `https://imeru.github.io/buzzplan/` |
-| SAREK 2026 하계 명시 | `…/?conf=sarek-2026-summer` |
+| 기본 학회 (RoomVent 2026) | `https://imeru.github.io/buzzplan/` |
+| RoomVent 2026 명시 | `…/?conf=roomvent-2026` |
+| SAREK 2026 하계 | `…/?conf=sarek-2026-summer` |
 | IAQVEC 2026 | `…/?conf=iaqvec-2026` |
 | SAREK 2025 동계 | `…/?conf=sarek-2025-winter` |
 | SAREK 2025 하계 | `…/?conf=sarek-2025-summer` |
@@ -118,6 +122,7 @@ buzzplan/
 | IAQVEC·IBPSA·ASHRAE 등 영문 표 형식 | `parser.py` |
 | SAREK 동계 (가로 2단) | `parser_sarek.py` |
 | SAREK 하계 (세로 1단, 다일자) | `parser_sarek_summer.py` |
+| RoomVent 등 ConfTool 인쇄용 프로그램 | `parser_roomvent.py` |
 | 그 외 형식 | 새 파서 작성 (아래 트러블슈팅 참고) |
 
 빌드 명령 예:
@@ -137,6 +142,11 @@ python3 build.py /path/to/sarek-summer.pdf \
   --parser parser_sarek_summer.py \
   --id sarek-2027-summer --name "대한설비공학회 2027 하계학술발표대회" \
   --default
+
+# RoomVent (ConfTool 인쇄용 프로그램)
+python3 build.py /path/to/roomvent_program.pdf \
+  --parser parser_roomvent.py \
+  --id roomvent-2028 --name "RoomVent 2028" --timezone Europe/Prague --default
 ```
 
 `build.py`가 자동으로 다음을 수행합니다.

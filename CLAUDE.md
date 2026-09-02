@@ -48,6 +48,9 @@ firestore.rules     Firestore 보안 규칙. 콘솔에 수동 배포 (본인 uid
 parser.py           IAQVEC·IBPSA 형식(세로 1단, 표) 규칙 파서
 parser_sarek.py     SAREK 동계(가로 2단 컬럼) 규칙 파서
 parser_sarek_summer.py  SAREK 하계(세로 1단, 다일자) 규칙 파서. --day-fix 옵션 있음
+parser_roomvent.py  RoomVent(ConfTool 인쇄용 프로그램) 규칙 파서. 좌표가 아니라
+                    글꼴 크기와 굵기로 역할(세션헤더 15pt / 메타 10.6pt 이탤릭 /
+                    시간마커 9.5pt 볼드 / 제목 11pt 볼드 / 저자 10pt)을 구분한다
 parser_utils.py     파서 공통: v2 정규화(finalize_v2)·검증(validate_v2) + 레이아웃 헬퍼
                     (group_rows, consolidate_split_chars, is_skip_row 등. 상수는 파라미터로 주입)
 parser_llm.py       LLM 범용 추출기. 코드 완성·미가동 (API 키 필요, 사용자가 당분간 보류 결정)
@@ -103,7 +106,8 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
 | iaqvec-2026 | IAQVEC 2026 | parser.py | 60세션/321발표 | tz America/Los_Angeles. venue.walk 보유(추정치) |
 | sarek-2025-winter | 설비공학회 2025 동계 | parser_sarek.py | 34세션/159발표 | 발표별 명시 시간 |
 | sarek-2025-summer | 설비공학회 2025 하계 | parser_sarek_summer.py | 66세션/312발표 | 포스터 누락 (알려진 제한) |
-| sarek-2026-summer | 설비공학회 2026 하계 | parser_sarek_summer.py | 76세션/407발표 | **default**. 포스터 67편은 Tier 2로 추가. 재파싱 시 `--day-fix 19:25` 필수 |
+| sarek-2026-summer | 설비공학회 2026 하계 | parser_sarek_summer.py | 76세션/407발표 | 포스터 67편은 Tier 2로 추가. 재파싱 시 `--day-fix 19:25` 필수 |
+| roomvent-2026 | RoomVent 2026 | parser_roomvent.py | 59세션/269발표 | **default**. tz Europe/Prague. 단일 건물 `CTU`, 방으로만 구분. 발표번호 없어 paper_no는 `<세션ID>-<순번>` |
 
 이 표의 숫자가 바뀌는 작업을 했으면 이 파일과 **README.md의 학회 표**도 같이 갱신한다.
 
@@ -206,6 +210,10 @@ curl -s "https://imeru.github.io/buzzplan/?v=$RANDOM" | grep -c "<찾을 문자�
   2026 하계 포스터 67편은 Tier 2로 수동 추가 완료, **2025 하계 포스터는 여전히 누락**
 - PDF 글자 쪼개짐은 `consolidate_split_chars()`로 보정 (gap 0.5pt 이하 병합)
 - 발표 시간 자동 배정은 고정 15분. 발표 수가 적은 세션은 일찍 끝나는 것으로 표시됨
+- roomvent-2026: 기술투어(TT1~TT4)는 프로그램에 시작(8:30)만 있고 종료가 없어
+  `--tour-end` 기본값 12:00을 넣었다. **추정치이므로 신뢰하지 말 것.** 같은 방
+  `Off-site`를 쓰므로 build.py의 시간 겹침 경고 3건은 정상이다.
+  세션 S17의 마지막 발표(11:35-11:50)가 세션 종료(11:45)를 5분 넘기는데 원문 그대로다
 - 부팅 오류 페이지(conferences.json 로드 실패 등)는 한국어 고정 (i18n 미적용).
   동적으로 DOM을 재생성하는 코드는 문자열을 하드코딩하지 말고 t()를 쓸 것
   (과거 사례: 학회명 편집 후 툴팁이 한국어로 되돌아가는 회귀)
