@@ -29,7 +29,7 @@
 4. **사용자 노출 문자열은 한국어가 소스**이고, 새로 추가할 때 반드시
    `I18N_KO`와 `I18N_EN` 양쪽에 키를 넣고 `t(key)`로 쓴다.
    정적 HTML 문자열이면 `applyStaticLang()`에도 영어 치환을 추가한다
-5. **선택·별점·메모를 바꾸는 모든 코드 경로는 `touch(key)`를 호출해야 한다.**
+5. **선택, 별점, 메모, 꼭 듣기(⭐)를 바꾸는 모든 코드 경로는 `touch(key)`를 호출해야 한다.**
    touch가 빠지면 그 변경은 다른 기기로 동기화되지 않는다.
    단, 원격 수신 적용부(`applyRemoteItems`)에서는 touch 금지 (push 루프 발생)
 6. **모바일 로그인은 `signInWithPopup`만 쓴다.** `signInWithRedirect`는 호스팅 도메인
@@ -136,7 +136,7 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
 ```
 게스트: localStorage만 (cs:<confId>:selected / :notes / :stamps / :collapsed)
 로그인: 위 + Firestore users/<uid>/confs/<confId> 문서 1개
-        { items: { "<sessionId>#<paperNo>": {s: 0|1, r: 별점, n: 메모, t: ms} } }
+        { items: { "<sessionId>#<paperNo>": {s: 0|1, r: 별점, n: 메모, m: 0|1(꼭 듣기), t: ms} } }
 ```
 
 - **키별 LWW 병합**: 로컬 변경은 `touch(key)`가 `state.stamps`에 시각 기록 → 800ms 디바운스 후
@@ -145,6 +145,8 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
 - **에코 가드**: onSnapshot에서 `hasPendingWrites`면 무시. 로그인 직후 첫 스냅샷은 토스트 억제
 - **게스트 모드 불변 원칙**: 로그인 없으면 동작이 기존과 100% 동일해야 한다
 - **오류는 표면화**: 동기화 실패는 조용히 삼키지 말고 `reportSyncError`로 (버튼 ⚠️ + 권한 오류 안내)
+- **구버전 클라이언트 주의**: 문서를 통째로 쓰는 LWW라, `m`을 모르는 옛 index.html이 캐시된 기기가
+  push하면 꼭 듣기 플래그가 지워진다. 캐시가 갱신되면 해소된다. 앞으로 항목 필드를 늘릴 때도 같은 성질이 따라온다
 - 확장: 무료 쿼터(읽기 5만/쓰기 2만/일)로 수백 명 커버. 초과 시 Blaze 전환만 하면 됨 (구조 불변)
 
 ## 8. index.html 주요 구조 (JS)
@@ -159,6 +161,10 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
   poster/Panel/Special은 세션 공유 > 15분 슬라이스
 - `renderSessions()` 둘러보기 탭 / `renderItinerary()` 내 일정 탭 (리스트·시간표 토글, hop 힌트)
 - 동기화 계층: `startSync`/`stopSync`/`schedulePush`/`applyRemoteItems`/`touch`/`reportSyncError`
+- **꼭 듣기(⭐)**: `isMust`/`toggleMust`/`clearMustOnDeselect`. 상태는 notes 항목의 `must` 불리언이라
+  별점과 축이 다르다 (별점은 듣고 난 뒤 평가, 꼭 듣기는 듣기 전 우선순위).
+  켜면 자동으로 선택에 담기고, 선택을 해제하면 함께 꺼진다. 토글 핸들러는 전체 재렌더 대신
+  해당 행이나 카드만 갱신한다 (메모 textarea 포커스 보존)
 - 조회 캐시 `_papersBySession` 등은 학회 전환 시 `invalidateCaches()`
 
 ## 9. 검증 방법 (테스트 프레임워크 없음, 아래가 관행)
@@ -186,7 +192,7 @@ curl -s "https://imeru.github.io/buzzplan/?v=$RANDOM" | grep -c "<찾을 문자�
 
 - [ ] index.html 수정 시: JS 구문 검사 통과
 - [ ] 신규 사용자 노출 문자열: I18N_KO/EN 양쪽 + (정적이면) applyStaticLang 반영
-- [ ] 선택·별점·메모 변경 경로를 추가·수정했으면: touch(key) 포함 여부 확인
+- [ ] 선택, 별점, 메모, 꼭 듣기 변경 경로를 추가하거나 수정했으면: touch(key) 포함 여부 확인
 - [ ] 데이터 변경 시: validate_v2 통과 + 학회 표(5장) 숫자 갱신
 - [ ] 로컬 서버에서 해당 화면 로드 확인 (최소한 게스트 모드)
 - [ ] push했으면: Pages 빌드 "built" 확인 후 배포본에서 변경 존재 확인

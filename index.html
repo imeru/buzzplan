@@ -405,6 +405,24 @@
   mark { background: #fff59d; color: inherit; padding: 0 1px; border-radius: 2px; }
 
   /* Rating + notes */
+  /* ⭐ 꼭 듣기: 사전 우선순위 표시. 별점(.rating)과 색을 나눠 역할이 섞이지 않게 한다.
+     별점은 주황(#f5a623), 꼭 듣기는 호박색 배경 강조. */
+  .must-btn {
+    flex: none; background: none; border: 1px solid transparent; border-radius: 6px;
+    cursor: pointer; padding: 1px 4px; font-size: 15px; line-height: 1.2;
+    color: #c9c9c9; transition: color .12s, background .12s;
+  }
+  .must-btn:hover  { color: #e8a400; background: #fff8e6; }
+  .must-btn.on     { color: inherit; }
+  .must-btn:focus-visible { outline: 2px solid #e8a400; outline-offset: 1px; }
+  .paper .must-btn { margin-left: auto; align-self: center; }
+  .paper.must      { background: #fffbef; }
+  .pick.must       { border-left: 3px solid #f0b429; background: #fffdf5; }
+  .pick .must-btn  { float: right; margin-left: 6px; }
+  .pick-badge.must { background: #fdf0cf; color: #8a6100; }
+  .tt-cell.must    { outline: 2px solid #f0b429; outline-offset: -2px; }
+  .spon            { color: #999; cursor: help; }
+
   .rating { display: inline-flex; gap: 1px; margin-top: 4px; }
   .rating .star {
     cursor: pointer; font-size: 16px; line-height: 1; color: #d0d0d0;
@@ -485,6 +503,7 @@
     .filter-group input[type="text"] { font-size: 16px; padding: 8px 10px; }
     .filter-group label { padding: 6px 0; font-size: 13px; }
     .rating .star { font-size: 22px; padding: 2px 3px; }
+    .must-btn { font-size: 22px; padding: 4px 6px; }
     .note-input { font-size: 16px; padding: 8px; }
     .slot { padding: 10px; }
     .slot .pick .ptitle { font-size: 13px; }
@@ -538,6 +557,12 @@
         왼쪽 <strong>필터</strong>(검색·Day·시간 범위·트랙·회장)로 좁힐 수 있습니다.
         선택이 끝나면 <strong>내 일정</strong> 탭에서 시간순 리스트(이동 거리·여유 안내 포함) 또는
         시간표(회장 × 시간 격자) 형태로 확인합니다. 별점·메모는 각 발표 아래에서 바로 입력합니다.
+      </p>
+      <p class="help-p">
+        <strong>⭐ 꼭 듣기</strong> — 놓치면 안 되는 발표는 오른쪽 <strong>☆</strong>를 누르세요.
+        내 일정과 시간표에서 노란색으로 강조되고, 표시하는 순간 일정에도 자동으로 담깁니다.
+        ICS로 내보내면 제목 앞에 ⭐가 붙어 캘린더에서도 구분됩니다.
+        별점(★★★★★)은 발표를 듣고 난 뒤의 평가라 별개입니다.
       </p>
 
       <h4 class="help-h">② 📱 컴퓨터 ↔ 모바일로 옮기기</h4>
@@ -676,6 +701,8 @@ const I18N_KO = {
   list: '📋 리스트', grid: '🗓️ 시간표', now: '🔴 지금',
   fold_all: '📕 모두 접기', unfold_all: '📖 모두 펴기',
   remove: '제거', note_ph: '메모...', clear_rating: '평점 지우기', hop_plan: '↔ 방 사이 이동 계획',
+  must_on: '꼭 듣기로 표시 (내 일정에 자동 추가)', must_off: '꼭 듣기 해제',
+  must_badge: '꼭 듣기', must_stat: '꼭 듣기', sponsored: '후원 발표',
   etal: ' 외', cnt_suffix: '개', switch_conf: '↕ 다른 학회로 전환', loading: '데이터를 불러오는 중...',
   clear_confirm: '선택을 모두 해제할까요?', no_selected: '선택된 발표가 없습니다.',
   no_export: '내보낼 항목이 없습니다 (선택·평점·메모 중 하나 이상 필요).',
@@ -699,6 +726,8 @@ const I18N_EN = {
   list: '📋 List', grid: '🗓️ Timetable', now: '🔴 Now',
   fold_all: '📕 Fold all', unfold_all: '📖 Unfold all',
   remove: 'Remove', note_ph: 'Notes...', clear_rating: 'Clear rating', hop_plan: '↔ Room-to-room moves',
+  must_on: 'Mark as must-see (adds to your itinerary)', must_off: 'Unmark must-see',
+  must_badge: 'Must-see', must_stat: 'Must-see', sponsored: 'Sponsored talk',
   etal: ' et al.', cnt_suffix: '', switch_conf: '↕ Switch conference', loading: 'Loading data...',
   clear_confirm: 'Clear all selections?', no_selected: 'No papers selected.',
   no_export: 'Nothing to export (select, rate, or note at least one paper).',
@@ -927,17 +956,35 @@ function saveCollapsed() {
 }
 
 function getNote(key) {
-  return state.notes.get(key) || { rating: 0, note: '' };
+  const n = state.notes.get(key);
+  return n ? { rating: 0, note: '', must: false, ...n } : { rating: 0, note: '', must: false };
 }
 
 function setNote(key, patch) {
   const cur = getNote(key);
   const next = { ...cur, ...patch };
-  // If both empty, remove the entry to keep storage compact
-  if (!next.rating && !next.note) state.notes.delete(key);
+  // If everything is empty, remove the entry to keep storage compact
+  if (!next.rating && !next.note && !next.must) state.notes.delete(key);
   else state.notes.set(key, next);
   saveNotes();
   touch(key);
+}
+
+// ⭐ 꼭 듣기 = 듣기 전 우선순위. 별점(rating)은 듣고 난 뒤의 평가라 축이 다르므로
+// 같은 값에 얹지 않고 별도 플래그로 둔다.
+// 표시하면 내 일정에 자동으로 담긴다 (꼭 들을 발표인데 일정에 없는 상태가 모순이므로).
+function isMust(key) { return !!getNote(key).must; }
+
+function toggleMust(key) {
+  const on = !isMust(key);
+  setNote(key, { must: on });   // setNote가 touch까지 수행
+  if (on && !state.selected.has(key)) { state.selected.add(key); saveSelection(); }
+  return on;
+}
+
+// 일정에서 빠진 발표에 "꼭 듣기"가 남아 있으면 모순이므로 함께 지운다.
+function clearMustOnDeselect(key) {
+  if (isMust(key)) setNote(key, { must: false });
 }
 
 // ====== Helpers ======
@@ -1404,19 +1451,40 @@ function renderSessions() {
       const idx = sPapersOrdered.findIndex(x => x.paper_no === p.paper_no);
       const pt  = paperTime(s, p, idx, sPapersOrdered.length);
       const timeBadge = `<span class="paper-time">${pt.start}–${pt.end}</span>`;
+      const must = isMust(key);
+      if (must) row.classList.add('must');
       row.innerHTML = `
         <input type="checkbox" data-key="${key}" ${state.selected.has(key)?'checked':''}>
         <div class="paper-body">
           <div class="paper-title">${timeBadge} ${hi(p.title)}${noteBadge}</div>
-          <div class="paper-authors">${hi(p.authors)} <span class="paper-no">· #${hi(p.paper_no)}${p.is_sponsored?' ⭐':''}</span></div>
+          <div class="paper-authors">${hi(p.authors)} <span class="paper-no">· #${hi(p.paper_no)}${p.is_sponsored?` <span class="spon" title="${t('sponsored')}">◆</span>`:''}</span></div>
         </div>
+        <button class="must-btn${must?' on':''}" data-key="${key}"
+                title="${must?t('must_off'):t('must_on')}"
+                aria-pressed="${must}">${must?'⭐':'☆'}</button>
       `;
       row.querySelector('input').onchange = (e) => {
         if (e.target.checked) state.selected.add(key);
-        else state.selected.delete(key);
+        else { state.selected.delete(key); clearMustOnDeselect(key); row.classList.remove('must'); }
         saveSelection();
         touch(key);
         renderItineraryIfVisible();  // 둘러보기에서 토글 시엔 dirty만, 탭 진입 시 1회 렌더
+      };
+      // ⭐ 꼭 듣기 토글. 전체 재렌더 대신 이 행만 갱신해 스크롤 위치를 지킨다.
+      row.querySelector('.must-btn').onclick = (e) => {
+        e.stopPropagation();
+        const on  = toggleMust(key);
+        const btn = e.currentTarget;
+        btn.textContent = on ? '⭐' : '☆';
+        btn.classList.toggle('on', on);
+        btn.title = on ? t('must_off') : t('must_on');
+        btn.setAttribute('aria-pressed', String(on));
+        row.classList.toggle('must', on);
+        // 꼭 듣기는 일정에 자동으로 담기므로 체크박스와 통계도 맞춘다
+        row.querySelector('input').checked = state.selected.has(key);
+        document.getElementById('stats').textContent = statsText();
+        renderView();
+        renderItineraryIfVisible();
       };
       pl.appendChild(row);
     }
@@ -1445,7 +1513,9 @@ function renderSessions() {
 
 // 헤더 통계 문자열 (4곳에서 사용)
 function statsText() {
-  return `${DATA.sessions.length} sessions · ${DATA.papers.length} papers · ${t('sel')}: ${state.selected.size}`;
+  const must = [...state.notes.values()].filter(n => n.must).length;
+  const mustPart = must ? ` · ⭐ ${t('must_stat')}: ${must}` : '';
+  return `${DATA.sessions.length} sessions · ${DATA.papers.length} papers · ${t('sel')}: ${state.selected.size}${mustPart}`;
 }
 
 // Scroll the session list to the current (or next upcoming) session.
@@ -1568,14 +1638,19 @@ function renderItinerary() {
         `<span class="star ${v<=n.rating?'on':''}" data-key="${it.key}" data-val="${v}">★</span>`
       ).join('');
       const timeBadge = pt ? `<span class="paper-time">${pt.start}–${pt.end}</span> ` : '';
+      const must = isMust(it.key);
       // 현재 시각 기준 상태 (날짜 + 발표 시간으로 판정). 접지 않고 강조/흐림만.
       const st = pt ? sessionStatus({date: it.s.date, start: pt.start, end: pt.end}) : 'none';
-      let pickCls = '', pickBadge = '', nowAttr = '';
+      let pickCls = must ? ' must' : '', pickBadge = '', nowAttr = '';
       if (st === 'current')  { pickCls = ' current'; pickBadge = `<span class="pick-badge cur">${t('status_current')}</span>`; nowAttr = ' data-now="1"'; }
       else if (st === 'upcoming') { pickBadge = `<span class="pick-badge up">${t('status_upcoming')}</span>`; nowAttr = ' data-next="1"'; }
       else if (st === 'past') { pickCls = ' past'; pickBadge = `<span class="pick-badge done">${t('status_past')}</span>`; }
+      const mustBadge = must ? `<span class="pick-badge must">⭐ ${t('must_badge')}</span>` : '';
       return `<div class="pick${pickCls}"${nowAttr}>
-        <div class="ptitle">${timeBadge}${escapeHtml(it.p.title)}${pickBadge}</div>
+        <button class="must-btn pick-must${must?' on':''}" data-key="${it.key}"
+                title="${must?t('must_off'):t('must_on')}"
+                aria-pressed="${must}">${must?'⭐':'☆'}</button>
+        <div class="ptitle">${timeBadge}${escapeHtml(it.p.title)}${mustBadge}${pickBadge}</div>
         <div class="pauthors">${escapeHtml(it.p.authors)}</div>
         <div class="pmeta">${escapeHtml(it.s.track_title)} · #${escapeHtml(it.p.paper_no)}
           <a href="#" data-key="${it.key}" class="rm" style="margin-left:6px;color:#d0021b;">${t('remove')}</a></div>
@@ -1677,9 +1752,34 @@ function renderItinerary() {
     a.onclick = (e) => {
       e.preventDefault();
       state.selected.delete(a.dataset.key);
+      clearMustOnDeselect(a.dataset.key);
       saveSelection();
       touch(a.dataset.key);
       renderAll();
+    };
+  });
+
+  // ⭐ 꼭 듣기 토글. 카드 전체를 다시 그리면 메모 입력 포커스가 날아가므로 이 카드만 갱신한다.
+  root.querySelectorAll('.pick-must').forEach(btn => {
+    btn.onclick = () => {
+      const key = btn.dataset.key;
+      const on  = toggleMust(key);
+      btn.textContent = on ? '⭐' : '☆';
+      btn.classList.toggle('on', on);
+      btn.title = on ? t('must_off') : t('must_on');
+      btn.setAttribute('aria-pressed', String(on));
+      const card = btn.closest('.pick');
+      card.classList.toggle('must', on);
+      const title = card.querySelector('.ptitle');
+      const badge = title.querySelector('.pick-badge.must');
+      if (on && !badge) {
+        const el = document.createElement('span');
+        el.className = 'pick-badge must';
+        el.textContent = `⭐ ${t('must_badge')}`;
+        title.appendChild(el);
+      } else if (!on && badge) badge.remove();
+      document.getElementById('stats').textContent = statsText();
+      markBrowseDirty();
     };
   });
 
@@ -1822,14 +1922,14 @@ function renderTimetable(byDay) {
       const n = getNote(it.key);
       const tooltip = `${it.p.title}\n${it.p.authors}`;
       const st = sessionStatus({date: it.s.date, start: it.pt.start, end: it.pt.end});
-      let curCls = '', stAttr = '';
-      if      (st === 'current')  { curCls = ' current'; stAttr = ' data-now="1"'; }
-      else if (st === 'upcoming') { curCls = ' upcoming'; stAttr = ' data-next="1"'; }
-      else if (st === 'past')     { curCls = ' past'; }
+      let curCls = n.must ? ' must' : '', stAttr = '';
+      if      (st === 'current')  { curCls += ' current'; stAttr = ' data-now="1"'; }
+      else if (st === 'upcoming') { curCls += ' upcoming'; stAttr = ' data-next="1"'; }
+      else if (st === 'past')     { curCls += ' past'; }
       html += `<div class="tt-cell tag-${it.s.building}${curCls}"${stAttr}
         style="grid-column:${colIdx+2}; grid-row:${rowStart+2} / span ${rowSpan};"
         title="${escapeHtml(tooltip)}">
-        <div class="tt-pno">#${escapeHtml(it.p.paper_no)} <span class="tt-author">${escapeHtml(firstAuthorLabel(it.p.authors))}</span></div>
+        <div class="tt-pno">${n.must?'⭐':''}#${escapeHtml(it.p.paper_no)} <span class="tt-author">${escapeHtml(firstAuthorLabel(it.p.authors))}</span></div>
         <div class="tt-meta">${it.pt.start}–${it.pt.end}${n.rating?` <span class="tt-rate">${'★'.repeat(n.rating)}</span>`:''}</div>
       </div>`;
     }
@@ -2047,7 +2147,7 @@ document.getElementById('btn-login').onclick = () => {
 updateLoginButtonUI();  // firebase 로드 여부와 무관하게 게스트 라벨을 즉시 표시
 
 // ----- 로컬 상태 ↔ Firestore 문서 변환 -----
-// 문서 경로: users/{uid}/confs/{currentConfId}, 형태 { items: { <key>: {s,r,n,t} }, updatedAt }
+// 문서 경로: users/{uid}/confs/{currentConfId}, 형태 { items: { <key>: {s,r,n,m,t} }, updatedAt }
 function buildLocalItems() {
   const keys = new Set([...state.selected, ...state.notes.keys(), ...state.stamps.keys()]);
   const items = {};
@@ -2057,6 +2157,7 @@ function buildLocalItems() {
       s: state.selected.has(key) ? 1 : 0,
       r: n.rating || 0,
       n: n.note || '',
+      m: n.must ? 1 : 0,
       t: state.stamps.get(key) || 0,
     };
   }
@@ -2074,7 +2175,8 @@ function applyRemoteItems(items) {
     if (remote.t <= localT) continue;
     changedCount++;
     if (remote.s) state.selected.add(key); else state.selected.delete(key);
-    if (remote.r || remote.n) state.notes.set(key, { rating: remote.r || 0, note: remote.n || '' });
+    if (remote.r || remote.n || remote.m)
+      state.notes.set(key, { rating: remote.r || 0, note: remote.n || '', must: !!remote.m });
     else state.notes.delete(key);
     state.stamps.set(key, remote.t);
   }
@@ -2177,6 +2279,7 @@ document.getElementById('btn-clear').onclick = () => {
   if (!confirm(t('clear_confirm'))) return;
   const clearedKeys = [...state.selected];
   state.selected.clear();
+  for (const key of clearedKeys) clearMustOnDeselect(key);
   saveSelection();
   for (const key of clearedKeys) touch(key);
   renderAll();
@@ -2217,7 +2320,7 @@ document.getElementById('btn-export-ics').onclick = () => {
 
     lines.push('BEGIN:VEVENT');
     lines.push('UID:' + key + '@conf-planner');
-    lines.push('SUMMARY:' + icsEscape(p.title));
+    lines.push('SUMMARY:' + icsEscape((n.must ? '⭐ ' : '') + p.title));
     lines.push('LOCATION:' + icsEscape(s.building + ' ' + s.room));
     lines.push('DESCRIPTION:' + icsEscape(descParts.join('\n')));
     lines.push('DTSTART:' + fmtMin(pt.startMin));
@@ -2252,7 +2355,7 @@ document.getElementById('btn-export-csv').onclick = () => {
   const keys = new Set([...state.selected, ...state.notes.keys()]);
   if (keys.size === 0) { alert(t('no_export')); return; }
 
-  const header = ['Day','Date','PaperStart','PaperEnd','SessionStart','SessionEnd','Building','Room','SessionID','Track','PaperNo','Title','Authors','Selected','Rating','Notes'];
+  const header = ['Day','Date','PaperStart','PaperEnd','SessionStart','SessionEnd','Building','Room','SessionID','Track','PaperNo','Title','Authors','Selected','MustSee','Rating','Notes'];
   const rows = [header.map(csvCell).join(',')];
 
   // Sort by day → paper start time
@@ -2282,6 +2385,7 @@ document.getElementById('btn-export-csv').onclick = () => {
       it.s.building, it.s.room, it.s.id, it.s.track_title,
       it.p.paper_no, it.p.title, it.p.authors,
       state.selected.has(it.key) ? 'Y' : 'N',
+      n.must ? 'Y' : 'N',
       n.rating || '',
       n.note || '',
     ].map(csvCell).join(','));
@@ -2497,6 +2601,12 @@ function applyStaticLang() {
       Narrow down with the left <strong>filters</strong> (search · day · time range · track · room).
       Then open <strong>My schedule</strong> for a time-ordered list (with walking-distance hints)
       or a timetable grid (rooms × time). Rate and take notes right under each talk.
+    </p>
+    <p class="help-p">
+      <strong>⭐ Must-see</strong> — hit the <strong>☆</strong> on the right for talks you
+      cannot miss. They are highlighted in amber in both the list and the timetable, and
+      marking one adds it to your schedule automatically. ICS exports prefix the title with ⭐.
+      The 5-star rating is separate: that is how you score a talk after hearing it.
     </p>
     <h4 class="help-h">② 📱 Move between computer and phone</h4>
     <p class="help-p">
