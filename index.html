@@ -459,6 +459,62 @@
   }
   .modal-body { padding: 16px 18px; }
 
+  /* Venue map modal: 도면을 크게 보여야 하므로 도움말보다 넓다 */
+  .modal-map { max-width: 1080px; }
+  .modal-map .modal-body { padding: 12px; }
+  .map-stage {
+    position: relative; overflow: hidden; background: #f4f4f4;
+    border: 1px solid #e2e2e2; border-radius: 6px;
+    height: auto; max-height: 68vh; min-height: 300px; touch-action: none; cursor: grab;
+  }
+  .map-stage.dragging { cursor: grabbing; }
+  /* 도면이 2장(층이 다른 경우)이면 나란히 놓고, 각 도면은 무대 높이에 맞게 줄인다.
+     세로로 쌓으면 아래쪽 층이 잘려 보이지 않는다. */
+  .map-canvas {
+    transform-origin: 0 0; will-change: transform;
+    display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px;
+    min-height: 100%; box-sizing: border-box;
+  }
+  .map-frame { min-width: 0; flex: 0 1 auto; }
+  .map-flabel {
+    font-size: 11px; font-weight: 700; color: #555; margin-bottom: 4px;
+  }
+  .map-img-wrap { position: relative; line-height: 0; background: #fff; display: inline-block; max-width: 100%; }
+  .map-img-wrap img { display: block; max-width: 100%; max-height: calc(68vh - 46px); width: auto; }
+  .map-line { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .map-line line {
+    stroke: #d0021b; stroke-width: 4; stroke-dasharray: 12 10; opacity: 0.85;
+    vector-effect: non-scaling-stroke;
+  }
+  /* 핀은 좌표가 곧 뾰족한 끝이 되도록 아래쪽 가운데를 기준점으로 잡는다 */
+  .map-pin { position: absolute; transform: translate(-50%, -100%); text-align: center; }
+  .map-pin .map-dot {
+    display: block; width: 14px; height: 14px; margin: 0 auto;
+    border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+    background: #4a90e2; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+  .map-pin .map-label {
+    display: inline-block; margin-top: 3px; padding: 1px 6px; border-radius: 3px;
+    font-size: 11px; font-weight: 700; line-height: 1.5; white-space: nowrap;
+    background: rgba(255,255,255,0.92); border: 1px solid #ccc; color: #1f1f1f;
+  }
+  .map-pin.from .map-dot { background: #7b8794; }
+  .map-pin.to   .map-dot { background: #d0021b; }
+  .map-pin.to   .map-label { border-color: #d0021b; color: #8a0014; }
+  .map-foot {
+    margin-top: 10px; font-size: 13px; color: #333; display: flex;
+    justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  }
+  .map-foot .map-hint { font-size: 11px; color: #888; }
+  .map-err { padding: 24px; font-size: 13px; color: #d0021b; background: #fff; }
+  /* 지도 링크: 평소엔 원래 텍스트처럼, 가리키면 클릭 가능함을 알린다 */
+  .map-link { color: inherit; text-decoration: none; cursor: pointer; border-bottom: 1px dotted currentColor; }
+  .map-link:hover { color: #1a5fb4; }
+  .room-loc .map-link { border-bottom: none; }
+  .room-loc .map-link::after { content: '🗺'; font-size: 10px; margin-left: 4px; opacity: .75; }
+  .room-loc .map-link:hover::after { opacity: 1; }
+  .building-tag .map-link { border-bottom-style: dotted; }
+
   /* Help modal: wider + structured sections */
   .modal-help { max-width: 560px; }
   .modal-help .modal-body { max-height: 70vh; overflow-y: auto; }
@@ -539,6 +595,20 @@
   </div>
 </header>
 
+<!-- Venue map modal (지도 데이터가 있는 학회에서만 열린다) -->
+<div class="modal-bg" id="map-modal" style="display:none;">
+  <div class="modal modal-map">
+    <div class="modal-head">
+      <strong id="map-modal-title">🗺️ 세션장 지도</strong>
+      <button class="modal-close" id="map-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="map-stage" id="map-stage"><div class="map-canvas" id="map-canvas"></div></div>
+      <div class="map-foot" id="map-foot"></div>
+    </div>
+  </div>
+</div>
+
 <!-- Help modal -->
 <div class="modal-bg" id="help-modal" style="display:none;">
   <div class="modal modal-help">
@@ -584,6 +654,7 @@
         <li>모바일에선 <strong>트랙·회장 필터</strong>가 기본으로 접혀 있습니다 (탭하면 펴짐).</li>
         <li>스크롤이 길어지면 우하단에 <strong>↑ 맨 위로</strong> 버튼이 나타남.</li>
         <li>상단 <strong>학회명</strong> 클릭으로 이름 변경, 옆 드롭다운으로 다른 학회 전환.</li>
+        <li>회장 지도를 공개한 학회에서는 <strong>회장 이름</strong>을 누르면 지도가 열립니다. 이동 안내의 "A → B"를 누르면 두 지점과 예상 도보 시간을 함께 보여 줍니다.</li>
       </ul>
     </div>
   </div>
@@ -703,6 +774,12 @@ const I18N_KO = {
   remove: '제거', note_ph: '메모...', clear_rating: '평점 지우기', hop_plan: '↔ 방 사이 이동 계획',
   must_on: '꼭 듣기로 표시 (내 일정에 자동 추가)', must_off: '꼭 듣기 해제',
   must_badge: '꼭 듣기', must_stat: '꼭 듣기', sponsored: '후원 발표',
+  map_title: '🗺️ 세션장 지도', map_open: '지도에서 위치 보기',
+  map_est: '직선 {d}m · 도보 약 {m}분 (추정)',
+  map_no_scale: '이 지도는 축척 정보가 없어 위치만 표시합니다.',
+  map_diff_floor: '층이 달라 층 이동 시간을 더했습니다.',
+  map_zoom_hint: '휠 또는 두 손가락으로 확대, 끌어서 이동, 더블클릭으로 원래대로',
+  map_missing: '지도 이미지를 불러오지 못했습니다: ',
   etal: ' 외', cnt_suffix: '개', switch_conf: '↕ 다른 학회로 전환', loading: '데이터를 불러오는 중...',
   clear_confirm: '선택을 모두 해제할까요?', no_selected: '선택된 발표가 없습니다.',
   no_export: '내보낼 항목이 없습니다 (선택·평점·메모 중 하나 이상 필요).',
@@ -728,6 +805,12 @@ const I18N_EN = {
   remove: 'Remove', note_ph: 'Notes...', clear_rating: 'Clear rating', hop_plan: '↔ Room-to-room moves',
   must_on: 'Mark as must-see (adds to your itinerary)', must_off: 'Unmark must-see',
   must_badge: 'Must-see', must_stat: 'Must-see', sponsored: 'Sponsored talk',
+  map_title: '🗺️ Venue map', map_open: 'Show on the venue map',
+  map_est: '{d} m in a straight line · about {m} min walk (estimate)',
+  map_no_scale: 'This map has no scale, so only the location is shown.',
+  map_diff_floor: 'A floor-change allowance is included.',
+  map_zoom_hint: 'Wheel or pinch to zoom, drag to pan, double-click to reset',
+  map_missing: 'Could not load the map image: ',
   etal: ' et al.', cnt_suffix: '', switch_conf: '↕ Switch conference', loading: 'Loading data...',
   clear_confirm: 'Clear all selections?', no_selected: 'No papers selected.',
   no_export: 'Nothing to export (select, rate, or note at least one paper).',
@@ -748,17 +831,94 @@ function t(key) { return (EN ? I18N_EN : I18N_KO)[key] ?? key; }
 function walkMinutes(a, b) {
   if (!a || !b) return 0;
   const w = (DATA && DATA.venue && DATA.venue.walk) || {};
+  // 1) 다른 건물 사이는 명시된 pairs 값이 최우선. 사람이 실측했거나 학회가 공지한 값이라
+  //    지도에서 계산한 값보다 믿을 만하다.
+  if (a.building !== b.building) {
+    const pairKey = [a.building, b.building].sort().join('|');
+    for (const p of (w.pairs || [])) {
+      if ([...p.between].sort().join('|') === pairKey) return p.min;
+    }
+  }
+  // 2) 두 방이 지도에 핀으로 찍혀 있고 축척도 있으면 실제 배치로 계산한다.
+  const mw = mapWalkMinutes(a, b);
+  if (mw !== null) return mw;
+  // 3) 지도가 없으면 아래 계층 규칙. 지도를 붙이지 않은 학회는 동작이 이전과 같다.
   if (a.building === b.building && a.room === b.room)   return w.same_room     ?? 0;
   if (a.building === b.building && a.floor === b.floor) return w.same_floor    ?? 2;
   if (a.building === b.building)                        return w.same_building ?? 4;
-  const pairKey = [a.building, b.building].sort().join('|');
-  for (const p of (w.pairs || [])) {
-    if ([...p.between].sort().join('|') === pairKey) return p.min;
-  }
   const bm = w.building_min || {};
   if (a.building in bm) return bm[a.building];
   if (b.building in bm) return bm[b.building];
   return w.cross_building ?? 8;
+}
+
+// ====== 세션장 지도 (선택 기능, 스키마 v2 확장) ======
+// venue.maps: [{ id, building, floor, label, image, width_px, height_px,
+//                width_meters?, pins: [{ room, x, y }] }]
+//   x, y 는 원본 이미지의 픽셀 좌표. width_meters 는 이미지 가로 폭이 실제 몇 미터인가.
+//   width_meters 가 없으면 비례를 믿을 수 없는 안내형 지도로 보고 표시 전용이 된다.
+// venue.walk_model: { speed_m_per_min, detour, floor_min }  (전부 추정 상수)
+const WALK_MODEL_DEFAULT = { speed_m_per_min: 66, detour: 1.3, floor_min: 1.5 };
+
+let _mapPins = null;   // Map<"building|room", { map, pin }>
+
+function mapsList() { return (DATA && DATA.venue && DATA.venue.maps) || []; }
+function hasMaps()  { return mapsList().length > 0; }
+function walkModel() { return { ...WALK_MODEL_DEFAULT, ...((DATA && DATA.venue && DATA.venue.walk_model) || {}) }; }
+function metersPerPx(m) { return (m && m.width_meters > 0 && m.width_px > 0) ? m.width_meters / m.width_px : 0; }
+
+function mapPins() {
+  if (_mapPins) return _mapPins;
+  _mapPins = new Map();
+  for (const m of mapsList())
+    for (const pin of (m.pins || []))
+      _mapPins.set(`${m.building}|${pin.room}`, { map: m, pin });
+  return _mapPins;
+}
+// 세션이 열리는 방의 지도 위 위치. 핀이 없으면 null (그 방은 지도 링크를 만들지 않는다).
+function pinFor(sess) {
+  if (!sess || !hasMaps()) return null;
+  return mapPins().get(`${sess.building}|${sess.room}`) || null;
+}
+
+// 두 핀 사이 직선 거리(m). 계산 근거가 없으면 null.
+// 같은 건물의 층 도면들은 같은 기준으로 잘려 있다고 보고 좌표를 그대로 비교한다.
+function planarMeters(A, B) {
+  if (!A || !B) return null;
+  if (A.map.building !== B.map.building) return null;
+  const ma = metersPerPx(A.map), mb = metersPerPx(B.map);
+  if (!ma || !mb) return null;
+  return Math.hypot(A.pin.x * ma - B.pin.x * mb, A.pin.y * ma - B.pin.y * mb);
+}
+
+// 지도 기반 도보 시간(분). 계산할 수 없으면 null을 돌려주고 walkMinutes가 계층 규칙으로 넘어간다.
+function mapWalkMinutes(a, b) {
+  const A = pinFor(a), B = pinFor(b);
+  if (!A || !B) return null;
+  const d = planarMeters(A, B);
+  if (d === null) return null;
+  const mdl = walkModel();
+  const floors = Math.abs((A.map.floor ?? 0) - (B.map.floor ?? 0));
+  const min = d * mdl.detour / mdl.speed_m_per_min + floors * mdl.floor_min;
+  return Math.max(0, Math.ceil(min));
+}
+
+// 장소 텍스트를 지도 링크로 감싼다. 지도에 위치가 없는 방은 평문 그대로 둔다 (죽은 링크 방지).
+// 인자는 building·room을 가진 객체면 무엇이든 된다 (세션, 시간표 열 머리의 임시 객체).
+function placeKey(p) { return p ? `${p.building}|${p.room}` : ''; }
+function placeFromKey(key) {
+  const i = String(key).indexOf('|');
+  if (i < 0) return null;
+  const p = { building: key.slice(0, i), room: key.slice(i + 1) };
+  const hit = hasMaps() ? mapPins().get(key) : null;
+  if (hit && hit.map.floor != null) p.floor = hit.map.floor;
+  return p;
+}
+function mapLink(inner, from, to) {
+  if (!pinFor(from)) return inner;
+  if (to && !pinFor(to)) return inner;
+  const toAttr = to ? ` data-map-to="${escapeHtml(placeKey(to))}"` : '';
+  return `<a href="#" class="map-link" data-map-from="${escapeHtml(placeKey(from))}"${toAttr} title="${t('map_open')}">${inner}</a>`;
 }
 
 // ====== Per-conference storage ======
@@ -1217,6 +1377,7 @@ function paperByKey(key) {
   return _paperByKey.get(key);
 }
 function invalidateCaches() {
+  _mapPins         = null;
   _papersBySession = null;
   _sessionsById    = null;
   _paperByKey      = null;
@@ -1404,7 +1565,7 @@ function renderSessions() {
     if (collapsedByUser || (state.collapsePast && status === 'past')) {
       div.classList.add('collapsed');
     }
-    const bldgTag = `<span class="building-tag tag-${s.building}">${hi(s.building + ' ' + s.room)}</span>`;
+    const bldgTag = `<span class="building-tag tag-${s.building}">${mapLink(hi(s.building + ' ' + s.room), s, null)}</span>`;
     const chair = s.chair ? `Chair: ${hi(s.chair)}` : '';
     div.innerHTML = `
       <div class="session-header">
@@ -1670,9 +1831,13 @@ function renderItinerary() {
         const gap = timeToMin(picks[0].s.start) - timeToMin(prev.s.end);
         const w = walkMinutes(prev.s, picks[0].s);
         const tight = gap < w;
+        // 장소 부분만 지도 링크로. 지도가 없는 학회에서는 mapLink가 평문을 그대로 돌려준다.
+        const route = mapLink(
+          `${escapeHtml(prev.s.building)} ${escapeHtml(prev.s.room)} → ${escapeHtml(picks[0].s.building)} ${escapeHtml(picks[0].s.room)}`,
+          prev.s, picks[0].s);
         html += EN
-          ? `<div class="walk ${tight?'tight':''}">↓ Move ${prev.s.building} ${prev.s.room} → ${picks[0].s.building} ${picks[0].s.room} · ~${w} min walk · ${gap} min buffer${tight?'  ⚠️ too tight':''}</div>`
-          : `<div class="walk ${tight?'tight':''}">↓ 이동 ${prev.s.building} ${prev.s.room} → ${picks[0].s.building} ${picks[0].s.room} · 도보 ~${w}분 · 여유 ${gap}분${tight?'  ⚠️ 시간 부족':''}</div>`;
+          ? `<div class="walk ${tight?'tight':''}">↓ Move ${route} · ~${w} min walk · ${gap} min buffer${tight?'  ⚠️ too tight':''}</div>`
+          : `<div class="walk ${tight?'tight':''}">↓ 이동 ${route} · 도보 ~${w}분 · 여유 ${gap}분${tight?'  ⚠️ 시간 부족':''}</div>`;
       }
 
       const byRoom = new Map();
@@ -1700,11 +1865,11 @@ function renderItinerary() {
         const collapsed = state.collapsedSessions.has(sid);
         html += `<div class="room-col tag-${bldgCls} ${collapsed?'collapsed':''}" data-session-id="${escapeHtml(sid)}">
           <div class="room-head">
-            <span class="room-loc">
+            <span class="room-loc">${mapLink(`
               <span class="room-icon">📍</span>
               <span class="room-bldg">${escapeHtml(bldg)}</span>
               <span class="room-no">${escapeHtml(rno)}</span>
-              ${floor ? `<span class="room-floor">${escapeHtml(String(floor))}F</span>` : ''}
+              ${floor ? `<span class="room-floor">${escapeHtml(String(floor))}F</span>` : ''}`, roomPicks[0].s, null)}
             </span>
             <span class="room-meta">
               <span class="room-count">${roomPicks.length}${t('cnt_suffix')}</span>
@@ -1732,7 +1897,10 @@ function renderItinerary() {
             const note = EN
               ? (tight ? `⚠️ too tight (${w} min walk, ${gap} min buffer)` : `~${w} min walk · ${gap} min buffer`)
               : (tight ? `⚠️ 시간 부족 (도보 ${w}분, 여유 ${gap}분)` : `도보 ~${w}분 · 여유 ${gap}분`);
-            hops.push(`<div class="hop ${cls}">↻ ${it.pt.start} · ${escapeHtml(prevPick.s.building)} ${escapeHtml(prevPick.s.room)} → ${escapeHtml(it.s.building)} ${escapeHtml(it.s.room)} · ${note}</div>`);
+            const route = mapLink(
+              `${escapeHtml(prevPick.s.building)} ${escapeHtml(prevPick.s.room)} → ${escapeHtml(it.s.building)} ${escapeHtml(it.s.room)}`,
+              prevPick.s, it.s);
+            hops.push(`<div class="hop ${cls}">↻ ${it.pt.start} · ${route} · ${note}</div>`);
           }
           prevPick = it;
         }
@@ -1906,7 +2074,8 @@ function renderTimetable(byDay) {
     html += `<div class="tt-corner" style="grid-column:1; grid-row:1;"></div>`;
     roomKeys.forEach((rk, i) => {
       const [b, ro] = rk.split('|');
-      html += `<div class="tt-room-head tag-${b}" style="grid-column:${i+2}; grid-row:1;">${escapeHtml(b)} ${escapeHtml(ro)}</div>`;
+      const place = { building: b, room: ro };
+      html += `<div class="tt-room-head tag-${b}" style="grid-column:${i+2}; grid-row:1;">${mapLink(escapeHtml(b) + ' ' + escapeHtml(ro), place, null)}</div>`;
     });
 
     // Time labels
@@ -2493,6 +2662,145 @@ document.getElementById('btn-expand-all-browse').onclick   = expandAllVisible;
   });
 })();
 
+// ====== 세션장 지도 모달 ======
+// 지도 데이터가 없는 학회에서는 링크 자체가 만들어지지 않으므로 이 코드는 호출되지 않는다.
+(function setupMapModal() {
+  const modal  = document.getElementById('map-modal');
+  const stage  = document.getElementById('map-stage');
+  const canvas = document.getElementById('map-canvas');
+  const foot   = document.getElementById('map-foot');
+  const titleEl = document.getElementById('map-modal-title');
+  const closeBtn = document.getElementById('map-close');
+  if (!modal || !stage || !canvas) return;
+
+  let scale = 1, tx = 0, ty = 0;
+  const pointers = new Map();     // 드래그와 두 손가락 확대를 같은 이벤트로 처리
+  let pinchBase = null;
+
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  function apply() { canvas.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`; }
+  function reset() { scale = 1; tx = 0; ty = 0; apply(); }
+
+  // 확대 기준점을 커서 위치로 잡아야 보고 있던 곳이 화면 밖으로 밀려나지 않는다.
+  function zoomAt(factor, cx, cy) {
+    const next = clamp(scale * factor, 1, 8);
+    const r = stage.getBoundingClientRect();
+    const px = cx - r.left, py = cy - r.top;
+    tx = px - (px - tx) * (next / scale);
+    ty = py - (py - ty) * (next / scale);
+    scale = next;
+    if (scale === 1) { tx = 0; ty = 0; }
+    apply();
+  }
+
+  function frameHtml(m, marks) {
+    const label = m.label || [m.building, m.floor ? m.floor + 'F' : ''].filter(Boolean).join(' ');
+    const pins = marks.map(mk => `
+        <div class="map-pin ${mk.kind}" style="left:${(mk.pin.x / m.width_px * 100).toFixed(3)}%;top:${(mk.pin.y / m.height_px * 100).toFixed(3)}%">
+          <span class="map-dot"></span><span class="map-label">${escapeHtml(mk.pin.room)}</span>
+        </div>`).join('');
+    const line = marks.length === 2
+      ? `<svg class="map-line" viewBox="0 0 ${m.width_px} ${m.height_px}" preserveAspectRatio="none">
+           <line x1="${marks[0].pin.x}" y1="${marks[0].pin.y}" x2="${marks[1].pin.x}" y2="${marks[1].pin.y}"></line>
+         </svg>` : '';
+    return `<div class="map-frame">
+      <div class="map-flabel">${escapeHtml(label)}</div>
+      <div class="map-img-wrap">
+        <img src="${escapeHtml(m.image || '')}" alt="${escapeHtml(label)}">
+        ${line}${pins}
+      </div>
+    </div>`;
+  }
+
+  function open(from, to) {
+    const A = pinFor(from), B = to ? pinFor(to) : null;
+    if (!A) return;
+    const place = s => `${s.building} ${s.room}`;
+    titleEl.textContent = `${t('map_title')} · ${to ? `${place(from)} → ${place(to)}` : place(from)}`;
+
+    canvas.innerHTML = (!B || A.map === B.map)
+      ? frameHtml(A.map, B ? [{ pin: A.pin, kind: 'from' }, { pin: B.pin, kind: 'to' }]
+                           : [{ pin: A.pin, kind: 'to' }])
+      : frameHtml(A.map, [{ pin: A.pin, kind: 'from' }]) + frameHtml(B.map, [{ pin: B.pin, kind: 'to' }]);
+
+    // 이미지가 없으면 조용히 깨진 아이콘만 남는 대신 이유를 적어 준다.
+    canvas.querySelectorAll('img').forEach(img => {
+      img.onerror = () => {
+        const wrap = img.closest('.map-img-wrap');
+        if (wrap) wrap.innerHTML = `<div class="map-err">${t('map_missing')}${escapeHtml(img.getAttribute('src') || '')}</div>`;
+      };
+    });
+
+    let info = '';
+    if (B) {
+      const d = planarMeters(A, B);
+      if (d === null) info = t('map_no_scale');
+      else {
+        info = t('map_est').replace('{d}', String(Math.round(d))).replace('{m}', String(walkMinutes(from, to)));
+        if ((A.map.floor ?? 0) !== (B.map.floor ?? 0)) info += ' ' + t('map_diff_floor');
+      }
+    } else if (!metersPerPx(A.map)) {
+      info = t('map_no_scale');
+    }
+    foot.innerHTML = `<span>${escapeHtml(info)}</span><span class="map-hint">${t('map_zoom_hint')}</span>`;
+
+    reset();
+    modal.style.display = 'flex';
+  }
+
+  // 장소 텍스트 클릭 → 지도. 링크는 재렌더로 계속 새로 만들어지므로 위임으로 받는다.
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest && e.target.closest('.map-link');
+    if (!a) return;
+    e.preventDefault();
+    const from = placeFromKey(a.dataset.mapFrom);
+    const to   = a.dataset.mapTo ? placeFromKey(a.dataset.mapTo) : null;
+    if (from) open(from, to);
+  });
+
+  const hide = () => { modal.style.display = 'none'; };
+  closeBtn.onclick = hide;
+  modal.onclick = (e) => { if (e.target.id === 'map-modal') hide(); };
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.style.display === 'flex') hide();
+  });
+
+  stage.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX, e.clientY);
+  }, { passive: false });
+  stage.addEventListener('dblclick', reset);
+
+  stage.addEventListener('pointerdown', (e) => {
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    stage.setPointerCapture(e.pointerId);
+    stage.classList.add('dragging');
+  });
+  stage.addEventListener('pointermove', (e) => {
+    if (!pointers.has(e.pointerId)) return;
+    const prev = pointers.get(e.pointerId);
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const pts = [...pointers.values()];
+    if (pts.length >= 2) {
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      const mid  = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+      if (pinchBase) zoomAt(dist / pinchBase, mid.x, mid.y);
+      pinchBase = dist;
+      return;
+    }
+    tx += e.clientX - prev.x;
+    ty += e.clientY - prev.y;
+    apply();
+  });
+  const release = (e) => {
+    pointers.delete(e.pointerId);
+    if (pointers.size < 2) pinchBase = null;
+    if (pointers.size === 0) stage.classList.remove('dragging');
+  };
+  stage.addEventListener('pointerup', release);
+  stage.addEventListener('pointercancel', release);
+})();
+
 // ====== 도움말 모달 + 첫 방문 펄스 힌트 ======
 (function setupHelp() {
   const btn   = document.getElementById('btn-help');
@@ -2588,6 +2896,9 @@ function applyStaticLang() {
   set('#btn-expand-all-browse',   el => { el.textContent = t('unfold_all'); el.title = 'Unfold all visible sessions'; });
   set('#to-top', el => { el.title = 'Back to top'; el.setAttribute('aria-label', 'Back to top'); });
 
+  // 지도 모달 제목은 열릴 때 t()로 다시 쓰이지만, 열기 전 표시를 위해 맞춰 둔다
+  set('#map-modal-title', el => el.textContent = '🗺️ Venue map');
+
   // Help modal (영어판 전체 치환)
   set('#help-modal .modal-head strong', el => el.textContent = '📘 How to use BuzzPlan');
   set('#help-modal .modal-body', el => el.innerHTML = `
@@ -2626,6 +2937,7 @@ function applyStaticLang() {
       <li>On mobile, <strong>track/room filters</strong> start folded (tap to open).</li>
       <li>A <strong>↑ top</strong> button appears when you scroll down.</li>
       <li>Click the <strong>conference name</strong> to rename; use the dropdown to switch conferences.</li>
+      <li>Where the conference publishes venue maps, clicking a <strong>room name</strong> opens the map. Clicking "A → B" in a walk hint shows both points and the estimated walking time.</li>
     </ul>`);
 }
 

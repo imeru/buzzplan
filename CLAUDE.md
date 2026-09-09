@@ -56,7 +56,11 @@ parser_utils.py     파서 공통: v2 정규화(finalize_v2)·검증(validate_v2
 parser_llm.py       LLM 범용 추출기. 코드 완성·미가동 (API 키 필요, 사용자가 당분간 보류 결정)
 migrate_v2.py       v1→v2 일괄 변환 (일회성, 실행 완료. 참고용으로만 유지)
 build.py            PDF→JSON→검증→conferences.json 등록 자동화. --dry-run 지원
+map-editor.html     회장 지도 저작 도구 (내부용, 앱에서 링크하지 않음). 지도 이미지를 끌어다 놓고
+                    두 점 실거리로 축척을 잡고 방마다 핀을 찍어 venue.maps JSON을 뽑는다.
+                    로컬 서버로 열 것 (data/*.json을 fetch한다)
 assets/             로고. 헤더는 buzzplan-bee.png(+@2x), buzzplan-logo.png(+@2x)도 참조됨
+assets/maps/        회장 도면 이미지. venue.maps[].image가 여기를 가리킨다 (커밋 대상)
 README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기와 중복 보유하므로 함께 갱신할 것
 ```
 
@@ -71,7 +75,14 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
       "same_room": 0, "same_floor": 2, "same_building": 4, "cross_building": 8,
       "pairs": [{ "between": ["SGM", "GFS"], "min": 7 }],
       "building_min": { "VHE": 10 }
-    }
+    },
+    "walk_model": { "speed_m_per_min": 66, "detour": 1.3, "floor_min": 1.5 },
+    "maps": [{
+      "building": "CTU", "floor": 1, "label": "CTU 1층",
+      "image": "assets/maps/ctu-1f.png",
+      "width_px": 1600, "height_px": 1100, "width_meters": 82,
+      "pins": [{ "room": "B 168", "x": 430, "y": 720 }]
+    }]
   },
   "sessions": [{
     "id": "1-1", "block": 1, "day": 2, "date": "2026-05-19",
@@ -90,6 +101,14 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
 
 - `venue.walk`: 단위는 분. 없으면 기본값(0/2/4/8) 사용. `building_min`은 "이 건물이 끼면 N분".
   현재 iaqvec-2026의 값(7분/10분 등)은 실측이 아니라 **추정치**다. 정밀도를 믿지 말 것
+- `venue.maps`: 선택 사항. 없으면 지도 기능 전체가 꺼지고 동작이 이전과 같다.
+  좌표는 **원본 이미지 픽셀** 기준이고 `width_px`/`height_px`는 그 이미지의 실제 크기여야 한다
+  (이미지를 리사이즈하면 핀이 전부 어긋난다). `pins[].room`은 세션의 `room` 값과 정확히 같아야
+  매칭된다. 작성은 `map-editor.html`로 한다
+- `venue.maps[].width_meters`: 도면 가로가 실제 몇 미터인가. **이 키가 없으면 표시 전용**이고
+  거리 계산을 하지 않는다. 비례가 맞지 않는 안내형 일러스트 지도에는 일부러 넣지 말 것
+- `venue.walk_model`: 거리를 분으로 바꾸는 상수. 기본 66 m/min(혼잡한 학회장 기준 1.1 m/s),
+  우회 계수 1.3, 층당 1.5분. 지도가 있을 때만 쓰인다
 - `session.day`: 정렬·필터용 숫자일 뿐 의미가 학회마다 다르다
   (IAQVEC: 행사 N일차, SAREK: 날짜의 일). 같은 학회 안에서만 일관되면 된다
 - `session.type`: `oral`(기본)·`poster`·`keynote`·`social`·`break`.
@@ -165,6 +184,12 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
   별점과 축이 다르다 (별점은 듣고 난 뒤 평가, 꼭 듣기는 듣기 전 우선순위).
   켜면 자동으로 선택에 담기고, 선택을 해제하면 함께 꺼진다. 토글 핸들러는 전체 재렌더 대신
   해당 행이나 카드만 갱신한다 (메모 textarea 포커스 보존)
+- **회장 지도**: `mapsList`/`hasMaps`/`mapPins`/`pinFor`(방 → 핀 조회, 캐시 `_mapPins`)
+  → `metersPerPx`/`planarMeters`(같은 건물 안에서만 픽셀 거리를 미터로) → `mapWalkMinutes`.
+  `walkMinutes`의 우선순위는 (1) 다른 건물 사이의 명시된 `pairs` → (2) 지도 기반 계산 →
+  (3) 기존 계층 규칙(same_room/same_floor/...)이다. 지도가 없으면 (3)만 남아 이전과 동일하다.
+  `mapLink(inner, from, to)`는 `{building, room}`을 가진 객체를 받아 장소 텍스트를 지도 링크로
+  감싸고, 핀이 없는 방은 평문을 그대로 돌려준다 (죽은 링크 방지). 모달은 `setupMapModal()`
 - 조회 캐시 `_papersBySession` 등은 학회 전환 시 `invalidateCaches()`
 
 ## 9. 검증 방법 (테스트 프레임워크 없음, 아래가 관행)
@@ -220,6 +245,12 @@ curl -s "https://imeru.github.io/buzzplan/?v=$RANDOM" | grep -c "<찾을 문자�
   `--tour-end` 기본값 12:00을 넣었다. **추정치이므로 신뢰하지 말 것.** 같은 방
   `Off-site`를 쓰므로 build.py의 시간 겹침 경고 3건은 정상이다.
   세션 S17의 마지막 발표(11:35-11:50)가 세션 종료(11:45)를 5분 넘기는데 원문 그대로다
+- 회장 지도의 거리는 **직선거리에 우회 계수를 곱한 추정치**다. 실제 복도 경로가 아니므로
+  ㄷ자 동선이나 막힌 구역이 있으면 실제보다 짧게 나온다. 실측값이 있으면 `venue.walk.pairs`에
+  적어 두는 편이 낫다 (pairs가 지도 계산을 이긴다)
+- 같은 건물의 층 도면들은 **같은 기준으로 잘려 있다고 가정**하고 좌표를 그대로 비교한다.
+  층마다 다르게 크롭되었거나 축척이 다르면 층 사이 거리가 틀린다. 도면을 넣기 전에
+  같은 위치의 기둥이나 계단이 두 층에서 같은 좌표에 오는지 확인할 것
 - 부팅 오류 페이지(conferences.json 로드 실패 등)는 한국어 고정 (i18n 미적용).
   동적으로 DOM을 재생성하는 코드는 문자열을 하드코딩하지 말고 t()를 쓸 것
   (과거 사례: 학회명 편집 후 툴팁이 한국어로 되돌아가는 회귀)
