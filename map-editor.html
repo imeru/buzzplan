@@ -172,12 +172,18 @@
   <span class="sep"></span>
   <button id="addBtn">지도 이미지 추가</button>
   <input type="file" id="fileIn" accept="image/*" multiple hidden>
+  <span class="sep"></span>
+  <button id="dirBtn">저장소 폴더 연결</button>
+  <button id="dirSaveBtn" disabled>미저장 이미지 저장</button>
+  <span id="dirInfo" class="scale-info"></span>
+  <span class="sep"></span>
   <button id="resetBtn" class="danger">작업 초기화</button>
   <span id="status"></span>
 </div>
 
 <div class="notice">
-  브라우저는 파일을 저장하지 못합니다. 여기서 불러온 이미지 파일을 <code>assets/maps/</code> 폴더에 직접 복사해 두어야 배포본에서 지도가 보입니다.
+  Chrome이나 Edge에서 저장소 폴더(<code>buzzplan</code>)를 연결해 두면 지도 이미지와 venue JSON이 자동으로 저장됩니다.
+  폴더를 연결하지 않았거나 다른 브라우저라면, 여기서 불러온 이미지 파일을 <code>assets/maps/</code> 폴더에 직접 복사해야 배포본에서 지도가 보입니다.
   아래 <code>image</code> 경로와 실제 파일 이름이 같아야 합니다.
 </div>
 
@@ -229,6 +235,7 @@
           <span class="scale-info" id="zoomInfo"></span>
           <span class="sep"></span>
           <span class="scale-info" id="scaleInfo"></span>
+          <span class="scale-info" id="saveState" style="font-weight:600"></span>
         </div>
 
         <div class="calib-form" id="calibForm">
@@ -263,6 +270,7 @@
       <textarea id="jsonOut" readonly spellcheck="false"></textarea>
       <div class="out-actions">
         <button id="copyBtn" class="primary">복사</button>
+        <button id="writeBtn" disabled>data/&lt;id&gt;.json에 쓰기</button>
         <label class="chk"><input type="checkbox" id="inclWalk"> walk_model 기본값 포함</label>
       </div>
       <div class="warnbox" id="warnBox"></div>
@@ -286,6 +294,13 @@
   var DEFAULT_WALK_MODEL = { speed_m_per_min: 66, detour: 1.3, floor_min: 1.5 };
   var SEP = " :: ";
 
+  var FS_SUPPORTED = (typeof window.showDirectoryPicker === "function");
+  var IDB_NAME = "buzzplan-mapeditor";
+  var IDB_STORE = "handles";
+  var IDB_KEY = "rootDir";
+  var IDB_KEY_OLD = "mapsDir";
+  var MAPS_PREFIX = "assets/maps/";
+
   var state = {
     confs: [], confId: "", data: null,
     rooms: [], buildings: [],
@@ -294,7 +309,11 @@
     mode: "pin",              // "pin" 또는 "calib"
     calibPts: [],
     zoom: 1, scale: 1,
-    drag: null, suppressClick: false
+    drag: null, suppressClick: false,
+    dir: null,                // 연결된 디렉토리 핸들
+    dirName: "",
+    dirPending: null,         // 기억은 됐지만 권한 재허용이 필요한 핸들
+    dirRemembered: false
   };
 
   var els = {};
@@ -318,23 +337,229 @@
     var t = null;
     return function () { clearTimeout(t); t = setTimeout(fn, ms); };
   }
+  function errText(e) { return (e && e.message) ? e.message : String(e); }
+
+  /* ---------- IndexedDB (디렉토리 핸들 보관) ---------- */
+
+  function idbOpen() {
+    return new Promise(function (resolve, reject) {
+      if (!window.indexedDB) { reject(new Error("indexedDB를 쓸 수 없습니다")); return; }
+      var req = indexedDB.open(IDB_NAME, 1);
+      req.onupgradeneeded = function () {
+        var db = req.result;
+        if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+      };
+      req.onsuccess = function () { resolve(req.result); };
+      req.onerror = function () { reject(req.error || new Error("indexedDB 열기 실패")); };
+    });
+  }
+  function idbRun(mode, fn) {
+    return idbOpen().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var req = fn(db.transaction(IDB_STORE, mode).objectStore(IDB_STORE));
+        req.onsuccess = function () { resolve(req.result); db.close(); };
+        req.onerror = function () { reject(req.error); db.close(); };
+      });
+    });
+  }
+  function idbGet(key) { return idbRun("readonly", function (st) { return st.get(key); }); }
+  function idbPut(key, val) { return idbRun("readwrite", function (st) { return st.put(val, key); }); }
+  function idbDel(key) { return idbRun("readwrite", function (st) { return st["delete"](key); }); }
+
+  function idbSafe(p) {
+    try { return p().catch(function () { return null; }); }
+    catch (e) { return Promise.resolve(null); }
+  }
+
+  /* ---------- 폴더 연결 ---------- */
+
+  // 고른 폴더가 정말 buzzplan 저장소 루트인지 확인한다.
+  async function looksLikeRepo(handle) {
+    if (!handle) return false;
+    try {
+      await handle.getFileHandle("conferences.json");
+      await handle.getDirectoryHandle("data");
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function setDir(handle) {
+    state.dir = handle;
+    state.dirName = handle.name || "폴더";
+    state.dirPending = null;
+    state.dirRemembered = false;
+    idbSafe(function () { return idbPut(IDB_KEY, handle); });
+    renderDirUI();
+  }
+
+  function clearDir() {
+    state.dir = null;
+    state.dirName = "";
+    state.dirPending = null;
+    state.dirRemembered = false;
+    idbSafe(function () { return idbDel(IDB_KEY); });
+    renderDirUI();
+  }
+
+  async function connectDir() {
+    var pending = state.dirPending;
+    try {
+      if (pending && typeof pending.requestPermission === "function") {
+        // 사용자 클릭 안에서 곧바로 호출해야 한다
+        var perm = await pending.requestPermission({ mode: "readwrite" });
+        if (perm === "granted" && await looksLikeRepo(pending)) {
+          setDir(pending);
+          setStatus("폴더를 다시 연결했습니다: " + state.dirName);
+          return;
+        }
+        state.dirPending = null;
+        state.dirRemembered = false;
+        idbSafe(function () { return idbDel(IDB_KEY); });
+      }
+      var picked = await window.showDirectoryPicker({
+        id: "buzzplan-root", mode: "readwrite", startIn: "documents"
+      });
+      if (!picked) return;
+      if (!(await looksLikeRepo(picked))) {
+        renderDirUI();
+        setStatus("저장소 루트가 아닙니다. conferences.json이 있는 폴더(buzzplan)를 고르세요.", true);
+        return;
+      }
+      setDir(picked);
+      setStatus("폴더를 연결했습니다: " + state.dirName);
+    } catch (e) {
+      renderDirUI();
+      if (e && e.name === "AbortError") { setStatus("폴더 연결을 취소했습니다."); return; }
+      if (e && e.name === "SecurityError") {
+        setStatus("권한이 남아 있지 않습니다. 버튼을 한 번 더 눌러 폴더를 고르세요.", true);
+        return;
+      }
+      setStatus("폴더를 연결하지 못했습니다. (" + errText(e) + ")", true);
+    }
+  }
+
+  function restoreDir() {
+    if (!FS_SUPPORTED) { renderDirUI(); return; }
+    // 예전 키에 저장된 핸들은 assets/maps를 가리켜 더 이상 쓸 수 없다.
+    idbSafe(function () { return idbDel(IDB_KEY_OLD); }).then(function () {
+      return idbSafe(function () { return idbGet(IDB_KEY); });
+    }).then(function (h) {
+      if (!h || typeof h.queryPermission !== "function") { renderDirUI(); return null; }
+      return h.queryPermission({ mode: "readwrite" }).then(function (perm) {
+        if (perm !== "granted") {
+          state.dirPending = h;
+          state.dirRemembered = true;
+          renderDirUI();
+          return null;
+        }
+        return looksLikeRepo(h).then(function (ok) {
+          if (ok) {
+            state.dir = h;
+            state.dirName = h.name || "폴더";
+          } else {
+            // 저장소 루트가 아니면 조용히 버린다
+            idbSafe(function () { return idbDel(IDB_KEY); });
+          }
+          renderDirUI();
+        });
+      });
+    }).catch(function () { renderDirUI(); });
+  }
+
+  /* ---------- 폴더에 쓰기 ---------- */
+
+  function fileNameOf(m) {
+    var p = String((m && m.image) || "").trim();
+    if (p.indexOf(MAPS_PREFIX) === 0) p = p.slice(MAPS_PREFIX.length);
+    var i = p.lastIndexOf("/");
+    return i >= 0 ? p.slice(i + 1) : p;
+  }
+
+  function unsavedMaps() {
+    return state.maps.filter(function (m) { return m._fileBlob && !m._saved; });
+  }
+
+  async function mapsDirHandle() {
+    var assets = await state.dir.getDirectoryHandle("assets", { create: true });
+    return await assets.getDirectoryHandle("maps", { create: true });
+  }
+
+  async function writeFileIn(dirHandle, name, blob) {
+    var fh = await dirHandle.getFileHandle(name, { create: true });
+    var w = await fh.createWritable();
+    await w.write(blob);
+    await w.close();
+  }
+
+  async function writeToDir(file, name) {
+    await writeFileIn(await mapsDirHandle(), name, file);
+  }
+
+  async function dirHasFile(name) {
+    try {
+      var maps = await mapsDirHandle();
+      await maps.getFileHandle(name);
+      return true;
+    } catch (e) {
+      if (e && e.name === "NotFoundError") return false;
+      throw e;
+    }
+  }
+
+  // 저장했으면 true, 사용자가 덮어쓰기를 취소했으면 false. 실패는 throw.
+  async function saveMapFile(m) {
+    if (!state.dir || !m || !m._fileBlob) return false;
+    var name = fileNameOf(m);
+    if (!name) throw new Error("image 경로에서 파일 이름을 찾지 못했습니다");
+    if (await dirHasFile(name)) {
+      if (!confirm(name + " 파일이 이미 폴더에 있습니다. 덮어쓸까요?")) return false;
+    }
+    await writeToDir(m._fileBlob, name);
+    m._saved = true;
+    return true;
+  }
+
+  async function saveAllUnsaved() {
+    if (!state.dir) return;
+    var list = unsavedMaps();
+    if (!list.length) { setStatus("저장할 이미지가 없습니다."); return; }
+    var ok = 0, skipped = 0, failed = 0;
+    for (var i = 0; i < list.length; i++) {
+      try {
+        if (await saveMapFile(list[i])) ok++;
+        else skipped++;
+      } catch (e) {
+        failed++;
+      }
+    }
+    renderDirUI();
+    var msg = ok + "개 저장했습니다.";
+    if (skipped) msg += " 건너뜀 " + skipped + "개.";
+    if (failed) msg += " 실패 " + failed + "개.";
+    setStatus(msg, failed > 0);
+  }
 
   /* ---------- 부팅 ---------- */
 
   function cacheEls() {
     var ids = ["confSel", "reloadBtn", "addBtn", "fileIn", "resetBtn", "status",
+      "dirBtn", "dirSaveBtn", "dirInfo", "saveState",
       "roomCount", "roomSearch", "onlyThisMap", "roomList",
       "mapCount", "mapTabs", "propsWrap", "pId", "pBuilding", "pFloor", "pLabel", "pImage",
       "calibBtn", "calibClear", "zoomOut", "zoomFit", "zoomIn", "zoomInfo", "scaleInfo",
       "calibForm", "calibMeters", "calibOk", "calibCancel", "hint",
       "canvasWrap", "stage", "mapImg", "calibSvg", "pinLayer", "dropHint",
-      "jsonOut", "copyBtn", "inclWalk", "warnBox", "jsonIn", "loadBtn"];
+      "jsonOut", "copyBtn", "writeBtn", "inclWalk", "warnBox", "jsonIn", "loadBtn"];
     ids.forEach(function (id) { els[id] = $(id); });
   }
 
   function boot() {
     cacheEls();
     bindEvents();
+    renderDirUI();
+    restoreDir();
     fetch("conferences.json", { cache: "no-store" })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (cj) {
@@ -416,7 +641,8 @@
     return {
       id: "", building: "", floor: "", label: "", image: "",
       width_px: 0, height_px: 0, width_meters: null, pins: [],
-      _url: "", _calib: null, _sizeWarn: ""
+      _url: "", _calib: null, _sizeWarn: "",
+      _saved: false, _fileBlob: null
     };
   }
 
@@ -457,13 +683,26 @@
         m.label = base;
         m.building = guessBuilding(base);
         m.floor = guessFloor(base);
+        m._fileBlob = f;
+        m._saved = false;
         state.maps.push(m);
         state.active = state.maps.length - 1;
         state.zoom = 1;
         state.mode = "pin";
         renderAll();
         save();
-        setStatus("지도를 추가했습니다. " + f.name + " 파일을 assets/maps/ 에 복사해 두세요.");
+        var manual = "지도를 추가했습니다. " + f.name + " 파일을 assets/maps/ 에 복사해 두세요.";
+        if (!state.dir) { setStatus(manual); return; }
+        setStatus("지도를 추가했습니다. 저장하는 중");
+        saveMapFile(m).then(function (done) {
+          renderDirUI();
+          setStatus(done
+            ? "지도를 추가하고 assets/maps/에 저장했습니다: " + fileNameOf(m)
+            : manual);
+        }, function (e) {
+          renderDirUI();
+          setStatus("지도를 추가했지만 저장하지 못했습니다. (" + errText(e) + ")", true);
+        });
       };
       img.onerror = function () { setStatus("이미지를 읽지 못했습니다: " + f.name, true); };
       img.src = url;
@@ -549,6 +788,52 @@
     renderProps();
     renderRooms();
     renderOutput();
+    renderDirUI();
+  }
+
+  function renderWriteBtn() {
+    if (!els.writeBtn) return;
+    els.writeBtn.textContent = "data/" + (state.confId || "<id>") + ".json에 쓰기";
+    els.writeBtn.disabled = !FS_SUPPORTED || !state.dir || !state.confId;
+  }
+
+  function renderDirUI() {
+    if (!els.dirBtn) return;
+    if (!FS_SUPPORTED) {
+      els.dirBtn.disabled = true;
+      els.dirBtn.textContent = "폴더 연결 (미지원)";
+      els.dirSaveBtn.disabled = true;
+      els.dirInfo.textContent = "이 브라우저는 폴더 저장을 지원하지 않습니다. Chrome이나 Edge에서 열면 자동 저장됩니다.";
+      renderWriteBtn();
+      renderSaveState();
+      return;
+    }
+    els.dirBtn.disabled = false;
+    if (state.dir) {
+      els.dirBtn.textContent = "폴더 연결 해제";
+      els.dirInfo.textContent = "연결됨: " + (state.dirName || "폴더") + " · 자동 저장 켜짐";
+    } else if (state.dirRemembered) {
+      els.dirBtn.textContent = "폴더 다시 연결";
+      els.dirInfo.textContent = "저장 폴더가 기억되어 있습니다. 눌러서 권한을 다시 허용하세요.";
+    } else {
+      els.dirBtn.textContent = "저장소 폴더 연결";
+      els.dirInfo.textContent = "buzzplan 폴더를 연결하면 이미지와 JSON을 자동 저장합니다.";
+    }
+    els.dirSaveBtn.disabled = !state.dir || !unsavedMaps().length;
+    renderWriteBtn();
+    renderSaveState();
+  }
+
+  function renderSaveState() {
+    if (!els.saveState) return;
+    var m = activeMap();
+    if (!state.dir || !m || !m._fileBlob) {
+      els.saveState.textContent = "";
+      els.saveState.style.color = "";
+      return;
+    }
+    els.saveState.textContent = m._saved ? "저장됨" : "미저장";
+    els.saveState.style.color = m._saved ? "#2e7d32" : "#c0392b";
   }
 
   function renderMapTabs() {
@@ -763,7 +1048,7 @@
     renderWarnings();
   }
 
-  function renderWarnings() {
+  function collectWarnings() {
     var w = [], ids = {};
     var roomSet = {}, roomAny = {};
     state.rooms.forEach(function (r) {
@@ -794,6 +1079,11 @@
       });
     });
 
+    return w;
+  }
+
+  function renderWarnings() {
+    var w = collectWarnings();
     var html = "";
     var m0 = activeMap();
     if (m0) {
@@ -810,6 +1100,118 @@
       html += '<div class="ok">형식 경고 없음</div>';
     }
     els.warnBox.innerHTML = html;
+  }
+
+  /* ---------- data/<id>.json 에 쓰기 ---------- */
+
+  // venue 조각을 다시 조립한다. 키 순서는 walk, walk_model, maps, 그 뒤에 원래 있던 나머지 키.
+  // maps만 교체하고 walk를 비롯한 다른 키는 그대로 옮긴다.
+  function buildVenue(oldVenue, mapsJSON, wantWalkModel) {
+    var src = (oldVenue && typeof oldVenue === "object" && !Array.isArray(oldVenue)) ? oldVenue : {};
+    var out = {};
+    if (Object.prototype.hasOwnProperty.call(src, "walk")) out.walk = src.walk;
+    if (Object.prototype.hasOwnProperty.call(src, "walk_model")) {
+      out.walk_model = src.walk_model;
+    } else if (wantWalkModel) {
+      out.walk_model = {
+        speed_m_per_min: DEFAULT_WALK_MODEL.speed_m_per_min,
+        detour: DEFAULT_WALK_MODEL.detour,
+        floor_min: DEFAULT_WALK_MODEL.floor_min
+      };
+    }
+    if (mapsJSON && mapsJSON.length) out.maps = mapsJSON;
+    Object.keys(src).forEach(function (k) {
+      if (k === "walk" || k === "walk_model" || k === "maps") return;
+      out[k] = src[k];
+    });
+    return out;
+  }
+
+  // venue를 최상위 객체에 끼운다. 원래 있던 자리는 유지하고, 없었으면 맨 뒤에 붙인다.
+  function placeVenue(d, venue) {
+    var out = {}, had = false;
+    Object.keys(d).forEach(function (k) {
+      if (k === "venue") { had = true; out.venue = venue; return; }
+      out[k] = d[k];
+    });
+    if (!had) out.venue = venue;
+    return out;
+  }
+
+  function countPins(mapsJSON) {
+    return mapsJSON.reduce(function (n, m) {
+      return n + ((m && m.pins) ? m.pins.length : 0);
+    }, 0);
+  }
+
+  async function writeVenue() {
+    if (!state.dir || !state.confId) return;
+    var name = state.confId + ".json";
+    try {
+      var warns = collectWarnings();
+      if (warns.length) {
+        if (!confirm("경고가 " + warns.length + "건 있습니다. 그래도 쓸까요?\n\n"
+          + warns.slice(0, 5).join("\n"))) return;
+      }
+
+      var dataDir = await state.dir.getDirectoryHandle("data");
+      var fh = await dataDir.getFileHandle(name);
+      var text = await (await fh.getFile()).text();
+
+      var d;
+      try { d = JSON.parse(text); }
+      catch (e) {
+        setStatus("data/" + name + " 를 JSON으로 읽지 못했습니다. (" + errText(e) + ")", true);
+        return;
+      }
+      if (!d || typeof d !== "object" || Array.isArray(d)) {
+        setStatus("data/" + name + " 의 최상위가 객체가 아닙니다.", true);
+        return;
+      }
+
+      var before = {
+        sessions: (d.sessions || []).length,
+        papers: (d.papers || []).length,
+        keys: Object.keys(d).join(",")
+      };
+      var oldMaps = (d.venue && Array.isArray(d.venue.maps)) ? d.venue.maps.length : 0;
+
+      var mapsJSON = state.maps.map(mapToJSON);
+      var pins = countPins(mapsJSON);
+      var hadVenue = Object.prototype.hasOwnProperty.call(d, "venue");
+      var venue = buildVenue(d.venue, mapsJSON, !!(els.inclWalk && els.inclWalk.checked));
+      var next = (!hadVenue && !Object.keys(venue).length) ? d : placeVenue(d, venue);
+      var out = JSON.stringify(next, null, 2);
+
+      var check = JSON.parse(out);
+      var lost = before.keys.split(",").filter(function (k) {
+        return k && !Object.prototype.hasOwnProperty.call(check, k);
+      });
+      if ((check.sessions || []).length !== before.sessions
+        || (check.papers || []).length !== before.papers
+        || lost.length) {
+        setStatus("불변량 검사에 실패해 쓰지 않았습니다. sessions와 papers, 최상위 키를 확인하세요.", true);
+        return;
+      }
+
+      if (!confirm("data/" + name + " 에 씁니다.\n\n"
+        + "지도 " + mapsJSON.length + "장, 핀 " + pins + "개  (기존 maps " + oldMaps + "장)\n"
+        + "sessions " + before.sessions + ", papers " + before.papers + " 는 그대로입니다.\n\n"
+        + "원본은 data/" + name + ".bak 으로 복사합니다.")) return;
+
+      try {
+        await writeFileIn(dataDir, name + ".bak", text);
+      } catch (e) {
+        setStatus("백업을 만들지 못해 원본을 그대로 두었습니다. (" + errText(e) + ")", true);
+        return;
+      }
+      await writeFileIn(dataDir, name, out);
+
+      setStatus("data/" + name + "에 썼습니다. 지도 " + mapsJSON.length + "장, 핀 " + pins
+        + "개. 되돌리려면 git checkout -- data/" + name);
+    } catch (e) {
+      setStatus("data/" + name + " 에 쓰지 못했습니다. (" + errText(e) + ")", true);
+    }
   }
 
   /* ---------- 좌표 변환과 핀 ---------- */
@@ -1043,6 +1445,19 @@
       els.fileIn.value = "";
     });
 
+    els.dirBtn.addEventListener("click", function () {
+      if (!FS_SUPPORTED) return;
+      if (state.dir) {
+        clearDir();
+        setStatus("폴더 연결을 해제했습니다. 폴더 안의 파일은 그대로 둡니다.");
+        return;
+      }
+      connectDir();
+    });
+    els.dirSaveBtn.addEventListener("click", function () {
+      saveAllUnsaved();
+    });
+
     els.resetBtn.addEventListener("click", function () {
       if (!state.maps.length) return;
       if (!confirm("이 학회의 지도 작업을 모두 지웁니다. 계속할까요?")) return;
@@ -1090,11 +1505,16 @@
         var m = activeMap();
         if (!m) return;
         m[key] = el.value;
-        if (key === "image") tryLoadImage(m);
+        if (key === "image") {
+          // 이름을 바꾸면 그 이름으로는 아직 저장된 적이 없다
+          if (m._fileBlob) m._saved = false;
+          tryLoadImage(m);
+        }
         save();
         renderMapTabs();
         renderOutput();
         renderRooms();
+        renderDirUI();
       });
     }
     bindProp(els.pId, "id");
@@ -1206,6 +1626,7 @@
 
     els.inclWalk.addEventListener("change", renderOutput);
     els.copyBtn.addEventListener("click", copyOutput);
+    els.writeBtn.addEventListener("click", function () { writeVenue(); });
     els.loadBtn.addEventListener("click", loadPasted);
 
     window.addEventListener("resize", debounce(function () {

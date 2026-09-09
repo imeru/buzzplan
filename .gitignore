@@ -2,3 +2,5 @@
 *.pyc
 __pycache__/
 *.pdf
+# map-editor.html이 data/<id>.json을 쓸 때 남기는 백업
+*.json.bak

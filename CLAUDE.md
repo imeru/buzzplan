@@ -58,7 +58,9 @@ migrate_v2.py       v1→v2 일괄 변환 (일회성, 실행 완료. 참고용�
 build.py            PDF→JSON→검증→conferences.json 등록 자동화. --dry-run 지원
 map-editor.html     회장 지도 저작 도구 (내부용, 앱에서 링크하지 않음). 지도 이미지를 끌어다 놓고
                     두 점 실거리로 축척을 잡고 방마다 핀을 찍어 venue.maps JSON을 뽑는다.
-                    로컬 서버로 열 것 (data/*.json을 fetch한다)
+                    로컬 서버로 열 것 (data/*.json을 fetch한다). Chrome이나 Edge에서
+                    저장소 루트를 연결하면(File System Access API) 이미지는 assets/maps/에,
+                    venue JSON은 data/<id>.json에 직접 쓴다. 자세한 계약은 13장 참조
 assets/             로고. 헤더는 buzzplan-bee.png(+@2x), buzzplan-logo.png(+@2x)도 참조됨
 assets/maps/        회장 도면 이미지. venue.maps[].image가 여기를 가리킨다 (커밋 대상)
 README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기와 중복 보유하므로 함께 갱신할 것
@@ -255,7 +257,27 @@ curl -s "https://imeru.github.io/buzzplan/?v=$RANDOM" | grep -c "<찾을 문자�
   동적으로 DOM을 재생성하는 코드는 문자열을 하드코딩하지 말고 t()를 쓸 것
   (과거 사례: 학회명 편집 후 툴팁이 한국어로 되돌아가는 회귀)
 
-## 13. 백로그 (우선순위 순. 착수 전 사용자에게 한 줄 확인)
+## 13. 지도 편집기의 파일 쓰기 계약
+
+`map-editor.html`은 File System Access API로 저장소에 직접 쓴다. Chrome과 Edge에서만
+동작하고, Safari와 Firefox에서는 기능만 꺼지고 나머지는 그대로 쓸 수 있다.
+
+- **연결 대상은 저장소 루트**다. `conferences.json`과 `data/`가 있는지 검사해서
+  엉뚱한 폴더를 연결하는 사고를 막는다 (`looksLikeRepo`). 핸들은 IndexedDB
+  (`buzzplan-mapeditor` / `handles` / `rootDir`)에 기억되지만, 재방문 시 권한이
+  `prompt`로 떨어지면 버튼을 한 번 더 눌러야 한다
+- **이미지**는 `assets/maps/`에 쓴다. 같은 이름이 있으면 덮어쓰기를 확인받는다
+- **venue JSON**은 `data/<id>.json`을 읽어 `venue.maps`만 갈아 끼우고 다시 쓴다.
+  `venue.walk`를 비롯한 나머지 키는 건드리지 않는다
+- **diff가 venue 블록에만 갇히는 이유**: 브라우저의 `JSON.stringify(d, null, 2)`가
+  build.py의 `json.dumps(ensure_ascii=False, indent=2)`와 출력이 같다. 현행 5개 파일
+  전부 왕복 후 바이트가 일치하는 것을 확인했다. **끝에 개행을 붙이면 안 된다**
+  (파일들의 마지막 문자는 `}`다). 이 성질이 깨지면 전 파일에 diff가 생긴다
+- **안전장치 3중**: 쓰기 전 `sessions`와 `papers` 개수와 최상위 키 대조,
+  원본을 `data/<id>.json.bak`으로 백업(`*.json.bak`은 .gitignore), 변경 내용을
+  확인창으로 표시. 결과가 이상하면 `git checkout -- data/<id>.json`으로 되돌린다
+
+## 14. 백로그 (우선순위 순. 착수 전 사용자에게 한 줄 확인)
 
 1. **sarek-2025-summer 포스터 추가** (Tier 2 방식): 지난 학회라 아카이브 완결성 목적.
    소스 PDF를 사용자에게 요청해야 함
