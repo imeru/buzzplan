@@ -4192,5 +4192,103 @@
       "title": "기체수소 저장기술의 글로벌 특허동향 분석"
     }
   ],
-  "schema_version": 2
+  "schema_version": 2,
+  "venue": {
+    "maps": [
+      {
+        "id": "sarek-2026-summer-1f",
+        "building": "회장",
+        "floor": 1,
+        "label": "알펜시아 컨벤션센터 1층",
+        "image": "assets/maps/sarek-2026-summer-1f.png",
+        "width_px": 1538,
+        "height_px": 704,
+        "width_meters": 102.5,
+        "pins": [
+          {
+            "room": "1",
+            "x": 820,
+            "y": 358
+          },
+          {
+            "room": "2",
+            "x": 642,
+            "y": 238
+          },
+          {
+            "room": "3",
+            "x": 632,
+            "y": 327
+          },
+          {
+            "room": "4",
+            "x": 424,
+            "y": 327
+          },
+          {
+            "room": "5",
+            "x": 427,
+            "y": 399
+          },
+          {
+            "room": "6",
+            "x": 426,
+            "y": 479
+          },
+          {
+            "room": "7",
+            "x": 299,
+            "y": 352
+          },
+          {
+            "room": "8",
+            "x": 307,
+            "y": 485
+          }
+        ]
+      },
+      {
+        "id": "sarek-2026-summer-2f",
+        "building": "회장",
+        "floor": 2,
+        "label": "알펜시아 컨벤션센터 2층",
+        "image": "assets/maps/sarek-2026-summer-2f.png",
+        "width_px": 1538,
+        "height_px": 889,
+        "width_meters": 102.5,
+        "pins": [
+          {
+            "room": "9",
+            "x": 952,
+            "y": 480
+          },
+          {
+            "room": "10",
+            "x": 734,
+            "y": 465
+          },
+          {
+            "room": "11",
+            "x": 538,
+            "y": 445
+          },
+          {
+            "room": "12",
+            "x": 375,
+            "y": 515
+          },
+          {
+            "room": "13",
+            "x": 371,
+            "y": 589
+          },
+          {
+            "room": "포스터",
+            "x": 993,
+            "y": 734
+          }
+        ]
+      }
+    ]
+  }
 }
