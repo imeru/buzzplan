@@ -185,7 +185,12 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
 - **꼭 듣기(⭐)**: `isMust`/`toggleMust`/`clearMustOnDeselect`. 상태는 notes 항목의 `must` 불리언이라
   별점과 축이 다르다 (별점은 듣고 난 뒤 평가, 꼭 듣기는 듣기 전 우선순위).
   켜면 자동으로 선택에 담기고, 선택을 해제하면 함께 꺼진다. 토글 핸들러는 전체 재렌더 대신
-  해당 행이나 카드만 갱신한다 (메모 textarea 포커스 보존)
+  해당 행이나 카드만 갱신한다 (메모 textarea 포커스 보존).
+  **강조 CSS의 축 분리 계약**: 시간 상태(current/upcoming/past)와 꼭 듣기는 서로 다른 CSS 속성을
+  써야 한다. 시간 상태는 시간표에서 `outline`, 내 일정 카드에서 ring(`box-shadow`)과 `opacity`를
+  쓰고, 꼭 듣기는 배경과 왼쪽 띠, 굵은 제목, 배지를 쓴다. 같은 속성을 쓰면 소스 순서가 뒤인 쪽이
+  앞의 표시를 지운다 (과거 사례: `.tt-cell.must`의 outline이 `.tt-cell.current`의 빨간 테두리를 먹었다).
+  `renderPick`에서 상태 클래스를 붙일 때도 `pickCls +=`를 쓴다. `=`로 덮으면 must가 날아간다
 - **회장 지도**: `mapsList`/`hasMaps`/`mapPins`/`pinFor`(방 → 핀 조회, 캐시 `_mapPins`)
   → `metersPerPx`/`planarMeters`(같은 건물 안에서만 픽셀 거리를 미터로) → `mapWalkMinutes`.
   `walkMinutes`의 우선순위는 (1) 다른 건물 사이의 명시된 `pairs` → (2) 지도 기반 계산 →

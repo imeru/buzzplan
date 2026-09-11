@@ -184,7 +184,10 @@
   /* Pick card status (내 일정 리스트) */
   .pick.past { opacity: 0.55; }
   .pick.current { background: #fff5f5; border-radius: 4px; box-shadow: 0 0 0 2px rgba(208,2,27,0.25); padding: 4px 6px; }
-  .pick .pick-badge { font-size: 9px; font-weight: 600; padding: 0 5px; border-radius: 8px; margin-left: 4px; }
+  .pick .pick-badge {
+    font-size: 9px; font-weight: 600; padding: 0 5px; border-radius: 8px; margin-left: 4px;
+    display: inline-block; white-space: nowrap;
+  }
   .pick .pick-badge.cur { background: #d0021b; color: #fff; }
   .pick .pick-badge.up  { background: #2d6b2d; color: #fff; }
   .pick .pick-badge.done{ background: #ddd; color: #777; }
@@ -416,11 +419,40 @@
   .must-btn.on     { color: inherit; }
   .must-btn:focus-visible { outline: 2px solid #e8a400; outline-offset: 1px; }
   .paper .must-btn { margin-left: auto; align-self: center; }
-  .paper.must      { background: #fffbef; }
-  .pick.must       { border-left: 3px solid #f0b429; background: #fffdf5; }
+  /* 둘러보기 목록. 긴 목록을 훑을 때 눈에 걸리려면 배경만으로는 부족하다.
+     왼쪽 금색 띠(inset이라 레이아웃이 밀리지 않는다) + 호박 배경 + 굵은 제목 셋을 겹친다.
+     음수 margin으로 배경만 좌우로 넓혀 다른 행과의 세로 정렬은 그대로 둔다. */
+  .paper.must {
+    background: #fff4cf; border-bottom-color: #ecd9a4;
+    box-shadow: inset 4px 0 0 #e09b00;
+    margin-left: -8px; margin-right: -6px;
+    padding-left: 8px; padding-right: 6px;   /* 세로 padding은 .paper 값을 그대로 둔다 (모바일 10px) */
+    border-radius: 3px;
+  }
+  .paper.must .paper-title   { font-weight: 600; }
+  .paper.must .paper-authors { color: #5a4a2a; }
+  .paper.must .must-btn      { font-size: 17px; }
+  /* 내 일정 목록. 꼭 듣기는 띠와 배경, 시간 상태(현재/종료)는 ring과 흐림을 쓴다.
+     속성을 나눠 뒀으므로 둘이 겹쳐도 서로를 지우지 않는다. */
+  .pick.must {
+    background: #fff4cf; border-left: 4px solid #e09b00; margin-left: -4px;
+    padding: 4px 8px; border-radius: 0 4px 4px 0;
+  }
+  .pick.must .ptitle   { font-weight: 600; }
+  .pick.must .pauthors { color: #5a4a2a; }
+  .pick.past.must      { opacity: 0.78; }   /* 끝난 뒤에도 별점을 매기러 다시 찾는다 */
   .pick .must-btn  { float: right; margin-left: 6px; }
-  .pick-badge.must { background: #fdf0cf; color: #8a6100; }
-  .tt-cell.must    { outline: 2px solid #f0b429; outline-offset: -2px; }
+  .pick.must .must-btn { font-size: 17px; }
+  .pick-badge.must { background: #e09b00; color: #fff; }
+  /* 시간표. background-image로 겹쳐 칸의 건물 배경색을 살린 채 호박빛만 덧입힌다.
+     outline은 현재/예정 표시가 쓰므로 여기서 쓰지 않는다 (예전엔 must가 현재 표시를 덮었다). */
+  .tt-cell.must {
+    background-image: linear-gradient(rgba(224,155,0,0.28), rgba(224,155,0,0.28));
+    box-shadow: inset 0 -2px 0 #e09b00;
+  }
+  .tt-cell.must .tt-pno  { font-weight: 700; }
+  .tt-cell.must .tt-must { font-size: 13px; vertical-align: -1px; }
+  .tt-cell.past.must     { opacity: 0.78; }
   .spon            { color: #999; cursor: help; }
 
   .rating { display: inline-flex; gap: 1px; margin-top: 4px; }
@@ -1803,9 +1835,10 @@ function renderItinerary() {
       // 현재 시각 기준 상태 (날짜 + 발표 시간으로 판정). 접지 않고 강조/흐림만.
       const st = pt ? sessionStatus({date: it.s.date, start: pt.start, end: pt.end}) : 'none';
       let pickCls = must ? ' must' : '', pickBadge = '', nowAttr = '';
-      if (st === 'current')  { pickCls = ' current'; pickBadge = `<span class="pick-badge cur">${t('status_current')}</span>`; nowAttr = ' data-now="1"'; }
+      // += 로 덧붙인다. = 로 덮으면 진행 중이거나 끝난 발표에서 꼭 듣기 강조가 사라진다.
+      if (st === 'current')  { pickCls += ' current'; pickBadge = `<span class="pick-badge cur">${t('status_current')}</span>`; nowAttr = ' data-now="1"'; }
       else if (st === 'upcoming') { pickBadge = `<span class="pick-badge up">${t('status_upcoming')}</span>`; nowAttr = ' data-next="1"'; }
-      else if (st === 'past') { pickCls = ' past'; pickBadge = `<span class="pick-badge done">${t('status_past')}</span>`; }
+      else if (st === 'past') { pickCls += ' past'; pickBadge = `<span class="pick-badge done">${t('status_past')}</span>`; }
       const mustBadge = must ? `<span class="pick-badge must">⭐ ${t('must_badge')}</span>` : '';
       return `<div class="pick${pickCls}"${nowAttr}>
         <button class="must-btn pick-must${must?' on':''}" data-key="${it.key}"
@@ -2098,7 +2131,7 @@ function renderTimetable(byDay) {
       html += `<div class="tt-cell tag-${it.s.building}${curCls}"${stAttr}
         style="grid-column:${colIdx+2}; grid-row:${rowStart+2} / span ${rowSpan};"
         title="${escapeHtml(tooltip)}">
-        <div class="tt-pno">${n.must?'⭐':''}#${escapeHtml(it.p.paper_no)} <span class="tt-author">${escapeHtml(firstAuthorLabel(it.p.authors))}</span></div>
+        <div class="tt-pno">${n.must?'<span class="tt-must">⭐</span>':''}#${escapeHtml(it.p.paper_no)} <span class="tt-author">${escapeHtml(firstAuthorLabel(it.p.authors))}</span></div>
         <div class="tt-meta">${it.pt.start}–${it.pt.end}${n.rating?` <span class="tt-rate">${'★'.repeat(n.rating)}</span>`:''}</div>
       </div>`;
     }
