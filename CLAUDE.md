@@ -191,6 +191,22 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
   "서버를 읽지 못했다"가 화면상 구별되지 않는다. 실패하면 `_syncOffline`을 켜서 로그인 버튼에
   드러내고(`sync_offline`), 화면은 캐시본으로 채우되 **업로드는 계속 금지**한다.
   여기서 `_serverSeen`을 켜면 캐시본 기준으로 원격을 덮어쓴다
+- **그 서버 읽기에 타임아웃과 재시도를 건다** (`getServerWithTimeout`, `SERVER_READ_TIMEOUT_MS`
+  5초, `SERVER_READ_BACKOFF` `[0, 2000, 5000, 10000]`으로 시도 4회 약 17초).
+  `source:'server'`는 조용한 실패를 없애는 대신 **서버에 닿을 때까지 reject도 resolve도 하지 않고
+  pending으로 남을 수 있다.** 사파리는 Firestore 연결이 streaming 실패 후 long-polling으로
+  폴백하는 데 수 초가 걸려 이 상태에 오래 머문다. 타임아웃도 재시도도 없으면 그 pending이
+  그대로 영구 빈 화면이 된다 (2026-09-11 실기기에서 `offline=false` + `serverSeen=false` +
+  로컬 0건으로 관측). 지켜야 할 것 넷이다
+  - 실패와 타임아웃에서 `_serverSeen`을 켜지 않는다. 업로드는 끝까지 금지하고 화면만 캐시본으로
+    채운다 (캐시 폴백 읽기는 첫 실패에서만 한 번)
+  - 리스너가 먼저 서버본을 받으면(`_serverSeen`) 루프를 즉시 빠져나간다. 늦게 발화한 타임아웃이
+    `_syncOffline`을 켜면 정상 동작 중인데도 경고가 뜨므로, catch 진입 직후에도 `_serverSeen`을
+    다시 보고 `state='superseded'`로 남기고 반환한다
+  - `permission-denied`는 재시도해도 결과가 같다. 즉시 `reportSyncError`로 알리고 멈춘다
+  - 진행 상태는 `_syncRead = {state, tries, ms, err}`에 남긴다. `state`는
+    `idle`/`pending`/`ok`/`timeout`/`error`/`superseded`. 진단 패널이 "지연 중"과 "영구 실패"를
+    가르는 유일한 근거다
 - **현재 학회 문서가 비어 있으면 계정의 다른 학회를 확인한다** (`checkOtherConfs`).
   문서 경로가 `confs/<confId>`로 갈리므로 두 기기의 `?conf=`가 다르면 같은 계정인데도
   빈 화면이 나온다. 이 조회는 진단용 부가 동작이라 실패해도 본 동기화에 영향을 주지 않는다
@@ -246,6 +262,9 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
   계정 주소와 uid, `_serverSeen`/`_syncOffline`/`_pushQueued` 플래그, 현재 학회 문서의 키 수,
   계정 안의 전체 학회 문서 목록을 적고 "복사" 버튼으로 전문을 클립보드에 넣는다.
   SDK가 로드되지 않은 경우에도 떠야 하므로 호출 지점이 둘이다(인증 콜백 안과 밖).
+  `server read` 줄에 `_syncRead`의 `state`/`tries`/`ms`/`err`를 적는다. 서버본을 받기 전까지는
+  2.5초 간격으로 8회까지 자동 재검사해(`_diagAuto`) 한 번 찍은 값이 "아직 진행 중"일 뿐인 경우와
+  영구 실패를 가른다. "검사" 버튼을 누르면 이 카운터가 0으로 돌아간다.
   **운영자와 개발자용이라 i18n 대상이 아니다** (12장의 부팅 오류 페이지와 같은 취급).
   라벨은 영어 키워드로 쓴다
 

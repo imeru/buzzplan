@@ -2292,6 +2292,8 @@ let _remoteItems  = {};     // 마지막으로 본 서버본 items. 이 기기�
 let _pushQueued   = false;  // 서버본 도착 전에 밀린 push 요청
 let _syncGen      = 0;      // stopSync 후 뒤늦게 도착하는 비동기 응답을 버리기 위한 세대 번호
 let _syncOffline  = false;  // 서버 읽기에 실패했는가 (캐시본으로만 동작 중)
+// 서버 읽기의 진행 상태. 진단 패널이 "지연 중"과 "영구 실패"를 구분하는 근거다.
+let _syncRead = { state: 'idle', tries: 0, ms: 0, err: '' };
 
 // HH:MM:SS (24시간, 로컬 타임존) — 로그인 버튼 title에 마지막 동기화 시각 표시용.
 function fmtSyncTime(ts) {
@@ -2484,6 +2486,32 @@ function schedulePush() {
 }
 
 // 현재 학회 문서를 구독한다. 학회를 전환하면 stopSync() 후 다시 호출된다.
+// 서버 읽기에 타임아웃과 재시도를 건다. 사파리에서는 Firestore 연결이 streaming 실패 후
+// long-polling으로 폴백하느라 get({source:'server'})이 수 초 동안 pending할 수 있고,
+// 타임아웃도 재시도도 없으면 그 pending이 그대로 영구 빈 화면이 된다. 실제로 사파리에서
+// 로그인 1.5초 뒤 serverSeen=false, 로컬 0건인 상태가 관측되었다 (2026-09-11).
+const SERVER_READ_TIMEOUT_MS = 5000;
+const SERVER_READ_BACKOFF = [0, 2000, 5000, 10000];   // 시도 4회, 마지막까지 약 17초
+
+function sleepMs(ms) { return new Promise((r) => setTimeout(r, ms)); }
+
+// get()은 서버에 닿지 못해도 pending으로 남을 수 있다. 반드시 끝나는 약속으로 감싼다.
+function getServerWithTimeout(ref, ms) {
+  return new Promise((resolve, reject) => {
+    let done = false;
+    const timer = setTimeout(() => {
+      if (done) return;
+      done = true;
+      const e = new Error('server read timeout');
+      e.code = 'timeout';
+      reject(e);
+    }, ms);
+    ref.get({ source: 'server' }).then(
+      (snap) => { if (!done) { done = true; clearTimeout(timer); resolve(snap); } },
+      (err)  => { if (!done) { done = true; clearTimeout(timer); reject(err); } });
+  });
+}
+
 function startSync(user) {
   if (typeof firebase === 'undefined') return;
   stopSync();
@@ -2515,35 +2543,62 @@ function startSync(user) {
 
   // 리스너와 별개로 서버본을 한 번 확실히 읽는다. onSnapshot의 첫 스냅샷은 캐시에서
   // 올 수 있고, 캐시와 서버가 같으면(둘 다 "문서 없음") 메타데이터만 바뀌어 이벤트가
-  // 오지 않을 수도 있다. 이 get() 한 번이 업로드 허용 시점을 결정적으로 만든다.
-  // source:'server'를 쓰는 이유는 조용한 실패를 없애기 위해서다. 기본 get()은 서버에
-  // 닿지 못해도 캐시본으로 resolve되므로, 캐시가 빈 브라우저에서는 "계정에 아무것도 없다"와
-  // "서버를 읽지 못했다"가 화면상 구별되지 않는다 (사파리에서 보고된 증상).
-  docRef.get({ source: 'server' }).then((snap) => {
-    if (gen !== _syncGen) return;
-    _syncOffline = false;
-    const items = (snap.data() || {}).items || {};
-    const changed = applyRemoteItems(items);
-    if (changed > 0 && !pulledToastShown) {
-      pulledToastShown = true;
-      showToast(t('sync_pulled').replace('{n}', String(changed)));
+  // 오지 않을 수도 있다. 이 읽기 한 번이 업로드 허용 시점을 결정적으로 만든다.
+  // source:'server'는 조용한 실패를 없애고(기본 get()은 서버에 닿지 못해도 캐시본으로
+  // resolve된다), 타임아웃과 재시도는 응답 없이 멈추는 경우를 없앤다.
+  (async () => {
+    for (let i = 0; i < SERVER_READ_BACKOFF.length; i++) {
+      if (gen !== _syncGen || _serverSeen) return;   // 리스너가 먼저 서버본을 받았으면 끝
+      if (SERVER_READ_BACKOFF[i]) {
+        await sleepMs(SERVER_READ_BACKOFF[i]);
+        if (gen !== _syncGen || _serverSeen) return;
+      }
+      const startedAt = Date.now();
+      _syncRead = { state: 'pending', tries: i + 1, ms: 0, err: '' };
+      try {
+        const snap = await getServerWithTimeout(docRef, SERVER_READ_TIMEOUT_MS);
+        if (gen !== _syncGen) return;
+        _syncRead = { state: 'ok', tries: i + 1, ms: Date.now() - startedAt, err: '' };
+        _syncOffline = false;
+        const items = (snap.data() || {}).items || {};
+        const changed = applyRemoteItems(items);
+        if (changed > 0 && !pulledToastShown) {
+          pulledToastShown = true;
+          showToast(t('sync_pulled').replace('{n}', String(changed)));
+        }
+        onServerItems(items);
+        // 이 학회 문서가 비어 있으면 계정의 다른 학회를 확인한다. 두 기기의 ?conf=가 다르면
+        // 같은 계정인데도 빈 화면이 나오고, 사용자는 데이터가 사라졌다고 판단한다.
+        if (!Object.keys(items).length) checkOtherConfs(user, gen);
+        return;
+      } catch (e) {
+        if (gen !== _syncGen) return;
+        // 기다리는 동안 리스너가 서버본을 받았으면 이 실패는 의미가 없다. 여기서
+        // _syncOffline을 켜면 정상 동작 중인데도 오프라인으로 표시된다.
+        if (_serverSeen) { _syncRead = { state: 'superseded', tries: i + 1, ms: 0, err: '' }; return; }
+        _syncRead = { state: (e && e.code === 'timeout') ? 'timeout' : 'error', tries: i + 1,
+                      ms: Date.now() - startedAt, err: String((e && (e.code || e.message)) || e) };
+        // 서버 읽기 실패. _serverSeen을 켜면 안 된다 (캐시본 기준으로 원격을 덮어쓴다).
+        // 업로드는 계속 막은 채 상태만 드러내고, 화면은 캐시본으로 채운다.
+        _syncOffline = true;
+        updateLoginButtonUI();
+        if (i === 0) {
+          docRef.get({ source: 'cache' })
+            .then((snap) => {
+              if (gen === _syncGen && !_serverSeen) applyRemoteItems((snap.data() || {}).items || {});
+            })
+            .catch(() => {});
+        }
+        console.warn('동기화 오류(서버 읽기 ' + (i + 1) + '회):', e);
+        // 권한 오류는 재시도해도 결과가 같다. 즉시 알리고 멈춘다.
+        if (e && (e.code === 'permission-denied' || /permission/i.test(String(e.message || '')))) {
+          reportSyncError(e);
+          return;
+        }
+      }
     }
-    onServerItems(items);
-    // 이 학회 문서가 비어 있으면 계정의 다른 학회를 확인한다. 두 기기의 ?conf=가 다르면
-    // 같은 계정인데도 빈 화면이 나오고, 사용자는 데이터가 사라졌다고 판단한다.
-    if (!Object.keys(items).length) checkOtherConfs(user, gen);
-  }).catch((e) => {
-    if (gen !== _syncGen) return;
-    // 서버 읽기 실패. _serverSeen을 켜면 안 된다 (캐시본 기준으로 원격을 덮어쓴다).
-    // 업로드는 계속 막은 채 상태만 드러내고, 화면은 캐시본으로 채운다.
-    _syncOffline = true;
-    updateLoginButtonUI();
-    docRef.get({ source: 'cache' })
-      .then((snap) => { if (gen === _syncGen) applyRemoteItems((snap.data() || {}).items || {}); })
-      .catch(() => {});
-    console.warn('동기화 오류(서버 읽기):', e);
-    if (e && (e.code === 'permission-denied' || /permission/i.test(String(e.message || '')))) reportSyncError(e);
-  });
+    console.warn('동기화: 서버 읽기 ' + SERVER_READ_BACKOFF.length + '회 모두 실패. 리스너 복구를 기다린다');
+  })();
 
   // includeMetadataChanges: 캐시 → 서버로 바뀌는 순간(데이터는 같고 메타데이터만 변할 때)도
   // 받아야 오프라인에서 로그인한 뒤 온라인으로 복귀할 때 보류된 push가 흘러간다.
@@ -2605,6 +2660,8 @@ function checkOtherConfs(user, gen) {
 // 위한 창구다. 원인 후보 셋(다른 구글 계정, 다른 ?conf=, 서버 읽기 실패)을 한 화면에서
 // 가른다. 운영자와 개발자용이라 i18n 대상이 아니다. 라벨은 영어 키워드로 쓴다
 // (12장의 부팅 오류 페이지와 같은 취급).
+let _diagAuto = 0;   // 자동 재검사 횟수 (무한 반복 방지)
+
 function syncDebugOn() {
   return new URLSearchParams(location.search).get('debug') === 'sync';
 }
@@ -2624,7 +2681,7 @@ function mountSyncDiag() {
     '<button id="sync-diag-copy" style="font:inherit">복사</button>' +
     '<button id="sync-diag-close" style="font:inherit">닫기</button></div>';
   document.body.appendChild(box);
-  document.getElementById('sync-diag-run').onclick = runSyncDiag;
+  document.getElementById('sync-diag-run').onclick = () => { _diagAuto = 0; runSyncDiag(); };
   document.getElementById('sync-diag-copy').onclick = () => {
     const txt = document.getElementById('sync-diag-body').textContent;
     if (!navigator.clipboard) return;
@@ -2657,6 +2714,8 @@ async function runSyncDiag() {
   L.push('flags       serverSeen=' + _serverSeen + ' offline=' + _syncOffline +
          ' pushQueued=' + _pushQueued +
          ' lastSync=' + (_lastSyncAt ? fmtSyncTime(_lastSyncAt) : '없음'));
+  L.push('server read state=' + _syncRead.state + ' tries=' + _syncRead.tries +
+         ' ms=' + _syncRead.ms + (_syncRead.err ? ' err=' + _syncRead.err : ''));
   flush('server      읽는 중...');
   const base = firebase.firestore().collection('users').doc(u.uid).collection('confs');
   try {
@@ -2683,6 +2742,9 @@ async function runSyncDiag() {
     L.push('account all 스캔 실패: ' + ((e && (e.code || e.message)) || e));
   }
   flush();
+  // 사파리처럼 서버 읽기가 늦게 끝나는 환경에서는 한 번 찍은 값이 "아직 진행 중"일 뿐이다.
+  // 서버본을 받기 전까지 몇 차례 자동으로 다시 검사해 지연과 영구 실패를 구분한다.
+  if (!_serverSeen && _diagAuto < 8) { _diagAuto++; setTimeout(runSyncDiag, 2500); }
 }
 
 function stopSync() {
@@ -2692,6 +2754,7 @@ function stopSync() {
   syncActive = false;
   _serverSeen = false;        // 다음 구독은 다시 서버본을 확인한 뒤에만 쓴다
   _syncOffline = false;
+  _syncRead = { state: 'idle', tries: 0, ms: 0, err: '' };
   _remoteItems = {};
   _pushQueued = false;
   _lastSyncAt = null;  // 로그아웃/학회 전환 시 이전 세션의 "마지막 동기화" 시각을 지운다
@@ -3286,13 +3349,13 @@ async function bootApp() {
       updateLoginButtonUI();
       if (user) startSync(user); else stopSync();
       // startSync의 서버 읽기가 끝난 뒤의 플래그를 보여 주려고 조금 늦춘다
-      if (syncDebugOn()) setTimeout(mountSyncDiag, 1500);
+      if (syncDebugOn()) setTimeout(mountSyncDiag, 400);
     });
   }
 
   // SDK가 아예 로드되지 않은 경우에도 진단 패널은 떠야 한다. 무엇이 막혔는지
   // 보여 주는 것이 이 패널의 목적이다.
-  if (syncDebugOn()) setTimeout(mountSyncDiag, 1500);
+  if (syncDebugOn()) setTimeout(mountSyncDiag, 400);
 }
 
 bootApp();
