@@ -2293,7 +2293,18 @@ let _pushQueued   = false;  // 서버본 도착 전에 밀린 push 요청
 let _syncGen      = 0;      // stopSync 후 뒤늦게 도착하는 비동기 응답을 버리기 위한 세대 번호
 let _syncOffline  = false;  // 서버 읽기에 실패했는가 (캐시본으로만 동작 중)
 // 서버 읽기의 진행 상태. 진단 패널이 "지연 중"과 "영구 실패"를 구분하는 근거다.
-let _syncRead = { state: 'idle', tries: 0, ms: 0, err: '' };
+// startedAt은 pending 중에도 경과를 보이려는 것이다. ms=0을 "0밀리초에 끝났다"로 읽으면
+// 아직 진행 중인 읽기를 영구 실패로 오진한다 (2026-09-11에 이 혼동으로 한 번 헛돌았다).
+let _syncRead = { state: 'idle', tries: 0, ms: 0, err: '', startedAt: 0 };
+// 상태 전이 기록. 진단 패널은 사용자가 복사한 그 순간의 값만 담으므로 점 측정만으로는
+// 첫 읽기가 언제 어떻게 끝났는지 알 수 없다. 전이를 남겨 한 번의 복사로 전체 경과를 읽는다.
+let _syncReadLog = [];
+
+function noteSyncRead(o) {
+  _syncRead = o;
+  _syncReadLog.push({ at: Date.now(), state: o.state, tries: o.tries, ms: o.ms, err: o.err || '' });
+  if (_syncReadLog.length > 14) _syncReadLog.shift();   // 시도 4회 + 전이 여유
+}
 
 // HH:MM:SS (24시간, 로컬 타임존) — 로그인 버튼 title에 마지막 동기화 시각 표시용.
 function fmtSyncTime(ts) {
@@ -2557,12 +2568,12 @@ function startSync(user) {
         if (gen !== _syncGen || _serverSeen) return;
       }
       const startedAt = Date.now();
-      _syncRead = { state: 'pending', tries: i + 1, ms: 0, err: '' };
+      noteSyncRead({ state: 'pending', tries: i + 1, ms: 0, err: '', startedAt });
       try {
         const snap = await getServerWithTimeout(docRef,
                            i === 0 ? SERVER_READ_TIMEOUT_MS : SERVER_READ_RETRY_TIMEOUT_MS);
         if (gen !== _syncGen) return;
-        _syncRead = { state: 'ok', tries: i + 1, ms: Date.now() - startedAt, err: '' };
+        noteSyncRead({ state: 'ok', tries: i + 1, ms: Date.now() - startedAt, err: '', startedAt });
         _syncOffline = false;
         const items = (snap.data() || {}).items || {};
         const changed = applyRemoteItems(items);
@@ -2579,10 +2590,15 @@ function startSync(user) {
         if (gen !== _syncGen) return;
         // 기다리는 동안 리스너가 서버본을 받았으면 이 실패는 의미가 없다. 여기서
         // _syncOffline을 켜면 정상 동작 중인데도 오프라인으로 표시된다.
-        if (_serverSeen) { _syncRead = { state: 'superseded', tries: i + 1, ms: 0, err: '' }; return; }
+        if (_serverSeen) {
+          noteSyncRead({ state: 'superseded', tries: i + 1, ms: Date.now() - startedAt,
+                         err: '', startedAt });
+          return;
+        }
         const isTimeout = !!(e && e.code === 'timeout');
-        _syncRead = { state: isTimeout ? 'timeout' : 'error', tries: i + 1,
-                      ms: Date.now() - startedAt, err: String((e && (e.code || e.message)) || e) };
+        noteSyncRead({ state: isTimeout ? 'timeout' : 'error', tries: i + 1,
+                       ms: Date.now() - startedAt,
+                       err: String((e && (e.code || e.message)) || e), startedAt });
         // 서버 읽기 실패. _serverSeen을 켜면 안 된다 (캐시본 기준으로 원격을 덮어쓴다).
         // 업로드는 계속 막은 채 상태만 드러내고, 화면은 캐시본으로 채운다.
         // 오프라인 표시는 타임아웃에서 켜지 않는다. 정말 연결이 없으면 SDK가 곧바로
@@ -2631,8 +2647,10 @@ function startSync(user) {
       _syncOffline = false;
       // get()이 늦어 타임아웃된 뒤 리스너가 먼저 서버본을 받는 경우가 있다(사파리).
       // 읽기 상태를 그대로 두면 진단 패널이 멀쩡한 동기화를 실패로 보이게 한다.
-      if (_syncRead.state === 'timeout' || _syncRead.state === 'error') {
-        _syncRead = { state: 'listener-ok', tries: _syncRead.tries, ms: _syncRead.ms, err: '' };
+      if (_syncRead.state === 'timeout' || _syncRead.state === 'error' ||
+          _syncRead.state === 'pending') {
+        noteSyncRead({ state: 'listener-ok', tries: _syncRead.tries, ms: _syncRead.ms,
+                       err: '', startedAt: _syncRead.startedAt });
       }
       onServerItems(remoteItems);
     }
@@ -2679,6 +2697,26 @@ let _diagAuto = 0;   // 자동 재검사 횟수 (무한 반복 방지)
 
 function syncDebugOn() {
   return new URLSearchParams(location.search).get('debug') === 'sync';
+}
+
+// 서버 읽기 상태 한 줄. pending이면 ms를 실시간 경과로 쓴다. 0을 그대로 찍으면
+// "아직 기다리는 중"과 "즉시 끝났다"가 구별되지 않는다.
+function readStateLine() {
+  const live = _syncRead.state === 'pending' && _syncRead.startedAt
+             ? Date.now() - _syncRead.startedAt : _syncRead.ms;
+  return 'server read state=' + _syncRead.state + ' tries=' + _syncRead.tries +
+         ' ms=' + live + (_syncRead.state === 'pending' ? ' (진행 중)' : '') +
+         (_syncRead.err ? ' err=' + _syncRead.err : '');
+}
+
+// 전이 기록을 첫 전이 기준 상대 시각으로 늘어놓는다. 사용자가 언제 복사하든 한 줄로
+// 첫 읽기의 결말(몇 초에 끝났나, 리스너가 이겼나)이 드러나게 하려는 것이다.
+function readLogLine() {
+  if (!_syncReadLog.length) return 'read log    (없음)';
+  const t0 = _syncReadLog[0].at;
+  return 'read log    ' + _syncReadLog.map((e) =>
+    '+' + ((e.at - t0) / 1000).toFixed(1) + 's ' + e.state + '#' + e.tries +
+    (e.ms ? ' ' + e.ms + 'ms' : '')).join(' / ');
 }
 
 function mountSyncDiag() {
@@ -2729,21 +2767,32 @@ async function runSyncDiag() {
   L.push('flags       serverSeen=' + _serverSeen + ' offline=' + _syncOffline +
          ' pushQueued=' + _pushQueued +
          ' lastSync=' + (_lastSyncAt ? fmtSyncTime(_lastSyncAt) : '없음'));
-  L.push('server read state=' + _syncRead.state + ' tries=' + _syncRead.tries +
-         ' ms=' + _syncRead.ms + (_syncRead.err ? ' err=' + _syncRead.err : ''));
+  // 이 두 줄은 아래 네트워크 대기가 끝난 뒤 다시 쓴다. 대기 전에 한 번만 찍으면
+  // this conf 줄과 시점이 어긋나, 둘을 맞대도 본 읽기가 멈췄는지 가릴 수 없다.
+  const readLineIdx = L.length;
+  L.push(readStateLine());
+  const readLogIdx = L.length;
+  L.push(readLogLine());
   flush('server      읽는 중...');
   const base = firebase.firestore().collection('users').doc(u.uid).collection('confs');
+  // 이 읽기는 본 동기화와 별개로 지금 발행하는 서버 읽기다. 소요 시간을 함께 적어,
+  // 위의 server read가 pending인 동안 이쪽이 수백 ms에 끝나면 본 읽기는 느린 것이
+  // 아니라 멈춘 것이라고 가를 수 있게 한다.
+  const t0 = Date.now();
   try {
     const snap = await base.doc(currentConfId).get({ source: 'server' });
     const items = (snap.data() || {}).items || {};
     L.push('this conf   exists=' + snap.exists + ' keys=' + Object.keys(items).length +
-           ' 내용있음=' + filled(items));
+           ' 내용있음=' + filled(items) + ' (이 읽기 ' + (Date.now() - t0) + 'ms)');
   } catch (e) {
-    L.push('this conf   서버 읽기 실패: ' + ((e && (e.code || e.message)) || e));
+    L.push('this conf   서버 읽기 실패(' + (Date.now() - t0) + 'ms): ' +
+           ((e && (e.code || e.message)) || e));
   }
   flush('account     스캔 중...');
+  const t1 = Date.now();
   try {
     const qs = await base.get({ source: 'server' });
+    L.push('scan ok     계정 스캔 ' + (Date.now() - t1) + 'ms');
     if (qs.empty) {
       L.push('account all 이 계정에는 학회 문서가 하나도 없습니다');
     } else {
@@ -2754,12 +2803,16 @@ async function runSyncDiag() {
       });
     }
   } catch (e) {
-    L.push('account all 스캔 실패: ' + ((e && (e.code || e.message)) || e));
+    L.push('account all 스캔 실패(' + (Date.now() - t1) + 'ms): ' +
+           ((e && (e.code || e.message)) || e));
   }
+  L[readLineIdx] = readStateLine();   // 대기가 끝난 지금의 상태로 갱신
+  L[readLogIdx] = readLogLine();
   flush();
   // 사파리처럼 서버 읽기가 늦게 끝나는 환경에서는 한 번 찍은 값이 "아직 진행 중"일 뿐이다.
-  // 서버본을 받기 전까지 몇 차례 자동으로 다시 검사해 지연과 영구 실패를 구분한다.
-  if (!_serverSeen && _diagAuto < 8) { _diagAuto++; setTimeout(runSyncDiag, 2500); }
+  // 서버본을 받기 전까지 자동으로 다시 검사해 지연과 영구 실패를 구분한다. 횟수는
+  // 재시도 예산 전체(12+2+8+5+8+10+8 = 53초)를 덮도록 2.5초 간격 24회로 둔다.
+  if (!_serverSeen && _diagAuto < 24) { _diagAuto++; setTimeout(runSyncDiag, 2500); }
 }
 
 function stopSync() {
@@ -2769,7 +2822,8 @@ function stopSync() {
   syncActive = false;
   _serverSeen = false;        // 다음 구독은 다시 서버본을 확인한 뒤에만 쓴다
   _syncOffline = false;
-  _syncRead = { state: 'idle', tries: 0, ms: 0, err: '' };
+  _syncRead = { state: 'idle', tries: 0, ms: 0, err: '', startedAt: 0 };
+  _syncReadLog = [];
   _remoteItems = {};
   _pushQueued = false;
   _lastSyncAt = null;  // 로그아웃/학회 전환 시 이전 세션의 "마지막 동기화" 시각을 지운다

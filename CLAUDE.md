@@ -208,11 +208,18 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
   - **타임아웃에서는 `_syncOffline`을 켜지 않는다.** 정말 연결이 없으면 SDK가 곧바로
     `code: 'unavailable'`로 reject하므로(그 경로에서는 즉시 켠다), 타임아웃은 "연결 수립이
     느리다"는 뜻일 뿐이다. 사파리는 로그인마다 첫 읽기가 늦어 여기서 켜면 거짓 경고가 매번 뜬다
-  - 진행 상태는 `_syncRead = {state, tries, ms, err}`에 남긴다. `state`는
+  - 진행 상태는 `_syncRead = {state, tries, ms, err, startedAt}`에 남기고, 상태 전이는
+    `_syncReadLog`에 누적한다(`noteSyncRead`가 둘을 같이 쓴다. 14건까지 보관). `state`는
     `idle`/`pending`/`ok`/`timeout`/`error`/`superseded`/`listener-ok`. 진단 패널이 "지연 중"과
-    "영구 실패"를 가르는 유일한 근거다. 첫 읽기가 타임아웃된 뒤 리스너가 서버본을 받아
-    복구하는 일이 사파리에서 정상적으로 일어나므로, 그때 `onSnapshot`이 `timeout`/`error`를
-    `listener-ok`로 갱신한다. 갱신하지 않으면 패널이 멀쩡한 동기화를 실패로 보이게 한다
+    "영구 실패"를 가르는 유일한 근거다. 셋을 지킬 것이다
+    - `startedAt`이 있어야 pending 중에도 경과를 보여 줄 수 있다. `ms`는 읽기가 끝날 때만
+      채워지므로, pending에서 `ms=0`을 그대로 찍으면 "아직 기다리는 중"이 "즉시 끝났다"로
+      읽힌다 (2026-09-11에 이 혼동으로 진단 한 판을 버렸다)
+    - 첫 읽기가 타임아웃된 뒤 리스너가 서버본을 받아 복구하는 일이 사파리에서 정상적으로
+      일어나므로, 그때 `onSnapshot`이 `timeout`/`error`/`pending`을 `listener-ok`로 갱신한다.
+      `pending`을 빼면 리스너가 이긴 뒤에도 패널이 계속 pending을 보여 같은 오진을 낳는다
+    - 전이 기록이 있어야 사용자가 **언제 복사하든** 첫 읽기의 결말이 드러난다. 점 측정만으로는
+      복사 시점이 읽기 도중이면 아무것도 판정할 수 없다
 - **현재 학회 문서가 비어 있으면 계정의 다른 학회를 확인한다** (`checkOtherConfs`).
   문서 경로가 `confs/<confId>`로 갈리므로 두 기기의 `?conf=`가 다르면 같은 계정인데도
   빈 화면이 나온다. 이 조회는 진단용 부가 동작이라 실패해도 본 동기화에 영향을 주지 않는다
@@ -268,9 +275,16 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
   계정 주소와 uid, `_serverSeen`/`_syncOffline`/`_pushQueued` 플래그, 현재 학회 문서의 키 수,
   계정 안의 전체 학회 문서 목록을 적고 "복사" 버튼으로 전문을 클립보드에 넣는다.
   SDK가 로드되지 않은 경우에도 떠야 하므로 호출 지점이 둘이다(인증 콜백 안과 밖).
-  `server read` 줄에 `_syncRead`의 `state`/`tries`/`ms`/`err`를 적는다. 서버본을 받기 전까지는
-  2.5초 간격으로 8회까지 자동 재검사해(`_diagAuto`) 한 번 찍은 값이 "아직 진행 중"일 뿐인 경우와
-  영구 실패를 가른다. "검사" 버튼을 누르면 이 카운터가 0으로 돌아간다.
+  `server read` 줄(`readStateLine`)에 `_syncRead`를 적고, `read log` 줄(`readLogLine`)에
+  `_syncReadLog`의 전이를 첫 전이 기준 상대 시각으로 늘어놓는다. 서버본을 받기 전까지는
+  2.5초 간격으로 24회까지 자동 재검사해(`_diagAuto`, 재시도 예산 53초를 덮는 값) 한 번 찍은
+  값이 "아직 진행 중"일 뿐인 경우와 영구 실패를 가른다. "검사" 버튼을 누르면 카운터가 0으로
+  돌아간다. **패널이 스스로 발행하는 서버 읽기에는 소요 시간을 함께 적는다**
+  (`this conf ... (이 읽기 Nms)`, `scan ok`). 위의 `server read`가 pending인 동안 이쪽이
+  수백 ms에 끝나면 본 읽기는 느린 것이 아니라 멈춘 것이라고 가를 수 있다. 같은 이유로
+  `server read`와 `read log` 두 줄은 자리만 잡아 두고 **네트워크 대기가 끝난 뒤 다시 쓴다.**
+  대기 전에 한 번만 찍으면 같은 화면의 두 줄이 서로 다른 시점을 가리키면서 그 사실이
+  표시되지 않는다 (2026-09-11에 이 때문에 스냅샷 하나를 판정 불가로 버렸다).
   **운영자와 개발자용이라 i18n 대상이 아니다** (12장의 부팅 오류 페이지와 같은 취급).
   라벨은 영어 키워드로 쓴다
 
@@ -294,6 +308,9 @@ python3 build.py <pdf> --parser <parser> --id tmp --name t --dry-run   # 카운�
 # 4. 배포 확인 (push 후)
 gh api repos/imeru/buzzplan/pages/builds/latest --jq .status   # "built" 될 때까지
 curl -s "https://imeru.github.io/buzzplan/?v=$RANDOM" | grep -c "<찾을 문자열>"
+# builds API만 믿지 말 것. Actions 기반 배포에서는 이 legacy 레코드가 갱신되지 않아
+# 몇 분 동안 옛 커밋을 latest로 돌려주는 일이 있다 (2026-09-11에 4분간 관측).
+# 판정 근거는 배포본 curl의 문자열 검증이다. 둘이 엇갈리면 curl 쪽을 믿는다
 # 브라우저 확인은 반드시 강력 새로고침 (Cmd+Shift+R). 캐시가 강하다
 # index.html에 no-cache 메타를 넣어 재검증을 요구하지만, 이미 캐시된 기기에는 소급되지
 # 않는다. 사파리는 특히 오래 쓴다. 옛 버전이 돌면 동기화처럼 데이터가 걸린 기능에서
