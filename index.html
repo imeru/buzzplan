@@ -819,6 +819,7 @@ const I18N_KO = {
   sync_title: '동기화 중 — 클릭하여 로그아웃', login_title: '구글 로그인으로 기기 간 동기화',
   rename_title: '클릭하여 학회명 수정',
   sync_last: '마지막 동기화 ',
+  sync_pulled: '계정에 저장된 {n}건을 불러왔습니다',
   login_fail: '로그인 실패: ',
   sync_error: '⚠️ 동기화 오류',
   sync_perm_error: '동기화 권한 오류입니다.\n\nFirebase 콘솔 → Firestore Database → 규칙 탭에\n레포의 firestore.rules 내용을 붙여넣고 "게시"해야 합니다.\n(기본 규칙은 모든 접근을 거부합니다)',
@@ -850,6 +851,7 @@ const I18N_EN = {
   sync_title: 'Syncing — click to sign out', login_title: 'Sign in with Google to sync across devices',
   rename_title: 'Click to rename',
   sync_last: 'Synced ',
+  sync_pulled: 'Loaded {n} saved item(s) from your account',
   login_fail: 'Sign-in failed: ',
   sync_error: '⚠️ Sync error',
   sync_perm_error: 'Sync permission error.\n\nDeploy the firestore.rules from the repo in\nFirebase Console → Firestore Database → Rules.\n(The default rules deny all access)',
@@ -2261,6 +2263,13 @@ let syncActive    = false;  // 로그인 + 구독 중이면 true. touch()가 pus
 let _syncUnsub    = null;   // 현재 학회 문서 onSnapshot 구독 해제 함수
 let _pushTimer    = null;   // schedulePush 디바운스 타이머
 let _lastSyncAt   = null;   // 마지막으로 push 성공 또는 원격 스냅샷을 수신한 시각 (Date.now())
+// 문서를 통째로 set()하는 구조라, 서버본을 한 번도 못 본 상태에서 push하면 다른 기기가
+// 올려 둔 항목을 전부 지운다. 오프라인 캐시(enablePersistence)가 켜져 있어 리스너의
+// 첫 스냅샷이 캐시에서 "문서 없음"으로 먼저 올 수 있으므로 반드시 구분해야 한다.
+let _serverSeen   = false;  // 서버(캐시 아님) 스냅샷을 받았는가
+let _remoteItems  = {};     // 마지막으로 본 서버본 items. 이 기기가 모르는 키를 보존하는 데 쓴다
+let _pushQueued   = false;  // 서버본 도착 전에 밀린 push 요청
+let _syncGen      = 0;      // stopSync 후 뒤늦게 도착하는 비동기 응답을 버리기 위한 세대 번호
 
 // HH:MM:SS (24시간, 로컬 타임존) — 로그인 버튼 title에 마지막 동기화 시각 표시용.
 function fmtSyncTime(ts) {
@@ -2366,6 +2375,21 @@ function buildLocalItems() {
   return items;
 }
 
+// push용 payload. 로컬 items를 "마지막으로 본 서버본" 위에 덮어쓴다.
+// 문서를 통째로 교체하므로, 이 기기가 모르는 원격 키(다른 기기가 방금 올린 항목,
+// 또는 아직 병합하지 않은 항목)를 그대로 실어 보내지 않으면 그 항목이 사라진다.
+function buildPushItems() {
+  const out = {};
+  for (const [key, ri] of Object.entries(_remoteItems)) out[key] = ri;
+  for (const [key, li] of Object.entries(buildLocalItems())) {
+    const ri = out[key];
+    // 원격이 더 최신인 키는 원격 값을 유지한다 (아직 반영하지 않은 원격 변경을 되돌리지 않도록)
+    if (ri && typeof ri.t === 'number' && ri.t > (li.t || 0)) continue;
+    out[key] = li;
+  }
+  return out;
+}
+
 // 원격 items를 병합. 키별로 remote.t가 로컬 stamps보다 최신일 때만 반영한다.
 // touch()는 호출하지 않는다 (원격에서 온 값이므로 로컬 stamps는 remote.t로 그대로 맞춘다).
 // 반영된 키 개수를 반환한다 (0이면 변경 없음). 호출부는 이 개수로 토스트 표시 여부를 판단한다.
@@ -2373,8 +2397,14 @@ function applyRemoteItems(items) {
   let changedCount = 0;
   for (const [key, remote] of Object.entries(items || {})) {
     if (!remote || typeof remote.t !== 'number') continue;
+    const known  = state.stamps.has(key);
     const localT = state.stamps.get(key) || 0;
-    if (remote.t <= localT) continue;
+    // 로컬에 기록이 있는 키는 원격이 더 최신일 때만 받는다.
+    if (known && remote.t <= localT) continue;
+    // 기록이 없는 키는 t가 0이어도 받는다. 스탬프 없이 저장된 옛 항목이 0 <= 0 비교에
+    // 걸려 다른 기기로 영구히 전파되지 않는 일을 막는다. 단 내용이 빈 항목(tombstone)은
+    // 받을 것이 없으므로 건너뛴다 (changedCount와 토스트를 부풀리지 않는다).
+    if (!known && !remote.s && !remote.r && !remote.n && !remote.m) continue;
     changedCount++;
     if (remote.s) state.selected.add(key); else state.selected.delete(key);
     if (remote.r || remote.n || remote.m)
@@ -2402,14 +2432,17 @@ function rerenderAfterRemoteChange() {
 // update()의 dot-path 표기와는 충돌하므로 항상 문서 전체를 교체한다.
 function schedulePush() {
   if (!syncActive || !currentUser || typeof firebase === 'undefined') return;
+  // 서버본을 아직 못 봤으면 쓰지 않고 보류한다. 여기서 쓰면 아직 받아보지 못한
+  // 다른 기기의 항목을 빈 문서로 덮어써 영구히 지운다 (실제로 보고된 버그).
+  if (!_serverSeen) { _pushQueued = true; return; }
   clearTimeout(_pushTimer);
   _pushTimer = setTimeout(() => {
-    if (!currentUser) return;
+    if (!currentUser || !_serverSeen) return;
     const docRef = firebase.firestore()
       .collection('users').doc(currentUser.uid)
       .collection('confs').doc(currentConfId);
     docRef.set({
-      items: buildLocalItems(),
+      items: buildPushItems(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     }).then(() => {
       _lastSyncAt = Date.now();
@@ -2424,41 +2457,77 @@ function startSync(user) {
   stopSync();
   currentUser = user;
   syncActive = true;
-  // 구독 직후 첫 스냅샷(로그인/전환 시 초기 로드)에는 토스트를 띄우지 않는다 —
-  // 로그인하자마자 "N건 반영" 알림이 뜨면 소음이므로, 이후 실제 원격 변경에만 반응한다.
-  let isFirstSnapshot = true;
+  const gen = ++_syncGen;
+  let pulledToastShown = false;
   const docRef = firebase.firestore()
     .collection('users').doc(user.uid)
     .collection('confs').doc(currentConfId);
-  _syncUnsub = docRef.onSnapshot((snap) => {
-    if (snap.metadata.hasPendingWrites) return;  // 방금 우리가 쓴 값의 echo — 무시
-    const wasFirst = isFirstSnapshot;
-    isFirstSnapshot = false;
-    const data = snap.data() || {};
-    const remoteItems = data.items || {};
-    const changedCount = applyRemoteItems(remoteItems);
-    _lastSyncAt = Date.now();
-    updateLoginButtonUI();
-    if (!wasFirst && changedCount > 0) {
-      showToast(EN ? `Applied ${changedCount} change(s) from another device`
-                   : `다른 기기의 변경 ${changedCount}건을 반영했습니다`);
-    }
-    // 병합 후에도 로컬이 원격보다 최신인 키가 하나라도 있으면 업로드.
-    // 첫 로그인 시(원격 문서가 비어 있음)에도 이 경로로 로컬 데이터가 자연스럽게 올라간다.
-    const localItems = buildLocalItems();
-    let localHasNewer = false;
-    for (const [key, li] of Object.entries(localItems)) {
+
+  // 병합 후에도 로컬이 원격보다 최신인 키가 하나라도 있으면 업로드해야 한다.
+  // 첫 로그인 시(원격 문서가 비어 있음)에도 이 경로로 로컬 데이터가 올라간다.
+  const localHasNewerThan = (remoteItems) => {
+    for (const [key, li] of Object.entries(buildLocalItems())) {
       const ri = remoteItems[key];
-      if (!ri || (li.t || 0) > (ri.t || 0)) { localHasNewer = true; break; }
+      if (!ri || (li.t || 0) > (ri.t || 0)) return true;
     }
-    if (localHasNewer) schedulePush();
+    return false;
+  };
+  // 서버본을 받은 직후의 공통 처리: 모르는 키 보존용 스냅샷을 갱신하고 밀린 push를 흘린다.
+  const onServerItems = (remoteItems) => {
+    _serverSeen  = true;
+    _remoteItems = remoteItems;
+    _lastSyncAt  = Date.now();
+    updateLoginButtonUI();
+    if (localHasNewerThan(remoteItems) || _pushQueued) { _pushQueued = false; schedulePush(); }
+  };
+
+  // 리스너와 별개로 서버본을 한 번 확실히 읽는다. onSnapshot의 첫 스냅샷은 캐시에서
+  // 올 수 있고, 캐시와 서버가 같으면(둘 다 "문서 없음") 메타데이터만 바뀌어 이벤트가
+  // 오지 않을 수도 있다. 이 get() 한 번이 업로드 허용 시점을 결정적으로 만든다.
+  docRef.get().then((snap) => {
+    if (gen !== _syncGen) return;
+    const items = (snap.data() || {}).items || {};
+    const changed = applyRemoteItems(items);
+    if (changed > 0 && !pulledToastShown) {
+      pulledToastShown = true;
+      showToast(t('sync_pulled').replace('{n}', String(changed)));
+    }
+    if (!snap.metadata.fromCache) onServerItems(items);
+  }).catch(reportSyncError);
+
+  // includeMetadataChanges: 캐시 → 서버로 바뀌는 순간(데이터는 같고 메타데이터만 변할 때)도
+  // 받아야 오프라인에서 로그인한 뒤 온라인으로 복귀할 때 보류된 push가 흘러간다.
+  _syncUnsub = docRef.onSnapshot({ includeMetadataChanges: true }, (snap) => {
+    if (gen !== _syncGen) return;
+    if (snap.metadata.hasPendingWrites) return;  // 방금 우리가 쓴 값의 echo — 무시
+    const remoteItems = (snap.data() || {}).items || {};
+    const wasFirst = !_serverSeen;
+    const changedCount = applyRemoteItems(remoteItems);
+    if (changedCount > 0) {
+      // 로그인 직후 계정에 있던 데이터를 불러온 것과, 사용 중 다른 기기가 바꾼 것을 구분한다.
+      if (wasFirst && !pulledToastShown) {
+        pulledToastShown = true;
+        showToast(t('sync_pulled').replace('{n}', String(changedCount)));
+      } else if (!wasFirst) {
+        showToast(EN ? `Applied ${changedCount} change(s) from another device`
+                     : `다른 기기의 변경 ${changedCount}건을 반영했습니다`);
+      }
+    }
+    // 캐시본만 본 상태에서는 업로드를 판단하지 않는다 (원격을 빈 문서로 덮어쓰는 경로).
+    if (snap.metadata.fromCache && !_serverSeen) return;
+    if (!snap.metadata.fromCache) onServerItems(remoteItems);
+    else { _lastSyncAt = Date.now(); updateLoginButtonUI(); }
   }, reportSyncError);
 }
 
 function stopSync() {
+  _syncGen++;                 // 진행 중인 get()/스냅샷 응답을 무효화
   if (_syncUnsub) { _syncUnsub(); _syncUnsub = null; }
   clearTimeout(_pushTimer);
   syncActive = false;
+  _serverSeen = false;        // 다음 구독은 다시 서버본을 확인한 뒤에만 쓴다
+  _remoteItems = {};
+  _pushQueued = false;
   _lastSyncAt = null;  // 로그아웃/학회 전환 시 이전 세션의 "마지막 동기화" 시각을 지운다
 }
 

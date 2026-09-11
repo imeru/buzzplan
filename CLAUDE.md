@@ -164,6 +164,20 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
   문서 전체 push. 원격 수신은 `remote.t > local.t`인 키만 적용 (적용 시 stamps 직접 갱신, touch 금지)
 - **삭제 전파**: 선택 해제해도 stamps가 남아 tombstone(s:0) 역할
 - **에코 가드**: onSnapshot에서 `hasPendingWrites`면 무시. 로그인 직후 첫 스냅샷은 토스트 억제
+- **서버본을 보기 전에는 절대 push하지 않는다** (`_serverSeen` 게이트). 문서를 통째로 `set()`하는
+  구조라, 서버본을 못 본 클라이언트의 push 한 번이 다른 기기의 항목 전부를 지운다.
+  오프라인 캐시(`enablePersistence`)가 켜져 있어 `onSnapshot`의 첫 스냅샷은 캐시에서
+  "문서 없음"으로 올 수 있으므로, 업로드 허용 판정은 리스너가 아니라 `docRef.get()`의
+  `metadata.fromCache === false`로 한다. 서버본 도착 전 push 요청은 `_pushQueued`로 보류한다.
+  실제로 이 경로에서 데이터 전멸이 보고되었다 (2026-09-11)
+- **모르는 원격 키는 보존한다**: push payload는 `buildLocalItems()`가 아니라 `buildPushItems()`로
+  만든다. 마지막으로 본 서버본(`_remoteItems`)을 바탕에 깔고, 같은 키는 `t`가 큰 쪽을 남긴다.
+  이 기기가 아직 받지 못한 다른 기기의 항목이 살아남는 유일한 장치다
+- **로컬에 기록이 없는 키는 `t`가 0이어도 수용한다**: `remote.t <= localT` 조건만 쓰면
+  스탬프 없이 올라간 옛 항목이 `0 <= 0`에 걸려 새 기기에 영구히 전파되지 않는다.
+  단 내용이 빈 tombstone은 받을 것이 없어 건너뛴다
+- **세대 번호(`_syncGen`)**: `stopSync`가 증가시켜, 구독 종료 후 뒤늦게 도착하는
+  `get()`과 스냅샷 응답을 버린다 (로그아웃 직후 교차 오염 방지)
 - **게스트 모드 불변 원칙**: 로그인 없으면 동작이 기존과 100% 동일해야 한다
 - **오류는 표면화**: 동기화 실패는 조용히 삼키지 말고 `reportSyncError`로 (버튼 ⚠️ + 권한 오류 안내)
 - **구버전 클라이언트 주의**: 문서를 통째로 쓰는 LWW라, `m`을 모르는 옛 index.html이 캐시된 기기가
@@ -210,7 +224,11 @@ python3 build.py <pdf> --parser <parser> --id tmp --name t --dry-run   # 카운�
 
 # 3. 로직 테스트: 스크래치패드에 ad-hoc node 스크립트.
 #    /tmp/app.js에서 대상 함수를 문자열로 잘라 eval하고 시나리오 검증하는 패턴
-#    (동기화 수정 시 최소: 양방향 반영, 원격이 이기는 경우, 삭제 전파, 에코 무시)
+#    (동기화 수정 시 최소: 양방향 반영, 원격이 이기는 경우, 삭제 전파, 에코 무시,
+#     그리고 "새 기기가 서버본을 보기 전에 push하지 않는가")
+#    주의: 시뮬레이션은 한 ms 안에 끝나므로 Date.now()를 단조 증가 가상 클럭으로 섀도잉해야
+#    한다. 실제 클럭을 쓰면 스탬프가 겹쳐 LWW 비교가 무의미해지고 tombstone 전파가
+#    거짓 FAIL로 나온다 (2026-09-11에 이 함정으로 한 시간을 썼다)
 
 # 4. 배포 확인 (push 후)
 gh api repos/imeru/buzzplan/pages/builds/latest --jq .status   # "built" 될 때까지
