@@ -2490,8 +2490,11 @@ function schedulePush() {
 // long-polling으로 폴백하느라 get({source:'server'})이 수 초 동안 pending할 수 있고,
 // 타임아웃도 재시도도 없으면 그 pending이 그대로 영구 빈 화면이 된다. 실제로 사파리에서
 // 로그인 1.5초 뒤 serverSeen=false, 로컬 0건인 상태가 관측되었다 (2026-09-11).
-const SERVER_READ_TIMEOUT_MS = 5000;
-const SERVER_READ_BACKOFF = [0, 2000, 5000, 10000];   // 시도 4회, 마지막까지 약 17초
+// 첫 시도는 연결 수립까지 기다려야 하므로 넉넉히 준다. 사파리에서 5초는 모자랐다
+// (2026-09-11 실측: 5.002초에 타임아웃된 뒤 리스너가 뒤늦게 서버본을 받아 복구되었다).
+const SERVER_READ_TIMEOUT_MS = 12000;
+const SERVER_READ_RETRY_TIMEOUT_MS = 8000;            // 연결이 선 뒤의 재시도
+const SERVER_READ_BACKOFF = [0, 2000, 5000, 10000];   // 시도 4회
 
 function sleepMs(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
@@ -2556,7 +2559,8 @@ function startSync(user) {
       const startedAt = Date.now();
       _syncRead = { state: 'pending', tries: i + 1, ms: 0, err: '' };
       try {
-        const snap = await getServerWithTimeout(docRef, SERVER_READ_TIMEOUT_MS);
+        const snap = await getServerWithTimeout(docRef,
+                           i === 0 ? SERVER_READ_TIMEOUT_MS : SERVER_READ_RETRY_TIMEOUT_MS);
         if (gen !== _syncGen) return;
         _syncRead = { state: 'ok', tries: i + 1, ms: Date.now() - startedAt, err: '' };
         _syncOffline = false;
@@ -2576,12 +2580,15 @@ function startSync(user) {
         // 기다리는 동안 리스너가 서버본을 받았으면 이 실패는 의미가 없다. 여기서
         // _syncOffline을 켜면 정상 동작 중인데도 오프라인으로 표시된다.
         if (_serverSeen) { _syncRead = { state: 'superseded', tries: i + 1, ms: 0, err: '' }; return; }
-        _syncRead = { state: (e && e.code === 'timeout') ? 'timeout' : 'error', tries: i + 1,
+        const isTimeout = !!(e && e.code === 'timeout');
+        _syncRead = { state: isTimeout ? 'timeout' : 'error', tries: i + 1,
                       ms: Date.now() - startedAt, err: String((e && (e.code || e.message)) || e) };
         // 서버 읽기 실패. _serverSeen을 켜면 안 된다 (캐시본 기준으로 원격을 덮어쓴다).
         // 업로드는 계속 막은 채 상태만 드러내고, 화면은 캐시본으로 채운다.
-        _syncOffline = true;
-        updateLoginButtonUI();
+        // 오프라인 표시는 타임아웃에서 켜지 않는다. 정말 연결이 없으면 SDK가 곧바로
+        // code 'unavailable'로 reject하고, 타임아웃은 "연결 수립이 느리다"는 뜻일 뿐이다.
+        // 사파리는 로그인마다 첫 읽기가 늦어, 여기서 켜면 거짓 경고가 매번 뜬다.
+        if (!isTimeout) { _syncOffline = true; updateLoginButtonUI(); }
         if (i === 0) {
           docRef.get({ source: 'cache' })
             .then((snap) => {
@@ -2620,7 +2627,15 @@ function startSync(user) {
     }
     // 캐시본만 본 상태에서는 업로드를 판단하지 않는다 (원격을 빈 문서로 덮어쓰는 경로).
     if (snap.metadata.fromCache && !_serverSeen) return;
-    if (!snap.metadata.fromCache) { _syncOffline = false; onServerItems(remoteItems); }
+    if (!snap.metadata.fromCache) {
+      _syncOffline = false;
+      // get()이 늦어 타임아웃된 뒤 리스너가 먼저 서버본을 받는 경우가 있다(사파리).
+      // 읽기 상태를 그대로 두면 진단 패널이 멀쩡한 동기화를 실패로 보이게 한다.
+      if (_syncRead.state === 'timeout' || _syncRead.state === 'error') {
+        _syncRead = { state: 'listener-ok', tries: _syncRead.tries, ms: _syncRead.ms, err: '' };
+      }
+      onServerItems(remoteItems);
+    }
     else { _lastSyncAt = Date.now(); updateLoginButtonUI(); }
   }, reportSyncError);
 }

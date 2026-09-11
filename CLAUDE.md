@@ -191,8 +191,9 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
   "서버를 읽지 못했다"가 화면상 구별되지 않는다. 실패하면 `_syncOffline`을 켜서 로그인 버튼에
   드러내고(`sync_offline`), 화면은 캐시본으로 채우되 **업로드는 계속 금지**한다.
   여기서 `_serverSeen`을 켜면 캐시본 기준으로 원격을 덮어쓴다
-- **그 서버 읽기에 타임아웃과 재시도를 건다** (`getServerWithTimeout`, `SERVER_READ_TIMEOUT_MS`
-  5초, `SERVER_READ_BACKOFF` `[0, 2000, 5000, 10000]`으로 시도 4회 약 17초).
+- **그 서버 읽기에 타임아웃과 재시도를 건다** (`getServerWithTimeout`. 첫 시도
+  `SERVER_READ_TIMEOUT_MS` 12초, 재시도 `SERVER_READ_RETRY_TIMEOUT_MS` 8초,
+  `SERVER_READ_BACKOFF` `[0, 2000, 5000, 10000]`으로 시도 4회).
   `source:'server'`는 조용한 실패를 없애는 대신 **서버에 닿을 때까지 reject도 resolve도 하지 않고
   pending으로 남을 수 있다.** 사파리는 Firestore 연결이 streaming 실패 후 long-polling으로
   폴백하는 데 수 초가 걸려 이 상태에 오래 머문다. 타임아웃도 재시도도 없으면 그 pending이
@@ -204,9 +205,14 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
     `_syncOffline`을 켜면 정상 동작 중인데도 경고가 뜨므로, catch 진입 직후에도 `_serverSeen`을
     다시 보고 `state='superseded'`로 남기고 반환한다
   - `permission-denied`는 재시도해도 결과가 같다. 즉시 `reportSyncError`로 알리고 멈춘다
+  - **타임아웃에서는 `_syncOffline`을 켜지 않는다.** 정말 연결이 없으면 SDK가 곧바로
+    `code: 'unavailable'`로 reject하므로(그 경로에서는 즉시 켠다), 타임아웃은 "연결 수립이
+    느리다"는 뜻일 뿐이다. 사파리는 로그인마다 첫 읽기가 늦어 여기서 켜면 거짓 경고가 매번 뜬다
   - 진행 상태는 `_syncRead = {state, tries, ms, err}`에 남긴다. `state`는
-    `idle`/`pending`/`ok`/`timeout`/`error`/`superseded`. 진단 패널이 "지연 중"과 "영구 실패"를
-    가르는 유일한 근거다
+    `idle`/`pending`/`ok`/`timeout`/`error`/`superseded`/`listener-ok`. 진단 패널이 "지연 중"과
+    "영구 실패"를 가르는 유일한 근거다. 첫 읽기가 타임아웃된 뒤 리스너가 서버본을 받아
+    복구하는 일이 사파리에서 정상적으로 일어나므로, 그때 `onSnapshot`이 `timeout`/`error`를
+    `listener-ok`로 갱신한다. 갱신하지 않으면 패널이 멀쩡한 동기화를 실패로 보이게 한다
 - **현재 학회 문서가 비어 있으면 계정의 다른 학회를 확인한다** (`checkOtherConfs`).
   문서 경로가 `confs/<confId>`로 갈리므로 두 기기의 `?conf=`가 다르면 같은 계정인데도
   빈 화면이 나온다. 이 조회는 진단용 부가 동작이라 실패해도 본 동기화에 영향을 주지 않는다
