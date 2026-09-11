@@ -2716,7 +2716,20 @@ function readLogLine() {
   const t0 = _syncReadLog[0].at;
   return 'read log    ' + _syncReadLog.map((e) =>
     '+' + ((e.at - t0) / 1000).toFixed(1) + 's ' + e.state + '#' + e.tries +
-    (e.ms ? ' ' + e.ms + 'ms' : '')).join(' / ');
+    (e.ms ? ' ' + e.ms + 'ms' : '')).join(' / ') +
+    ' | now +' + ((Date.now() - t0) / 1000).toFixed(1) + 's';
+}
+
+// local과 flags도 네트워크 대기 뒤에 다시 써야 하는 줄이므로 헬퍼로 뽑는다.
+function localStateLine() {
+  return 'local       selected=' + state.selected.size +
+         ' notes=' + state.notes.size + ' stamps=' + state.stamps.size;
+}
+
+function flagsLine() {
+  return 'flags       serverSeen=' + _serverSeen + ' offline=' + _syncOffline +
+         ' pushQueued=' + _pushQueued +
+         ' lastSync=' + (_lastSyncAt ? fmtSyncTime(_lastSyncAt) : '없음');
 }
 
 function mountSyncDiag() {
@@ -2752,11 +2765,19 @@ async function runSyncDiag() {
   const filled = (items) => Object.values(items || {})
     .filter(it => it && (it.s || it.r || it.n || it.m)).length;
   const flush = (tail) => { out.textContent = L.join('\n') + (tail ? '\n' + tail : ''); };
+  // 아래 네트워크 대기(수 초)가 끝난 뒤 다시 써야 하는 줄들을 모아 둔다. 대기 전 값만
+  // 찍으면 한 화면의 줄들이 서로 다른 시점을 가리키면서 그 사실이 표시되지 않는다.
+  // 2026-09-11에 flags를 이 갱신에서 빼 두어, 읽기는 ok인데 serverSeen=false인
+  // 모순 스냅샷이 나왔다. 새 상태 줄은 반드시 liveLine으로 넣을 것이다.
+  const live = [];
+  const liveLine = (fn) => { live.push({ i: L.length, fn: fn }); L.push(fn()); };
+  const diagT0 = Date.now();
   L.push('=== BuzzPlan sync diag ===');
-  L.push('time        ' + new Date().toISOString());
+  liveLine(() => 'time        ' + new Date(diagT0).toISOString() +
+                 (Date.now() - diagT0 > 200
+                    ? ' (검사 ' + ((Date.now() - diagT0) / 1000).toFixed(1) + 's 경과)' : ''));
   L.push('conference  ' + currentConfId);
-  L.push('local       selected=' + state.selected.size +
-         ' notes=' + state.notes.size + ' stamps=' + state.stamps.size);
+  liveLine(localStateLine);
   if (typeof firebase === 'undefined') {
     L.push('firebase    SDK 미로드 (차단 또는 오프라인)'); flush(); return;
   }
@@ -2764,15 +2785,9 @@ async function runSyncDiag() {
   if (!u) { L.push('account     로그아웃 상태. 로그인한 뒤 다시 검사하세요'); flush(); return; }
   L.push('account     ' + (u.email || '(이메일 없음)'));
   L.push('uid         ' + u.uid);
-  L.push('flags       serverSeen=' + _serverSeen + ' offline=' + _syncOffline +
-         ' pushQueued=' + _pushQueued +
-         ' lastSync=' + (_lastSyncAt ? fmtSyncTime(_lastSyncAt) : '없음'));
-  // 이 두 줄은 아래 네트워크 대기가 끝난 뒤 다시 쓴다. 대기 전에 한 번만 찍으면
-  // this conf 줄과 시점이 어긋나, 둘을 맞대도 본 읽기가 멈췄는지 가릴 수 없다.
-  const readLineIdx = L.length;
-  L.push(readStateLine());
-  const readLogIdx = L.length;
-  L.push(readLogLine());
+  liveLine(flagsLine);
+  liveLine(readStateLine);
+  liveLine(readLogLine);
   flush('server      읽는 중...');
   const base = firebase.firestore().collection('users').doc(u.uid).collection('confs');
   // 이 읽기는 본 동기화와 별개로 지금 발행하는 서버 읽기다. 소요 시간을 함께 적어,
@@ -2806,8 +2821,7 @@ async function runSyncDiag() {
     L.push('account all 스캔 실패(' + (Date.now() - t1) + 'ms): ' +
            ((e && (e.code || e.message)) || e));
   }
-  L[readLineIdx] = readStateLine();   // 대기가 끝난 지금의 상태로 갱신
-  L[readLogIdx] = readLogLine();
+  for (const e of live) L[e.i] = e.fn();   // 대기가 끝난 지금의 상태로 일괄 갱신
   flush();
   // 사파리처럼 서버 읽기가 늦게 끝나는 환경에서는 한 번 찍은 값이 "아직 진행 중"일 뿐이다.
   // 서버본을 받기 전까지 자동으로 다시 검사해 지연과 영구 실패를 구분한다. 횟수는
