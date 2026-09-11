@@ -170,6 +170,14 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
   "문서 없음"으로 올 수 있으므로, 업로드 허용 판정은 리스너가 아니라 `docRef.get()`의
   `metadata.fromCache === false`로 한다. 서버본 도착 전 push 요청은 `_pushQueued`로 보류한다.
   실제로 이 경로에서 데이터 전멸이 보고되었다 (2026-09-11)
+- **서버 읽기는 `get({ source: 'server' })`로 강제한다.** 기본 `get()`은 서버에 닿지 못해도
+  캐시본으로 resolve되므로, 캐시가 빈 브라우저에서는 "계정에 아무것도 없다"와
+  "서버를 읽지 못했다"가 화면상 구별되지 않는다. 실패하면 `_syncOffline`을 켜서 로그인 버튼에
+  드러내고(`sync_offline`), 화면은 캐시본으로 채우되 **업로드는 계속 금지**한다.
+  여기서 `_serverSeen`을 켜면 캐시본 기준으로 원격을 덮어쓴다
+- **현재 학회 문서가 비어 있으면 계정의 다른 학회를 확인한다** (`checkOtherConfs`).
+  문서 경로가 `confs/<confId>`로 갈리므로 두 기기의 `?conf=`가 다르면 같은 계정인데도
+  빈 화면이 나온다. 이 조회는 진단용 부가 동작이라 실패해도 본 동기화에 영향을 주지 않는다
 - **모르는 원격 키는 보존한다**: push payload는 `buildLocalItems()`가 아니라 `buildPushItems()`로
   만든다. 마지막으로 본 서버본(`_remoteItems`)을 바탕에 깔고, 같은 키는 `t`가 큰 쪽을 남긴다.
   이 기기가 아직 받지 못한 다른 기기의 항목이 살아남는 유일한 장치다
@@ -234,6 +242,9 @@ python3 build.py <pdf> --parser <parser> --id tmp --name t --dry-run   # 카운�
 gh api repos/imeru/buzzplan/pages/builds/latest --jq .status   # "built" 될 때까지
 curl -s "https://imeru.github.io/buzzplan/?v=$RANDOM" | grep -c "<찾을 문자열>"
 # 브라우저 확인은 반드시 강력 새로고침 (Cmd+Shift+R). 캐시가 강하다
+# index.html에 no-cache 메타를 넣어 재검증을 요구하지만, 이미 캐시된 기기에는 소급되지
+# 않는다. 사파리는 특히 오래 쓴다. 옛 버전이 돌면 동기화처럼 데이터가 걸린 기능에서
+# 사고가 나므로, 동기화 수정 후에는 기기마다 강력 새로고침을 안내할 것
 ```
 
 ## 10. 완료의 정의 (보고 전 체크리스트)
