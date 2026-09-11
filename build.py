@@ -162,7 +162,13 @@ def main():
     else:
         reg = {'default': args.id, 'conferences': []}
 
-    entry = {'id': args.id, 'name': args.name, 'data': f"data/{args.id}.json"}
+    # start(개최 첫날)는 index.html의 학회 드롭다운 정렬 키다. 없으면 id의 연도로
+    # 폴백하므로 같은 해의 하계와 동계가 이름순으로 섞인다
+    _dates = sorted({x.get('date') for x in data.get('sessions', []) if x.get('date')})
+    entry = {'id': args.id, 'name': args.name}
+    if _dates:
+        entry['start'] = _dates[0]
+    entry['data'] = f"data/{args.id}.json"
     existing = [c for c in reg.get('conferences', []) if c.get('id') == args.id]
     if existing:
         existing[0].update(entry)
@@ -173,6 +179,10 @@ def main():
 
     if args.default or 'default' not in reg:
         reg['default'] = args.id
+
+    # 개최 시기 내림차순으로 유지한다. index.html도 같은 기준으로 정렬하지만,
+    # 파일 자체를 정렬해 두면 사람이 읽을 때와 diff를 볼 때 순서가 일치한다
+    reg['conferences'].sort(key=lambda c: (c.get('start', '0000'), c.get('name', '')), reverse=True)
 
     confs_idx.write_text(json.dumps(reg, ensure_ascii=False, indent=2), encoding='utf-8')
     print(f"      학회 {action}: {args.id}  (default: {reg['default']})")

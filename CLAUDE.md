@@ -120,6 +120,22 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
 - `paper.start/end`가 없으면 세션 시작부터 15분(`PAPER_MINUTES`) 단위로 자동 배정
 - v1 레거시(12시간제, M/D/YYYY)는 `schema_version` 부재를 보고 index.html이 구식 휴리스틱으로 처리
 
+`conferences.json`의 항목 스키마는 따로다. 키 순서는 `id, name, start, data`다.
+
+```json
+{ "default": "roomvent-2026",
+  "conferences": [
+    { "id": "roomvent-2026", "name": "RoomVent 2026",
+      "start": "2026-09-15", "data": "data/roomvent-2026.json" }
+  ] }
+```
+
+- `start`는 개최 첫날(ISO). **학회 드롭다운 정렬 키**이고, build.py가 등록할 때
+  `sessions[].date`의 최소값에서 뽑아 넣는다. 없으면 index.html이 id의 4자리 연도로
+  폴백하므로 같은 해의 하계(6월)와 동계(11월)가 이름순으로 섞인다
+- 파일 자체도 `start` 내림차순으로 정렬해 둔다 (build.py가 등록 후 재정렬한다).
+  사람이 읽을 때와 diff를 볼 때 드롭다운 순서와 일치하게 하려는 것이다
+
 ## 5. 등록된 학회 (현행)
 
 | id | 이름 | 파서 | 규모 | 비고 |
@@ -220,6 +236,18 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
   `mapLink(inner, from, to)`는 `{building, room}`을 가진 객체를 받아 장소 텍스트를 지도 링크로
   감싸고, 핀이 없는 방은 평문을 그대로 돌려준다 (죽은 링크 방지). 모달은 `setupMapModal()`
 - 조회 캐시 `_papersBySession` 등은 학회 전환 시 `invalidateCaches()`
+- **학회 드롭다운 정렬**: `renderConfChip()`의 `confSortKey(c)`가 `conferences.json`의
+  `start`를 1순위로 보고 내림차순으로 세운다(최신이 위, 오래된 것이 아래).
+  `start`가 없거나 ISO 형식이 아니면 id의 연도로 폴백하고, 같은 키면 `natCompare(name)`로 가른다.
+  현재 학회는 목록에서 빼고 맨 위 칩으로 따로 보여 준다
+- **동기화 진단 패널 (`?debug=sync`)**: `syncDebugOn`/`mountSyncDiag`/`runSyncDiag`.
+  "한 브라우저에서는 보이는데 다른 브라우저에서는 안 보인다"는 신고를 추측으로 쫓지 않기 위한
+  창구다. 한 화면에서 원인 후보 셋(다른 구글 계정, 다른 `?conf=`, 서버 읽기 실패)을 가른다.
+  계정 주소와 uid, `_serverSeen`/`_syncOffline`/`_pushQueued` 플래그, 현재 학회 문서의 키 수,
+  계정 안의 전체 학회 문서 목록을 적고 "복사" 버튼으로 전문을 클립보드에 넣는다.
+  SDK가 로드되지 않은 경우에도 떠야 하므로 호출 지점이 둘이다(인증 콜백 안과 밖).
+  **운영자와 개발자용이라 i18n 대상이 아니다** (12장의 부팅 오류 페이지와 같은 취급).
+  라벨은 영어 키워드로 쓴다
 
 ## 9. 검증 방법 (테스트 프레임워크 없음, 아래가 관행)
 
@@ -245,6 +273,12 @@ curl -s "https://imeru.github.io/buzzplan/?v=$RANDOM" | grep -c "<찾을 문자�
 # index.html에 no-cache 메타를 넣어 재검증을 요구하지만, 이미 캐시된 기기에는 소급되지
 # 않는다. 사파리는 특히 오래 쓴다. 옛 버전이 돌면 동기화처럼 데이터가 걸린 기능에서
 # 사고가 나므로, 동기화 수정 후에는 기기마다 강력 새로고침을 안내할 것
+
+# 5. 현장 동기화 진단 (사용자 신고가 재현되지 않을 때)
+#    문제가 난 기기에서 ?debug=sync를 붙여 열고 로그인한 뒤, 패널의 "복사"를 눌러
+#    전문을 받는다. 정상 기기에서도 같이 받아 account와 uid 줄을 맞대면
+#    계정 불일치가 즉시 갈린다. 추측으로 가설을 쌓기 전에 이 단계를 먼저 할 것
+https://imeru.github.io/buzzplan/?conf=<학회id>&debug=sync
 ```
 
 ## 10. 완료의 정의 (보고 전 체크리스트)

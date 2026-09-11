@@ -2,29 +2,34 @@
   "default": "roomvent-2026",
   "conferences": [
     {
+      "id": "roomvent-2026",
+      "name": "RoomVent 2026",
+      "start": "2026-09-15",
+      "data": "data/roomvent-2026.json"
+    },
+    {
+      "id": "sarek-2026-summer",
+      "name": "대한설비공학회 2026 하계학술발표대회",
+      "start": "2026-06-25",
+      "data": "data/sarek-2026-summer.json"
+    },
+    {
       "id": "iaqvec-2026",
       "name": "IAQVEC 2026",
+      "start": "2026-05-19",
       "data": "data/iaqvec-2026.json"
     },
     {
       "id": "sarek-2025-winter",
       "name": "대한설비공학회 2025 동계학술발표대회",
+      "start": "2025-11-28",
       "data": "data/sarek-2025-winter.json"
     },
     {
       "id": "sarek-2025-summer",
       "name": "대한설비공학회 2025 하계학술발표대회",
+      "start": "2025-06-19",
       "data": "data/sarek-2025-summer.json"
-    },
-    {
-      "id": "sarek-2026-summer",
-      "name": "대한설비공학회 2026 하계학술발표대회",
-      "data": "data/sarek-2026-summer.json"
-    },
-    {
-      "id": "roomvent-2026",
-      "name": "RoomVent 2026",
-      "data": "data/roomvent-2026.json"
     }
   ]
 }

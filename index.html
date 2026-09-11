@@ -826,6 +826,7 @@ const I18N_KO = {
   sync_offline: '⚠️ 계정 데이터를 읽지 못했습니다',
   sync_offline_title: '서버에 연결하지 못해 계정 데이터를 읽지 못했습니다. 이 기기의 변경은 업로드하지 않습니다 (원격 데이터 보호). 네트워크를 확인하고 새로고침하세요.',
   sync_other_conf: '이 학회에는 저장된 항목이 없습니다. \'{name}\'에 {n}건이 저장되어 있습니다',
+  sync_empty_account: '이 계정({email})에 저장된 항목이 없습니다. 다른 구글 계정으로 로그인했는지 확인하세요',
   login_fail: '로그인 실패: ',
   sync_error: '⚠️ 동기화 오류',
   sync_perm_error: '동기화 권한 오류입니다.\n\nFirebase 콘솔 → Firestore Database → 규칙 탭에\n레포의 firestore.rules 내용을 붙여넣고 "게시"해야 합니다.\n(기본 규칙은 모든 접근을 거부합니다)',
@@ -861,6 +862,7 @@ const I18N_EN = {
   sync_offline: '⚠️ Could not read account data',
   sync_offline_title: 'Could not reach the server, so your account data was not loaded. Changes on this device will not be uploaded (to protect remote data). Check your network and reload.',
   sync_other_conf: 'Nothing saved for this conference. {n} item(s) are saved under \'{name}\'',
+  sync_empty_account: 'Nothing is saved under this account ({email}). Check whether you signed in with a different Google account',
   login_fail: 'Sign-in failed: ',
   sync_error: '⚠️ Sync error',
   sync_perm_error: 'Sync permission error.\n\nDeploy the firestore.rules from the repo in\nFirebase Console → Firestore Database → Rules.\n(The default rules deny all access)',
@@ -2170,12 +2172,14 @@ function renderConfChip() {
   // Selecting an option navigates to ?conf=<id> so the URL stays shareable.
   const sel = document.getElementById('conf-switch');
   const list = (CONFERENCES_REG && CONFERENCES_REG.conferences) || [];
-  // 최신 연도 학회가 위로 오도록 정렬 (id의 4자리 연도 기준, 같으면 이름순)
-  const others = list.filter(c => c.id !== currentConfId).sort((a, b) => {
-    const ya = +((String(a.id).match(/20\d\d/) || [0])[0]);
-    const yb = +((String(b.id).match(/20\d\d/) || [0])[0]);
-    return (yb - ya) || natCompare(a.name, b.name);
-  });
+  // 개최 시기 내림차순 (최신이 위, 오래된 것이 아래). conferences.json의 start(개최 첫날)를
+  // 1순위로 쓴다. id의 연도만 보면 같은 해의 하계와 동계가 이름순으로 섞인다
+  const confSortKey = (c) => {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(c.start || '')) return c.start;
+    return ((String(c.id).match(/20\d\d/) || ['0000'])[0]) + '-00-00';
+  };
+  const others = list.filter(c => c.id !== currentConfId).sort((a, b) =>
+    confSortKey(b).localeCompare(confSortKey(a)) || natCompare(a.name, b.name));
   if (others.length === 0) {
     sel.style.display = 'none';
   } else {
@@ -2333,12 +2337,15 @@ function updateLoginButtonUI() {
       return;
     }
     btn.textContent = `🟢 ${first}`;
+    // 어느 계정으로 로그인했는지 title에 적는다. 브라우저마다 다른 구글 계정으로
+    // 로그인하면 "저장한 게 없다"와 같은 증상이 나는데, 이름 첫 단어만으로는 구별되지 않는다.
+    const acct = currentUser.email || currentUser.uid.slice(0, 8);
     if (_lastSyncAt) {
       const hms = fmtSyncTime(_lastSyncAt);
-      btn.title = EN ? `${t('sync_last')}${hms} — click to sign out`
-                     : `동기화 중 — ${t('sync_last')}${hms} · 클릭하여 로그아웃`;
+      btn.title = EN ? `${acct}\n${t('sync_last')}${hms}\nClick to sign out`
+                     : `${acct}\n${t('sync_last')}${hms}\n클릭하여 로그아웃`;
     } else {
-      btn.title = t('sync_title');
+      btn.title = `${acct}\n${t('sync_title')}`;
     }
   } else {
     btn.textContent = t('login');
@@ -2577,11 +2584,105 @@ function checkOtherConfs(user, gen) {
         const n = Object.values(items).filter(it => it && (it.s || it.r || it.n || it.m)).length;
         if (n > 0) others.push({ id: d.id, n });
       });
-      if (!others.length) return;
+      if (!others.length) {
+        // 계정 전체가 비어 있다. 로컬도 비었으면 사용자는 "저장한 게 사라졌다"고 읽는다.
+        // 브라우저마다 다른 구글 계정으로 로그인한 경우가 대표적이라 계정을 적어 보여 준다.
+        // 로컬에 데이터가 있으면 곧 업로드되므로 안내하지 않는다.
+        if (!state.selected.size && !state.notes.size) {
+          showToast(t('sync_empty_account')
+            .replace('{email}', user.email || user.uid.slice(0, 8)), 9000);
+        }
+        return;
+      }
       others.sort((a, b) => b.n - a.n);
       showToast(t('sync_other_conf').replace('{name}', confNameById(others[0].id))
                                     .replace('{n}', String(others[0].n)), 9000);
     }).catch(() => {});
+}
+
+// ===== 동기화 진단 패널 (?debug=sync) =====
+// "한 브라우저에서는 보이는데 다른 브라우저에서는 안 보인다"는 신고를 추측으로 쫓지 않기
+// 위한 창구다. 원인 후보 셋(다른 구글 계정, 다른 ?conf=, 서버 읽기 실패)을 한 화면에서
+// 가른다. 운영자와 개발자용이라 i18n 대상이 아니다. 라벨은 영어 키워드로 쓴다
+// (12장의 부팅 오류 페이지와 같은 취급).
+function syncDebugOn() {
+  return new URLSearchParams(location.search).get('debug') === 'sync';
+}
+
+function mountSyncDiag() {
+  if (document.getElementById('sync-diag')) { runSyncDiag(); return; }
+  const box = document.createElement('div');
+  box.id = 'sync-diag';
+  box.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;max-height:60vh;' +
+    'overflow:auto;background:#111;color:#7f7;padding:10px 12px;border-radius:8px;' +
+    'font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;' +
+    'box-shadow:0 4px 16px rgba(0,0,0,.45)';
+  box.innerHTML = '<pre id="sync-diag-body" style="margin:0;white-space:pre-wrap;' +
+    'word-break:break-all">sync diag: 준비 중</pre>' +
+    '<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">' +
+    '<button id="sync-diag-run" style="font:inherit">다시 검사</button>' +
+    '<button id="sync-diag-copy" style="font:inherit">복사</button>' +
+    '<button id="sync-diag-close" style="font:inherit">닫기</button></div>';
+  document.body.appendChild(box);
+  document.getElementById('sync-diag-run').onclick = runSyncDiag;
+  document.getElementById('sync-diag-copy').onclick = () => {
+    const txt = document.getElementById('sync-diag-body').textContent;
+    if (!navigator.clipboard) return;
+    navigator.clipboard.writeText(txt)
+      .then(() => showToast('진단 결과를 복사했습니다')).catch(() => {});
+  };
+  document.getElementById('sync-diag-close').onclick = () => box.remove();
+  runSyncDiag();
+}
+
+async function runSyncDiag() {
+  const out = document.getElementById('sync-diag-body');
+  if (!out) return;
+  const L = [];
+  const filled = (items) => Object.values(items || {})
+    .filter(it => it && (it.s || it.r || it.n || it.m)).length;
+  const flush = (tail) => { out.textContent = L.join('\n') + (tail ? '\n' + tail : ''); };
+  L.push('=== BuzzPlan sync diag ===');
+  L.push('time        ' + new Date().toISOString());
+  L.push('conference  ' + currentConfId);
+  L.push('local       selected=' + state.selected.size +
+         ' notes=' + state.notes.size + ' stamps=' + state.stamps.size);
+  if (typeof firebase === 'undefined') {
+    L.push('firebase    SDK 미로드 (차단 또는 오프라인)'); flush(); return;
+  }
+  const u = firebase.auth().currentUser;
+  if (!u) { L.push('account     로그아웃 상태. 로그인한 뒤 다시 검사하세요'); flush(); return; }
+  L.push('account     ' + (u.email || '(이메일 없음)'));
+  L.push('uid         ' + u.uid);
+  L.push('flags       serverSeen=' + _serverSeen + ' offline=' + _syncOffline +
+         ' pushQueued=' + _pushQueued +
+         ' lastSync=' + (_lastSyncAt ? fmtSyncTime(_lastSyncAt) : '없음'));
+  flush('server      읽는 중...');
+  const base = firebase.firestore().collection('users').doc(u.uid).collection('confs');
+  try {
+    const snap = await base.doc(currentConfId).get({ source: 'server' });
+    const items = (snap.data() || {}).items || {};
+    L.push('this conf   exists=' + snap.exists + ' keys=' + Object.keys(items).length +
+           ' 내용있음=' + filled(items));
+  } catch (e) {
+    L.push('this conf   서버 읽기 실패: ' + ((e && (e.code || e.message)) || e));
+  }
+  flush('account     스캔 중...');
+  try {
+    const qs = await base.get({ source: 'server' });
+    if (qs.empty) {
+      L.push('account all 이 계정에는 학회 문서가 하나도 없습니다');
+    } else {
+      qs.forEach((d) => {
+        const items = (d.data() || {}).items || {};
+        L.push('  ' + (d.id === currentConfId ? '* ' : '  ') + d.id +
+               '  keys=' + Object.keys(items).length + ' 내용있음=' + filled(items));
+      });
+    }
+  } catch (e) {
+    L.push('account all 스캔 실패: ' + ((e && (e.code || e.message)) || e));
+  }
+  flush();
 }
 
 function stopSync() {
@@ -3184,8 +3285,14 @@ async function bootApp() {
       currentUser = user;
       updateLoginButtonUI();
       if (user) startSync(user); else stopSync();
+      // startSync의 서버 읽기가 끝난 뒤의 플래그를 보여 주려고 조금 늦춘다
+      if (syncDebugOn()) setTimeout(mountSyncDiag, 1500);
     });
   }
+
+  // SDK가 아예 로드되지 않은 경우에도 진단 패널은 떠야 한다. 무엇이 막혔는지
+  // 보여 주는 것이 이 패널의 목적이다.
+  if (syncDebugOn()) setTimeout(mountSyncDiag, 1500);
 }
 
 bootApp();
