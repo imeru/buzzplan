@@ -4,3 +4,8 @@ __pycache__/
 *.pdf
 # map-editor.html이 data/<id>.json을 쓸 때 남기는 백업
 *.json.bak
+# 회장 도면 원본 사진(폰 촬영본). 가공한 결과만 assets/maps/에 커밋한다
+assets/maps/IMG_*.png
+assets/maps/IMG_*.jpg
+assets/maps/IMG_*.jpeg
+assets/maps/IMG_*.HEIC

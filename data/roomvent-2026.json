@@ -2966,5 +2966,60 @@
       "end": "16:30"
     }
   ],
-  "schema_version": 2
+  "schema_version": 2,
+  "venue": {
+    "walk_model": {
+      "speed_m_per_min": 66,
+      "detour": 1.5,
+      "floor_min": 1.5
+    },
+    "maps": [
+      {
+        "building": "CTU",
+        "floor": 2,
+        "label": "Upper level (2F)",
+        "image": "assets/maps/roomvent-2026-2f.jpg",
+        "width_px": 2000,
+        "height_px": 960,
+        "width_meters": 142,
+        "pins": [
+          {
+            "room": "B 286",
+            "x": 535,
+            "y": 767
+          },
+          {
+            "room": "C 215",
+            "x": 817,
+            "y": 562
+          },
+          {
+            "room": "C 217",
+            "x": 1016,
+            "y": 562
+          },
+          {
+            "room": "C 219",
+            "x": 1197,
+            "y": 562
+          },
+          {
+            "room": "C 221",
+            "x": 1359,
+            "y": 562
+          },
+          {
+            "room": "C 223",
+            "x": 1544,
+            "y": 562
+          },
+          {
+            "room": "A 230",
+            "x": 1880,
+            "y": 483
+          }
+        ]
+      }
+    ]
+  }
 }
