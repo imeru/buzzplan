@@ -2976,6 +2976,27 @@
     "maps": [
       {
         "building": "CTU",
+        "floor": 1,
+        "label": "Entrance level (1F)",
+        "image": "assets/maps/roomvent-2026-1f.jpg",
+        "width_px": 2000,
+        "height_px": 960,
+        "width_meters": 142,
+        "pins": [
+          {
+            "room": "B 168",
+            "x": 275,
+            "y": 176
+          },
+          {
+            "room": "B 169",
+            "x": 477,
+            "y": 176
+          }
+        ]
+      },
+      {
+        "building": "CTU",
         "floor": 2,
         "label": "Upper level (2F)",
         "image": "assets/maps/roomvent-2026-2f.jpg",
