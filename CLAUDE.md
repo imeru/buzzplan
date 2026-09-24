@@ -29,8 +29,9 @@
 4. **사용자 노출 문자열은 한국어가 소스**이고, 새로 추가할 때 반드시
    `I18N_KO`와 `I18N_EN` 양쪽에 키를 넣고 `t(key)`로 쓴다.
    정적 HTML 문자열이면 `applyStaticLang()`에도 영어 치환을 추가한다
-5. **선택, 별점, 메모, 꼭 듣기(⭐)를 바꾸는 모든 코드 경로는 `touch(key)`를 호출해야 한다.**
-   touch가 빠지면 그 변경은 다른 기기로 동기화되지 않는다.
+5. **선택과 꼭 듣기(⭐)를 바꾸는 모든 신규 UI 경로는 `touch(key)`를 호출해야 한다.**
+   `r`(별점)과 `n`(빠른 메모)은 이전 버전 호환용 필드다. 신규 UI에서 수정하지 않지만 기존 값을
+   읽고 원격에서 수용하며 push payload에 그대로 보존한다. 0이나 빈 문자열로 자동 초기화하면 안 된다.
    단, 원격 수신 적용부(`applyRemoteItems`)에서는 touch 금지 (push 루프 발생)
 6. **모바일 로그인은 `signInWithPopup`만 쓴다.** `signInWithRedirect`는 호스팅 도메인
    (imeru.github.io) ≠ authDomain(buzzplan.firebaseapp.com) 환경에서 브라우저의
@@ -184,6 +185,10 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
         { items: { "<sessionId>#<paperNo>": {s: 0|1, r: 별점, n: 메모, m: 0|1(꼭 듣기), t: ms} } }
 ```
 
+- 신규 화면은 `s`와 `m`만 변경한다. `r`과 `n`은 구버전 앱과 기존 사용자 데이터 호환을 위해
+  스키마에 남긴다. `buildLocalItems`와 `buildPushItems`는 기존 값을 재전송하고,
+  `applyRemoteItems`는 구버전 기기가 보낸 값을 계속 수용한다. 꼭 듣기 토글이나 선택 변경이
+  기존 `r`과 `n`을 지우지 않도록 `setNote`의 병합 동작을 유지한다
 - **키별 LWW 병합**: 로컬 변경은 `touch(key)`가 `state.stamps`에 시각 기록 → 800ms 디바운스 후
   문서 전체 push. 원격 수신은 `remote.t > local.t`인 키만 적용 (적용 시 stamps 직접 갱신, touch 금지)
 - **삭제 전파**: 선택 해제해도 stamps가 남아 tombstone(s:0) 역할.
@@ -283,8 +288,8 @@ Firestore: users/<uid>/confs/<confId>/richNotes/<noteId>
   tombstone을 갱신한다
 - 게스트 노트를 uid 파티션으로 옮길 때 같은 noteId의 계정 노트가 있으면 덮어쓰지 않는다.
   내용이 다르면 게스트 내용을 충돌 사본으로 보존하고, 게스트 원본은 자동 삭제하지 않는다
-- 원격 노트 적용과 발표 연결 변경은 `touch(key)`를 호출하지 않는다. `touch(key)`는 발표 선택,
-  별점, 빠른 메모, 꼭 듣기 전용이다
+- 원격 노트 적용과 발표 연결 변경은 `touch(key)`를 호출하지 않는다. 신규 UI에서 `touch(key)`는
+  발표 선택과 꼭 듣기 전용이다. 레거시 `r`과 `n`을 처리하는 구버전 호환 경로는 기존 계약을 유지한다
 - 이미지와 음성 Blob은 IndexedDB `media`에만 저장한다. Firestore에는 `mediaIds`와 본문 노드만
   올라간다. 파일이 없는 기기에서는 자리 표시자를 그리되 노드를 보존한다. 사이트 데이터 삭제 시
   로컬 첨부는 복구되지 않는다
@@ -310,7 +315,7 @@ Firestore: users/<uid>/confs/<confId>/richNotes/<noteId>
 - `nowParts()` : `conference.timezone` 기준 학회 현지 시각 (무효 tz는 기기 로컬 폴백, 1초 메모이즈)
 - `sessionStatus(s)` : past-day/future-day/past/current/upcoming (학회 현지 기준)
 - `startNowTimer()` : 다음 상태 전환 시각을 계산해 그때만 깨는 setTimeout (30초 폴링 아님).
-  메모 입력 중이면 재렌더를 미룬다
+  문서 노트 편집 중이면 재렌더를 미룬다
 - `paperTime(session, paper, idx, total)` : 발표 시간. 우선순위 paper.start/end > paper_no 시간형 >
   poster/Panel/Special은 세션 공유 > 15분 슬라이스
 - `renderSessions()` 둘러보기 탭 / `renderItinerary()` 내 일정 탭 (리스트·시간표 토글, hop 힌트)
@@ -321,10 +326,9 @@ Firestore: users/<uid>/confs/<confId>/richNotes/<noteId>
 - 동기화 계층: `startSync`/`stopSync`/`schedulePush`/`applyRemoteItems`/`touch`/`reportSyncError`
 - 문서 노트 동기화 계층: `startRichNotesSync`/`stopRichSync`/`rnPushOne`/`rnResolveConflict`.
   기존 items 동기화와 상태나 업로드 게이트를 섞지 않는다
-- **꼭 듣기(⭐)**: `isMust`/`toggleMust`/`clearMustOnDeselect`. 상태는 notes 항목의 `must` 불리언이라
-  별점과 축이 다르다 (별점은 듣고 난 뒤 평가, 꼭 듣기는 듣기 전 우선순위).
+- **꼭 듣기(⭐)**: `isMust`/`toggleMust`/`clearMustOnDeselect`. 상태는 notes 항목의 `must` 불리언이다.
   켜면 자동으로 선택에 담기고, 선택을 해제하면 함께 꺼진다. 토글 핸들러는 전체 재렌더 대신
-  해당 행이나 카드만 갱신한다 (메모 textarea 포커스 보존).
+  해당 행이나 카드만 갱신해 스크롤 위치를 보존한다. 레거시 `rating`과 `note`도 함께 보존해야 한다.
   **강조 CSS의 축 분리 계약**: 시간 상태(current/upcoming/past)와 꼭 듣기는 서로 다른 CSS 속성을
   써야 한다. 시간 상태는 시간표에서 `outline`, 내 일정 카드에서 ring(`box-shadow`)과 `opacity`를
   쓰고, 꼭 듣기는 배경과 왼쪽 띠, 굵은 제목, 배지를 쓴다. 같은 속성을 쓰면 소스 순서가 뒤인 쪽이
@@ -419,7 +423,8 @@ https://imeru.github.io/buzzplan/?conf=<학회id>&debug=sync
 - [ ] 편집기 소스 수정 시: `npm run check` 통과 + vendor 번들 갱신
 - [ ] firestore.rules 수정 시: `npm run test:rules` 통과 (게시는 사용자가 콘솔에서)
 - [ ] 신규 사용자 노출 문자열: I18N_KO/EN 양쪽 + (정적이면) applyStaticLang 반영
-- [ ] 선택, 별점, 빠른 메모, 꼭 듣기 변경 경로를 추가하거나 수정했으면: touch(key) 포함 여부 확인
+- [ ] 선택과 꼭 듣기 변경 경로를 추가하거나 수정했으면: touch(key) 포함 여부 확인
+- [ ] items 호환 계층 수정 시: 기존 `r`과 `n` 수용, 재전송, 꼭 듣기 변경 시 보존 여부 확인
 - [ ] richNotes 변경 시: 서버 확인 전 push 금지, 충돌 사본, tombstone, owner 분리 회귀 확인
 - [ ] 로컬 미디어 변경 시: 다른 기기의 미해결 노드를 삭제하지 않는지 확인
 - [ ] 데이터 변경 시: validate_v2 통과 + 학회 표(5장) 숫자 갱신

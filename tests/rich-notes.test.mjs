@@ -685,3 +685,157 @@ test('richNotes 경계와 Firestore 규칙의 데이터 보호 계약이 유지�
   assert.match(rules, /allow delete: if false/);
   assert.doesNotMatch(rules, /match \/users\/\{uid\}\/\{document=\*\*\}/);
 });
+
+test('내 일정은 별점과 빠른 메모 입력 대신 문서 노트 진입점만 렌더한다', () => {
+  const source = extractFunction('renderItinerary');
+  assert.match(source, /nbPickEntryHtml\(it\.key\)/);
+  assert.doesNotMatch(source, /note-input|class="rating|clear_rating|note_ph/);
+  assert.doesNotMatch(indexHtml, /data-nact="promote"|nb_promote/);
+});
+
+test('레거시 별점과 빠른 메모는 로컬 payload와 원격 수신에서 보존된다', () => {
+  const local = buildModule({
+    functions: ['buildLocalItems'],
+    prelude: `
+      const state = {
+        selected: new Set(['s1#p1']),
+        notes: new Map([['s1#p1', { rating: 4, note: 'legacy memo', must: true }]]),
+        stamps: new Map([['s1#p1', 42]]),
+      };
+    `,
+    exports: `{ run: buildLocalItems }`,
+  });
+  assert.deepEqual(local.run(), {
+    's1#p1': { s: 1, r: 4, n: 'legacy memo', m: 1, t: 42 },
+  });
+
+  const remote = buildModule({
+    functions: ['applyRemoteItems'],
+    prelude: `
+      const state = { selected: new Set(), notes: new Map(), stamps: new Map() };
+      const saveSelection = () => {};
+      const saveNotes = () => {};
+      const saveStamps = () => {};
+      const rerenderAfterRemoteChange = () => {};
+    `,
+    exports: `{
+      run: applyRemoteItems,
+      note: (key) => state.notes.get(key),
+      stamp: (key) => state.stamps.get(key),
+    }`,
+  });
+  assert.equal(remote.run({ 's1#p1': { s: 0, r: 3, n: 'old client memo', m: 0, t: 7 } }), 1);
+  assert.deepEqual(remote.note('s1#p1'), { rating: 3, note: 'old client memo', must: false });
+  assert.equal(remote.stamp('s1#p1'), 7);
+});
+
+test('꼭 듣기 변경은 보존된 별점과 빠른 메모를 지우지 않는다', () => {
+  const api = buildModule({
+    functions: ['getNote', 'setNote', 'isMust', 'toggleMust', 'clearMustOnDeselect'],
+    prelude: `
+      const state = {
+        selected: new Set(),
+        notes: new Map([['s1#p1', { rating: 5, note: 'keep me', must: false }]]),
+      };
+      let touches = 0;
+      const saveNotes = () => {};
+      const saveSelection = () => {};
+      const touch = () => { touches++; };
+    `,
+    exports: `{
+      toggle: toggleMust,
+      clear: clearMustOnDeselect,
+      note: (key) => state.notes.get(key),
+      touches: () => touches,
+    }`,
+  });
+
+  assert.equal(api.toggle('s1#p1'), true);
+  assert.deepEqual(api.note('s1#p1'), { rating: 5, note: 'keep me', must: true });
+  api.clear('s1#p1');
+  assert.deepEqual(api.note('s1#p1'), { rating: 5, note: 'keep me', must: false });
+  assert.equal(api.touches(), 2);
+});
+
+test('발표별 노트 진입은 기존 노트, 레거시 메모, 빈 노트를 구분한다', async () => {
+  const api = buildModule({
+    functions: ['nbOpenPaperEntry'],
+    prelude: `
+      const _nbEntryPending = new Set();
+      let linked = [];
+      let memo = '';
+      const calls = [];
+      const nbNotesForPaper = () => linked;
+      const getNote = () => ({ rating: 0, note: memo, must: false });
+      const nbOpenForPaper = async () => { calls.push('open'); return 'opened'; };
+      const nbPromoteQuickNote = async () => { calls.push('promote'); return 'promoted'; };
+      const nbCreateForPaper = async () => { calls.push('create'); return 'created'; };
+    `,
+    exports: `{
+      run: nbOpenPaperEntry,
+      setLinked: (v) => { linked = v; },
+      setMemo: (v) => { memo = v; },
+      calls: () => calls,
+    }`,
+  });
+
+  api.setLinked([{ id: 'n1' }]);
+  api.setMemo('legacy');
+  assert.equal(await api.run('s1#p1'), 'opened');
+
+  api.setLinked([]);
+  assert.equal(await api.run('s1#p1'), 'promoted');
+
+  api.setMemo('');
+  assert.equal(await api.run('s1#p1'), 'created');
+  assert.deepEqual(api.calls(), ['open', 'promote', 'create']);
+
+  const source = extractFunction('nbOpenPaperEntry') + extractFunction('nbPromoteQuickNote');
+  assert.doesNotMatch(source, /\bsetNote\s*\(|\btouch\s*\(/);
+});
+
+test('발표에 연결된 노트 하나는 바로 열고 여러 개는 발표별 목록을 연다', async () => {
+  const api = buildModule({
+    functions: ['nbOpenForPaper'],
+    prelude: `
+      let linked = [];
+      let opened = null;
+      let created = 0;
+      let rendered = 0;
+      let view = '';
+      const _nbUi = { filter: 'all', paperKey: null };
+      const document = { getElementById: () => null };
+      const nbNotesForPaper = () => linked;
+      const nbCreateForPaper = async () => { created++; };
+      const setView = (v) => { view = v; };
+      const nbOpenNote = async (id) => { opened = id; };
+      const renderNotesList = () => { rendered++; };
+    `,
+    exports: `{
+      run: nbOpenForPaper,
+      setLinked: (v) => { linked = v; },
+      state: () => ({ opened, created, rendered, view, paperKey: _nbUi.paperKey }),
+    }`,
+  });
+
+  api.setLinked([]);
+  await api.run('s1#p1');
+  assert.equal(api.state().created, 1);
+
+  api.setLinked([{ id: 'n1' }]);
+  await api.run('s1#p1');
+  assert.equal(api.state().opened, 'n1');
+
+  api.setLinked([{ id: 'n1' }, { id: 'n2' }]);
+  await api.run('s1#p1');
+  assert.equal(api.state().rendered, 1);
+  assert.equal(api.state().view, 'notes');
+  assert.equal(api.state().paperKey, 's1#p1');
+});
+
+test('CSV와 ICS는 보존된 별점과 빠른 메모를 계속 내보낸다', () => {
+  assert.match(indexHtml, /if \(n\.rating\) descParts\.push\('Rating: '/);
+  assert.match(indexHtml, /if \(n\.note\)\s+descParts\.push\('Notes: '/);
+  assert.match(indexHtml, /'MustSee','Rating','Notes','LinkedNoteTitles','LinkedNoteText'/);
+  assert.match(indexHtml, /n\.rating \|\| ''[\s\S]*n\.note \|\| ''/);
+});

@@ -233,7 +233,6 @@
   .tt-cell .tt-pno { font-weight: 600; font-size: 11px; }
   .tt-cell .tt-author { font-size: 10px; opacity: 0.85; }
   .tt-cell .tt-meta { font-size: 9px; opacity: 0.7; margin-top: 2px; font-family: monospace; }
-  .tt-cell .tt-rate { color: #f5a623; font-size: 10px; }
 
   .panel { background: #fff; border: 1px solid #e3e3e3; border-radius: 6px; padding: 14px; }
   .panel h2 { margin: 0 0 10px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #666; }
@@ -411,9 +410,7 @@
 
   mark { background: #fff59d; color: inherit; padding: 0 1px; border-radius: 2px; }
 
-  /* Rating + notes */
-  /* ⭐ 꼭 듣기: 사전 우선순위 표시. 별점(.rating)과 색을 나눠 역할이 섞이지 않게 한다.
-     별점은 주황(#f5a623), 꼭 듣기는 호박색 배경 강조. */
+  /* ⭐ 꼭 듣기: 사전 우선순위 표시. 호박색 배경과 왼쪽 띠로 강조한다. */
   .must-btn {
     flex: none; background: none; border: 1px solid transparent; border-radius: 6px;
     cursor: pointer; padding: 1px 4px; font-size: 15px; line-height: 1.2;
@@ -444,7 +441,7 @@
   }
   .pick.must .ptitle   { font-weight: 600; }
   .pick.must .pauthors { color: #5a4a2a; }
-  .pick.past.must      { opacity: 0.78; }   /* 끝난 뒤에도 별점을 매기러 다시 찾는다 */
+  .pick.past.must      { opacity: 0.78; }
   .pick .must-btn  { float: right; margin-left: 6px; }
   .pick.must .must-btn { font-size: 17px; }
   .pick-badge.must { background: #e09b00; color: #fff; }
@@ -459,19 +456,6 @@
   .tt-cell.past.must     { opacity: 0.78; }
   .spon            { color: #999; cursor: help; }
 
-  .rating { display: inline-flex; gap: 1px; margin-top: 4px; }
-  .rating .star {
-    cursor: pointer; font-size: 16px; line-height: 1; color: #d0d0d0;
-    user-select: none; transition: color 0.1s;
-  }
-  .rating .star.on { color: #f5a623; }
-  .rating .star:hover { color: #f5a623; }
-  .note-input {
-    width: 100%; margin-top: 4px; padding: 4px 6px; font-size: 11px;
-    border: 1px solid #ddd; border-radius: 3px; resize: vertical;
-    min-height: 22px; font-family: inherit;
-  }
-  .note-input:focus { outline: none; border-color: #4a90e2; }
   .note-indicator {
     display: inline-block; margin-left: 4px; font-size: 10px; color: #f5a623;
   }
@@ -594,9 +578,7 @@
     .paper-authors { font-size: 12px; }
     .filter-group input[type="text"] { font-size: 16px; padding: 8px 10px; }
     .filter-group label { padding: 6px 0; font-size: 13px; }
-    .rating .star { font-size: 22px; padding: 2px 3px; }
     .must-btn { font-size: 22px; padding: 4px 6px; }
-    .note-input { font-size: 16px; padding: 8px; }
     .slot { padding: 10px; }
     .slot .pick .ptitle { font-size: 13px; }
     .slot .pick .pauthors { font-size: 12px; }
@@ -808,20 +790,19 @@
       <p class="help-p">
         <strong>둘러보기</strong> 탭에서 듣고 싶은 발표 옆 체크박스를 누르세요.
         왼쪽 <strong>필터</strong>(검색·Day·시간 범위·트랙·회장)로 좁힐 수 있습니다.
-        선택이 끝나면 <strong>내 일정</strong> 탭에서 시간순 리스트(이동 거리·여유 안내 포함) 또는
-        시간표(회장 × 시간 격자) 형태로 확인합니다. 별점·메모는 각 발표 아래에서 바로 입력합니다.
+        선택이 끝나면 <strong>내 일정</strong> 탭에서 시간순 리스트(이동 거리와 여유 안내 포함) 또는
+        시간표(회장 × 시간 격자) 형태로 확인합니다. 목록의 발표 아래에서 문서 노트를 바로 만들거나 엽니다.
       </p>
       <p class="help-p">
         <strong>⭐ 꼭 듣기</strong> — 놓치면 안 되는 발표는 오른쪽 <strong>☆</strong>를 누르세요.
         내 일정과 시간표에서 노란색으로 강조되고, 표시하는 순간 일정에도 자동으로 담깁니다.
         ICS로 내보내면 제목 앞에 ⭐가 붙어 캘린더에서도 구분됩니다.
-        별점(★★★★★)은 발표를 듣고 난 뒤의 평가라 별개입니다.
       </p>
 
       <h4 class="help-h">② 📱 컴퓨터 ↔ 모바일로 옮기기</h4>
       <p class="help-p">
-        헤더의 <strong>🔑 로그인(구글)</strong>을 하면 모든 기기에서 선택·별점·메모가
-        자동으로 실시간 동기화됩니다. 다른 기기에서도 같은 계정으로 로그인만 하면 됩니다.
+        헤더의 <strong>🔑 로그인(구글)</strong>을 하면 선택과 꼭 듣기, 문서 노트의 글이
+        모든 기기에 동기화됩니다. 다른 기기에서도 같은 계정으로 로그인만 하면 됩니다.
       </p>
 
       <h4 class="help-h">③ 💾 다른 캘린더로</h4>
@@ -834,9 +815,10 @@
       <p class="help-p">
         <strong>노트</strong> 탭에서 제목, 목록, 표, 글자 색 같은 서식을 갖춘 문서형 노트를 씁니다.
         노트 하나를 여러 발표에 연결할 수 있고, 연결해도 내 일정은 바뀌지 않습니다.
-        발표 옆의 <strong>＋📝</strong>를 누르면 그 발표에 연결된 노트가 바로 만들어지고,
-        <strong>📝 숫자</strong>를 누르면 연결된 노트가 열립니다. 노트의 발표 이름을 누르면 둘러보기의 그 발표로 돌아갑니다.
-        내 일정의 짧은 메모는 그대로 쓸 수 있고, <strong>📄 문서 노트로</strong>를 누르면 메모를 복사한 노트가 생깁니다 (원래 메모는 남습니다).
+        둘러보기의 <strong>＋📝</strong>로 새 노트를 만들 수 있습니다. 내 일정에서는 발표 아래의
+        <strong>📝 노트 쓰기</strong> 또는 <strong>📝 노트 숫자</strong> 버튼으로 노트를 만들거나 엽니다.
+        이전 버전에서 작성한 빠른 메모가 있으면 처음 누를 때 그 내용을 문서 노트로 옮기며, 원래 기록은 삭제하지 않습니다.
+        노트의 발표 이름을 누르면 둘러보기의 그 발표로 돌아갑니다. 노트 자체에는 별점을 두지 않습니다.
       </p>
       <p class="help-p">
         로그인하면 노트의 글은 계정에 동기화됩니다. 로그인 전에 만든 노트는 로그인할 때 계정으로 복사되고
@@ -977,7 +959,8 @@ const I18N_KO = {
   itin_empty: '발표를 선택하면 여기에 일정과 동선이 표시됩니다.',
   list: '📋 리스트', grid: '🗓️ 시간표', now: '🔴 지금',
   fold_all: '📕 모두 접기', unfold_all: '📖 모두 펴기',
-  remove: '제거', note_ph: '메모...', clear_rating: '평점 지우기', hop_plan: '↔ 방 사이 이동 계획',
+  remove: '제거', hop_plan: '↔ 방 사이 이동 계획',
+  legacy_record_title: '이전 버전에서 작성한 별점 또는 빠른 메모가 보존되어 있습니다.',
   must_on: '꼭 듣기로 표시 (내 일정에 자동 추가)', must_off: '꼭 듣기 해제',
   must_badge: '꼭 듣기', must_stat: '꼭 듣기', sponsored: '후원 발표',
   map_title: '🗺️ 세션장 지도', map_open: '지도에서 위치 보기',
@@ -988,7 +971,7 @@ const I18N_KO = {
   map_missing: '지도 이미지를 불러오지 못했습니다: ',
   etal: ' 외', cnt_suffix: '개', switch_conf: '↕ 다른 학회로 전환', loading: '데이터를 불러오는 중...',
   clear_confirm: '선택을 모두 해제할까요?', no_selected: '선택된 발표가 없습니다.',
-  no_export: '내보낼 항목이 없습니다 (선택·평점·메모 중 하나 이상 필요).',
+  no_export: '내보낼 항목이 없습니다 (선택, 문서 노트 또는 보존된 이전 기록이 필요합니다).',
   login: '🔑 로그인', logout_confirm: '로그아웃할까요? 이 기기의 데이터는 유지됩니다.',
   sync_title: '동기화 중 — 클릭하여 로그아웃', login_title: '구글 로그인으로 기기 간 동기화',
   rename_title: '클릭하여 학회명 수정',
@@ -1051,7 +1034,9 @@ const I18N_KO = {
   nb_guest_copied: '로그인 전에 만든 노트 {n}개를 계정으로 복사했습니다 (원본은 이 기기에 남아 있습니다)',
   nb_created: '문서 노트를 만들었습니다',
   nb_chip_count: '이 발표에 연결된 노트 {n}개', nb_chip_new: '이 발표로 새 노트 만들기',
-  nb_promote: '📄 문서 노트로', nb_promote_title: '이 메모를 서식 있는 문서 노트로 복사합니다. 원래 메모는 그대로 남습니다.',
+  nb_entry_new: '📝 노트 쓰기', nb_entry_open: '📝 노트 {n}개',
+  nb_entry_new_title: '이 발표에 연결된 노트를 만듭니다.', nb_entry_open_title: '이 발표에 연결된 노트를 엽니다.',
+  nb_entry_legacy_title: '보존된 빠른 메모를 문서 노트로 옮깁니다. 원래 기록은 그대로 남습니다.',
   nb_tb_label: '서식 도구',
   nb_tb_h1: '제목 1', nb_tb_h2: '제목 2', nb_tb_h3: '제목 3',
   nb_tb_bullet: '글머리 기호 목록', nb_tb_ordered: '번호 목록', nb_tb_task: '할 일 목록',
@@ -1091,7 +1076,8 @@ const I18N_EN = {
   itin_empty: 'Select papers in Browse to see your schedule and walking plan here.',
   list: '📋 List', grid: '🗓️ Timetable', now: '🔴 Now',
   fold_all: '📕 Fold all', unfold_all: '📖 Unfold all',
-  remove: 'Remove', note_ph: 'Notes...', clear_rating: 'Clear rating', hop_plan: '↔ Room-to-room moves',
+  remove: 'Remove', hop_plan: '↔ Room-to-room moves',
+  legacy_record_title: 'A rating or quick memo from an earlier version is preserved.',
   must_on: 'Mark as must-see (adds to your itinerary)', must_off: 'Unmark must-see',
   must_badge: 'Must-see', must_stat: 'Must-see', sponsored: 'Sponsored talk',
   map_title: '🗺️ Venue map', map_open: 'Show on the venue map',
@@ -1102,7 +1088,7 @@ const I18N_EN = {
   map_missing: 'Could not load the map image: ',
   etal: ' et al.', cnt_suffix: '', switch_conf: '↕ Switch conference', loading: 'Loading data...',
   clear_confirm: 'Clear all selections?', no_selected: 'No papers selected.',
-  no_export: 'Nothing to export (select, rate, or note at least one paper).',
+  no_export: 'Nothing to export (select a talk, link a document note, or keep an earlier record).',
   login: '🔑 Sign in', logout_confirm: 'Sign out? Data on this device is kept.',
   sync_title: 'Syncing — click to sign out', login_title: 'Sign in with Google to sync across devices',
   rename_title: 'Click to rename',
@@ -1165,7 +1151,9 @@ const I18N_EN = {
   nb_guest_copied: 'Copied {n} note(s) made before signing in to your account (the originals stay on this device)',
   nb_created: 'Created a document note',
   nb_chip_count: '{n} note(s) linked to this talk', nb_chip_new: 'New note for this talk',
-  nb_promote: '📄 To document note', nb_promote_title: 'Copy this memo into a formatted document note. The memo itself stays.',
+  nb_entry_new: '📝 Write note', nb_entry_open: '📝 Notes {n}',
+  nb_entry_new_title: 'Create a note linked to this talk.', nb_entry_open_title: 'Open notes linked to this talk.',
+  nb_entry_legacy_title: 'Move the preserved quick memo into a document note. The original record stays.',
   nb_tb_label: 'Formatting',
   nb_tb_h1: 'Heading 1', nb_tb_h2: 'Heading 2', nb_tb_h3: 'Heading 3',
   nb_tb_bullet: 'Bulleted list', nb_tb_ordered: 'Numbered list', nb_tb_task: 'Task list',
@@ -1526,8 +1514,8 @@ function setNote(key, patch) {
   touch(key);
 }
 
-// ⭐ 꼭 듣기 = 듣기 전 우선순위. 별점(rating)은 듣고 난 뒤의 평가라 축이 다르므로
-// 같은 값에 얹지 않고 별도 플래그로 둔다.
+// ⭐ 꼭 듣기 = 듣기 전 우선순위. rating과 note는 이전 버전 기록을 보존하는 필드이므로
+// 신규 UI에서 바꾸지 않고, 꼭 듣기는 별도 플래그로 둔다.
 // 표시하면 내 일정에 자동으로 담긴다 (꼭 들을 발표인데 일정에 없는 상태가 모순이므로).
 function isMust(key) { return !!getNote(key).must; }
 
@@ -2003,8 +1991,8 @@ function renderSessions() {
       const row = document.createElement('div');
       row.className = 'paper';
       const n = getNote(key);
-      const noteBadge = (n.rating || n.note)
-        ? `<span class="note-indicator" title="${n.rating?n.rating+'★ ':''}${n.note?'· 메모 있음':''}">${n.rating?'★'.repeat(n.rating):''}${n.note?' 📝':''}</span>`
+      const legacyBadge = (n.rating || n.note)
+        ? `<span class="note-indicator" title="${escapeAttr(t('legacy_record_title'))}">📦</span>`
         : '';
       const idx = sPapersOrdered.findIndex(x => x.paper_no === p.paper_no);
       const pt  = paperTime(s, p, idx, sPapersOrdered.length);
@@ -2014,7 +2002,7 @@ function renderSessions() {
       row.innerHTML = `
         <input type="checkbox" data-key="${key}" ${state.selected.has(key)?'checked':''}>
         <div class="paper-body">
-          <div class="paper-title">${timeBadge} ${hi(p.title)}${noteBadge}</div>
+          <div class="paper-title">${timeBadge} ${hi(p.title)}${legacyBadge}</div>
           <div class="paper-authors">${hi(p.authors)} <span class="paper-no">· #${hi(p.paper_no)}${p.is_sponsored?` <span class="spon" title="${t('sponsored')}">◆</span>`:''}</span>${nbPaperChipsHtml(key)}</div>
         </div>
         <button class="must-btn${must?' on':''}" data-key="${key}"
@@ -2191,10 +2179,6 @@ function renderItinerary() {
 
     // Render a single pick card. `pt` is the paper-level time block.
     const renderPick = (it, pt) => {
-      const n = getNote(it.key);
-      const stars = [1,2,3,4,5].map(v =>
-        `<span class="star ${v<=n.rating?'on':''}" data-key="${it.key}" data-val="${v}">★</span>`
-      ).join('');
       const timeBadge = pt ? `<span class="paper-time">${pt.start}–${pt.end}</span> ` : '';
       const must = isMust(it.key);
       // 현재 시각 기준 상태 (날짜 + 발표 시간으로 판정). 접지 않고 강조/흐림만.
@@ -2213,11 +2197,7 @@ function renderItinerary() {
         <div class="pauthors">${escapeHtml(it.p.authors)}</div>
         <div class="pmeta">${escapeHtml(it.s.track_title)} · #${escapeHtml(it.p.paper_no)}
           <a href="#" data-key="${it.key}" class="rm" style="margin-left:6px;color:#d0021b;">${t('remove')}</a></div>
-        <div class="rating" data-key="${it.key}">${stars}
-          <span class="star clear-star" data-key="${it.key}" data-val="0" title="${t('clear_rating')}" style="color:#ccc;font-size:13px;margin-left:6px;">✕</span>
-        </div>
-        <textarea class="note-input" data-key="${it.key}" placeholder="${t('note_ph')}" rows="1">${escapeHtml(n.note)}</textarea>
-        <div class="pick-notes">${nbPaperChipsHtml(it.key)}${nbPromoteBtnHtml(it.key)}</div>
+        <div class="pick-notes">${nbPickEntryHtml(it.key)}</div>
       </div>`;
     };
 
@@ -2326,7 +2306,7 @@ function renderItinerary() {
     };
   });
 
-  // ⭐ 꼭 듣기 토글. 카드 전체를 다시 그리면 메모 입력 포커스가 날아가므로 이 카드만 갱신한다.
+  // ⭐ 꼭 듣기 토글. 스크롤 위치를 지키기 위해 이 카드만 갱신한다.
   root.querySelectorAll('.pick-must').forEach(btn => {
     btn.onclick = () => {
       const key = btn.dataset.key;
@@ -2350,34 +2330,6 @@ function renderItinerary() {
     };
   });
 
-  // Star rating click → set/clear rating; only refresh the star group (don't re-render whole panel
-  // or the textarea would lose focus while user is typing).
-  root.querySelectorAll('.rating .star').forEach(star => {
-    star.onclick = () => {
-      const key = star.dataset.key;
-      const v = parseInt(star.dataset.val, 10);
-      setNote(key, { rating: v });
-      // Refresh only the parent .rating element
-      const group = star.parentElement;
-      const newR = getNote(key).rating;
-      group.querySelectorAll('.star').forEach(s => {
-        const sv = parseInt(s.dataset.val, 10);
-        if (s.classList.contains('clear-star')) return;
-        s.classList.toggle('on', sv <= newR);
-      });
-    };
-  });
-
-  // Note textarea → debounced auto-save
-  root.querySelectorAll('.note-input').forEach(ta => {
-    let t = null;
-    ta.addEventListener('input', () => {
-      clearTimeout(t);
-      t = setTimeout(() => {
-        setNote(ta.dataset.key, { note: ta.value });
-      }, 250);
-    });
-  });
 
   // Toggle works in both views
   wireItineraryToggle();
@@ -2498,7 +2450,7 @@ function renderTimetable(byDay) {
         style="grid-column:${colIdx+2}; grid-row:${rowStart+2} / span ${rowSpan};"
         title="${escapeHtml(tooltip)}">
         <div class="tt-pno">${n.must?'<span class="tt-must">⭐</span>':''}#${escapeHtml(it.p.paper_no)} <span class="tt-author">${escapeHtml(firstAuthorLabel(it.p.authors))}</span></div>
-        <div class="tt-meta">${it.pt.start}–${it.pt.end}${n.rating?` <span class="tt-rate">${'★'.repeat(n.rating)}</span>`:''}${nbTimetableGlyphHtml(it.key)}</div>
+        <div class="tt-meta">${it.pt.start}–${it.pt.end}${nbTimetableGlyphHtml(it.key)}</div>
       </div>`;
     }
 
@@ -3262,6 +3214,7 @@ let _nbOwnerSwitchQueue = Promise.resolve(); // 로그아웃과 재로그인 전
 let _nbDbError  = '';          // IndexedDB를 열지 못했으면 이유
 let _nbPersisted = 'unknown';  // navigator.storage.persist() 결과 (진단용)
 let _nbPersistAsked = false;
+const _nbEntryPending = new Set(); // 빠른 연속 클릭으로 같은 발표의 노트가 중복 생성되는 것을 막는다
 let _nbEditorMod = null, _nbEditorLoad = null, _nbEditorState = 'idle';
 let _nbPaneBuilt = false;
 // 열린 노트와 편집기. openGen은 열기와 닫기마다 올라가 늦게 끝난 비동기 작업(편집기 로드, 사진 처리)을 버린다.
@@ -3645,18 +3598,24 @@ function nbPaperChipsHtml(key) {
   return `<button type="button" class="nchip nchip-count${n ? '' : ' hidden'}" data-nkey="${k}" data-nact="open" title="${cnt}" aria-label="${cnt}">📝 <span class="nchip-n">${n}</span></button>` +
          `<button type="button" class="nchip nchip-new" data-nkey="${k}" data-nact="new" title="${nw}" aria-label="${nw}">＋📝</button>`;
 }
-function nbPromoteBtnHtml(key) {
+// 내 일정의 단일 진입점. 연결 노트가 없고 보존된 빠른 메모가 있으면 그 내용을 옮긴다.
+// 노트가 생긴 뒤에는 같은 버튼이 열기 동작으로 바뀌므로 반복 변환으로 중복 문서를 만들지 않는다.
+function nbPickEntryHtml(key) {
   if (_nbDbError) return '';
-  return `<button type="button" class="nchip nb-promote" data-nkey="${escapeAttr(key)}" data-nact="promote" title="${escapeAttr(t('nb_promote_title'))}">${escapeHtml(t('nb_promote'))}</button>`;
+  const n = nbCountForPaper(key), k = escapeAttr(key);
+  const hasMemo = !!getNote(key).note;
+  const label = n ? t('nb_entry_open').replace('{n}', String(n)) : t('nb_entry_new');
+  const title = n ? t('nb_entry_open_title') : (hasMemo ? t('nb_entry_legacy_title') : t('nb_entry_new_title'));
+  return `<button type="button" class="nchip nchip-entry${n ? ' nchip-count' : ''}" data-nkey="${k}" data-nact="entry" title="${escapeAttr(title)}" aria-label="${escapeAttr(title)}">${escapeHtml(label)}</button>`;
 }
 function nbTimetableGlyphHtml(key) {
   if (_nbDbError) return '';
   const n = nbCountForPaper(key);
   return `<span class="tt-nc${n ? '' : ' hidden'}" data-nkey="${escapeAttr(key)}" title="${escapeAttr(t('nb_chip_count').replace('{n}', String(n)))}">📝${n}</span>`;
 }
-// 노트가 바뀔 때 행 전체를 다시 그리지 않고 숫자만 제자리에서 고친다 (스크롤과 메모 포커스 보존).
+// 노트가 바뀔 때 행 전체를 다시 그리지 않고 칩만 제자리에서 고친다 (스크롤 위치 보존).
 function nbUpdateChipsInPlace() {
-  document.querySelectorAll('.nchip-count[data-nkey]').forEach((b) => {
+  document.querySelectorAll('.nchip-count:not(.nchip-entry)[data-nkey]').forEach((b) => {
     const n = nbCountForPaper(b.dataset.nkey);
     b.classList.toggle('hidden', !n);
     const s = b.querySelector('.nchip-n');
@@ -3664,10 +3623,22 @@ function nbUpdateChipsInPlace() {
     const lbl = t('nb_chip_count').replace('{n}', String(n));
     b.title = lbl; b.setAttribute('aria-label', lbl);
   });
+  document.querySelectorAll('.nchip-entry[data-nkey]').forEach((b) => {
+    const key = b.dataset.nkey;
+    const n = nbCountForPaper(key);
+    const hasMemo = !!getNote(key).note;
+    const label = n ? t('nb_entry_open').replace('{n}', String(n)) : t('nb_entry_new');
+    const title = n ? t('nb_entry_open_title') : (hasMemo ? t('nb_entry_legacy_title') : t('nb_entry_new_title'));
+    b.textContent = label;
+    b.classList.toggle('nchip-count', !!n);
+    b.title = title;
+    b.setAttribute('aria-label', title);
+  });
   document.querySelectorAll('.tt-nc[data-nkey]').forEach((el) => {
     const n = nbCountForPaper(el.dataset.nkey);
     el.classList.toggle('hidden', !n);
     el.textContent = '📝' + n;
+    el.title = t('nb_chip_count').replace('{n}', String(n));
   });
 }
 function nbUpdateBadge() {
@@ -4396,12 +4367,11 @@ function nbUpdateStatus() {
   el.classList.toggle('err', /error|toobig|offline/.test(key));
 }
 
-// 입력 중인가. 빠른 메모 textarea, 노트 제목, 리치 편집기, 그리고 IME 조합을 모두 본다.
+// 입력 중인가. 노트 제목, 리치 편집기와 IME 조합을 본다.
 // nowTick과 원격 반영 재렌더가 이 값을 보고 미룬다 (입력 포커스와 조합 중인 글자 보호).
 function isUserEditing() {
   const ae = document.activeElement;
   if (!ae) return false;
-  if (ae.classList && ae.classList.contains('note-input')) return true;
   const shell = document.getElementById('nb-shell');
   if (!shell || !shell.contains(ae)) return false;
   // 조합 플래그는 포커스가 편집기 안에 있을 때만 믿는다 (compositionend가 빠지면 영구히 켜져 있게 된다)
@@ -4487,15 +4457,26 @@ async function nbOpenForPaper(key) {
   }
   renderNotesList();
 }
-// 빠른 메모를 복사해 리치 노트를 만든다. 원래 메모(state.notes)는 건드리지 않는다.
+// 보존된 빠른 메모를 리치 노트로 옮긴다. 원래 메모(state.notes)는 건드리지 않는다.
 async function nbPromoteQuickNote(key) {
   const ref = nbRefFor(key);
-  if (!ref) return;
-  let text = getNote(key).note || '';
-  // 250ms 디바운스로 아직 저장되지 않은 입력도 담으려고 화면의 textarea 값을 먼저 본다
-  for (const ta of document.querySelectorAll('.note-input')) if (ta.dataset.key === key) { text = ta.value; break; }
+  if (!ref) return null;
+  const text = getNote(key).note || '';
   const rec = await nbCreateNote({ title: ref.title.slice(0, NB_LIMITS.title), doc: nbTextToDoc(text), refs: [ref] });
   if (rec) showToast(t('nb_created'));
+  return rec;
+}
+// 내 일정의 노트 버튼 하나로 생성, 레거시 메모 이동, 기존 노트 열기를 분기한다.
+async function nbOpenPaperEntry(key) {
+  if (_nbEntryPending.has(key)) return;
+  _nbEntryPending.add(key);
+  try {
+    if (nbNotesForPaper(key).length) return await nbOpenForPaper(key);
+    if (getNote(key).note) return await nbPromoteQuickNote(key);
+    return await nbCreateForPaper(key);
+  } finally {
+    _nbEntryPending.delete(key);
+  }
 }
 
 // 노트에서 연결된 발표로 돌아간다. 필터에 가려 있으면 그 발표가 보이도록 필터를 푼다.
@@ -4636,9 +4617,9 @@ document.addEventListener('click', (e) => {
   if (!b) return;
   e.preventDefault();
   const key = b.dataset.nkey, act = b.dataset.nact;
-  if (act === 'new')          nbCreateForPaper(key);
-  else if (act === 'open')    nbOpenForPaper(key);
-  else if (act === 'promote') nbPromoteQuickNote(key);
+  if (act === 'new')        nbCreateForPaper(key);
+  else if (act === 'open')  nbOpenForPaper(key);
+  else if (act === 'entry') nbOpenPaperEntry(key);
 });
 
 // 탭을 숨기거나 페이지를 떠날 때 편집 중인 내용을 저장한다 (최선 노력: pagehide 뒤 비동기 쓰기는
@@ -6106,19 +6087,17 @@ function applyStaticLang() {
       In the <strong>Browse</strong> tab, tick the checkbox next to talks you want to attend.
       Narrow down with the left <strong>filters</strong> (search · day · time range · track · room).
       Then open <strong>My schedule</strong> for a time-ordered list (with walking-distance hints)
-      or a timetable grid (rooms × time). Rate and take notes right under each talk.
+      or a timetable grid (rooms × time). Create or open a document note under each talk in the list.
     </p>
     <p class="help-p">
       <strong>⭐ Must-see</strong> — hit the <strong>☆</strong> on the right for talks you
       cannot miss. They are highlighted in amber in both the list and the timetable, and
       marking one adds it to your schedule automatically. ICS exports prefix the title with ⭐.
-      The 5-star rating is separate: that is how you score a talk after hearing it.
     </p>
     <h4 class="help-h">② 📱 Move between computer and phone</h4>
     <p class="help-p">
-      Sign in with <strong>🔑 Google</strong> in the header and your selections, ratings,
-      and notes sync automatically in real time across all your devices. On another device,
-      just sign in with the same account.
+      Sign in with <strong>🔑 Google</strong> in the header and your selections, must-see flags,
+      and document-note text sync across your devices. On another device, just sign in with the same account.
     </p>
     <h4 class="help-h">③ 💾 Send to a calendar</h4>
     <ul class="help-ul">
@@ -6129,9 +6108,10 @@ function applyStaticLang() {
     <p class="help-p">
       The <strong>Notes</strong> tab holds document-style notes with headings, lists, tables, text color and more.
       One note can be linked to several talks, and linking never changes your schedule.
-      Press <strong>+📝</strong> next to a talk to create a note linked to it, or the <strong>📝 count</strong> to open its notes.
-      Clicking a linked talk inside a note takes you back to that talk in Browse.
-      The short memo under each talk in My schedule still works; <strong>📄 To document note</strong> copies it into a new note (the memo stays).
+      Use <strong>+📝</strong> in Browse to create a linked note. In My schedule, use the
+      <strong>📝 Write note</strong> or <strong>📝 Notes count</strong> button under a talk to create or open its notes.
+      If a quick memo from an earlier version exists, the first click moves its text into a document note without deleting the original record.
+      Clicking a linked talk inside a note takes you back to that talk in Browse. Notes do not have ratings.
     </p>
     <p class="help-p">
       When you are signed in, note text syncs to your account. Notes written before signing in are copied to your
