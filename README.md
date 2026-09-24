@@ -281,6 +281,16 @@ npm run check
 
 `npm run check`는 편집기와 스크립트의 구문을 검사하고 `assets/vendor/buzzplan-editor.mjs`를 다시 만든 뒤 Node 기반 회귀 테스트를 실행합니다. 생성된 vendor 파일은 GitHub Pages에서 직접 제공하므로 소스와 함께 버전 관리합니다. `node_modules/`는 커밋하지 않습니다.
 
+### Firestore 규칙 검사
+
+`firestore.rules`를 고쳤으면 콘솔에 게시하기 전에 로컬 에뮬레이터로 실행 검증합니다. `demo-buzzplan` 프로젝트 ID를 쓰므로 실제 Firebase 프로젝트와 데이터에는 닿지 않고 요금도 없습니다. Java 21 이상이 필요합니다.
+
+```bash
+npm run test:rules
+```
+
+본인 계정 허용, 다른 계정 거부, 문서 노트의 필드와 크기 제한, `writeId` 연쇄, 영구 삭제 금지, 구버전 앱 호환을 37가지 요청으로 확인합니다. 통과하면 Firebase 콘솔 → Firestore Database → 규칙 탭에 `firestore.rules` 전문을 붙여 넣고 게시합니다.
+
 ---
 
 ## 비표준 학회 PDF 대응

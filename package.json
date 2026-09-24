@@ -9,26 +9,30 @@
     "build:dev": "node scripts/build-editor.mjs --dev",
     "syntax-check": "node scripts/syntax-check.mjs",
     "test": "node --test assets/src/editor/__tests__/*.test.mjs tests/*.test.mjs",
-    "check": "npm run syntax-check && npm run build && npm test"
+    "check": "npm run syntax-check && npm run build && npm test",
+    "test:rules": "cd tests/rules && firebase emulators:exec --only firestore --project demo-buzzplan \"node firestore-rules.test.mjs\""
   },
   "engines": {
     "node": ">=18"
   },
   "dependencies": {
     "@tiptap/core": "3.31.3",
-    "@tiptap/pm": "3.31.3",
-    "@tiptap/starter-kit": "3.31.3",
-    "@tiptap/extension-list": "3.31.3",
-    "@tiptap/extension-task-list": "3.31.3",
-    "@tiptap/extension-task-item": "3.31.3",
-    "@tiptap/extension-text-style": "3.31.3",
     "@tiptap/extension-color": "3.31.3",
     "@tiptap/extension-font-family": "3.31.3",
     "@tiptap/extension-highlight": "3.31.3",
-    "@tiptap/extension-table": "3.31.3"
+    "@tiptap/extension-list": "3.31.3",
+    "@tiptap/extension-table": "3.31.3",
+    "@tiptap/extension-task-item": "3.31.3",
+    "@tiptap/extension-task-list": "3.31.3",
+    "@tiptap/extension-text-style": "3.31.3",
+    "@tiptap/pm": "3.31.3",
+    "@tiptap/starter-kit": "3.31.3"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "5.0.2",
     "esbuild": "0.28.2",
+    "firebase": "12.19.0",
+    "firebase-tools": "15.31.0",
     "jsdom": "25.0.1"
   }
 }

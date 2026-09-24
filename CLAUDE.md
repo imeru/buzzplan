@@ -68,6 +68,8 @@ assets/maps/        회장 도면 이미지. venue.maps[].image가 여기를 가
 assets/src/editor/  Tiptap 기반 문서 노트 편집기 소스와 Node 회귀 테스트
 assets/vendor/buzzplan-editor.mjs  index.html이 지연 로드하는 생성 ESM 번들 (커밋 대상)
 scripts/            편집기 번들 빌드와 구문 검사 스크립트
+tests/              index.html 함수 단위 회귀 테스트(npm test). tests/rules/는 Firestore 규칙
+                    에뮬레이터 테스트(npm run test:rules)라 npm test 범위 밖에 둔다
 package.json, package-lock.json  편집기 빌드 의존성과 고정 버전. 앱 런타임은 여전히 빌드리스
 README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기와 중복 보유하므로 함께 갱신할 것
 ```
@@ -374,6 +376,12 @@ npm ci
 npm run check
 # assets/vendor/buzzplan-editor.mjs도 생성 결과이므로 소스와 함께 커밋한다
 
+# firestore.rules 수정 후: 로컬 에뮬레이터로 실행 검증 (Java 21 이상 필요, demo 프로젝트라 실서버 무관)
+npm run test:rules
+# 테스트는 tests/rules/에 따로 둔다. tests/*.test.mjs에 두면 npm test가 에뮬레이터 없이 돌려 실패한다.
+# firebase.json에 규칙 경로를 넣지 않는다 (CLI가 설정 폴더 밖 파일을 거부한다). 테스트가 원문을 직접 올린다
+# 2026-09-24 기준 37/37 통과. Java가 없으면 Temurin JDK를 시스템 설치 없이 내려받아 JAVA_HOME만 지정해도 된다
+
 # 2. 데이터 검증 (데이터·파서 수정 후)
 python3 build.py <pdf> --parser <parser> --id tmp --name t --dry-run   # 카운트·orphan·결번·분포 리포트
 
@@ -409,6 +417,7 @@ https://imeru.github.io/buzzplan/?conf=<학회id>&debug=sync
 
 - [ ] index.html 수정 시: JS 구문 검사 통과
 - [ ] 편집기 소스 수정 시: `npm run check` 통과 + vendor 번들 갱신
+- [ ] firestore.rules 수정 시: `npm run test:rules` 통과 (게시는 사용자가 콘솔에서)
 - [ ] 신규 사용자 노출 문자열: I18N_KO/EN 양쪽 + (정적이면) applyStaticLang 반영
 - [ ] 선택, 별점, 빠른 메모, 꼭 듣기 변경 경로를 추가하거나 수정했으면: touch(key) 포함 여부 확인
 - [ ] richNotes 변경 시: 서버 확인 전 push 금지, 충돌 사본, tombstone, owner 분리 회귀 확인
