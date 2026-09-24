@@ -661,8 +661,30 @@
   .nb-toolbar button[aria-pressed="true"] { background: #1f1f1f; color: #fff; border-color: #1f1f1f; }
   .nb-toolbar button:disabled { opacity: 0.4; cursor: default; }
   .nb-toolbar select { height: 30px; font-size: 12px; border: 1px solid #ddd; border-radius: 4px; background: #fff; max-width: 110px; }
-  .nb-toolbar input[type="color"] { width: 30px; height: 30px; padding: 1px; border: 1px solid #ddd; border-radius: 4px; background: #fff; cursor: pointer; }
   .nb-tb-sep { width: 1px; background: #ddd; margin: 3px; }
+  /* 글자색과 형광펜: 누르면 마지막 색을 바로 칠하는 버튼 + 색 목록을 여는 ▾. 두 도구가 헷갈리지 않게
+     글자색은 「가」 밑줄 막대, 형광펜은 🖍 밑 막대로 모양을 다르게 한다. */
+  .nb-tb-split { display: inline-flex; }
+  .nb-toolbar .nb-tb-split > button:first-child { border-radius: 4px 0 0 4px; }
+  .nb-toolbar .nb-tb-caret { border-left: none; border-radius: 0 4px 4px 0; min-width: 18px; padding: 0 3px; font-size: 10px; color: #666; }
+  .nb-tb-glyph { display: inline-flex; flex-direction: column; align-items: center; line-height: 1; font-weight: 700; font-size: 13px; }
+  .nb-tb-bar { display: block; width: 18px; height: 4px; margin-top: 2px; border-radius: 1px; border: 1px solid rgba(0,0,0,0.15); }
+  .nb-palette {
+    position: fixed; z-index: 950; width: 232px; background: #fff; border: 1px solid #ddd; border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15); padding: 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+  }
+  .nb-palette-item {
+    display: flex; align-items: center; gap: 6px; background: none; border: 0; border-radius: 4px;
+    padding: 5px 6px; font: inherit; font-size: 12px; color: #1f1f1f; text-align: left; cursor: pointer;
+  }
+  .nb-palette-item:hover, .nb-palette-item:focus { background: #f0f4fa; outline: none; }
+  .nb-palette-item:focus-visible { outline: 2px solid #4a90e2; }
+  .nb-palette-wide { grid-column: 1 / -1; }
+  .nb-palette-sw {
+    flex: none; width: 20px; height: 18px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.18);
+    display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; background: #fff;
+  }
+  .nb-palette-item input[type="color"] { flex: none; width: 20px; height: 18px; padding: 0; border: 1px solid rgba(0,0,0,0.18); border-radius: 3px; background: #fff; cursor: pointer; }
   .nb-banner {
     padding: 8px 12px; font-size: 12px; background: #fff8e0; color: #8a6d00;
     display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
@@ -726,6 +748,8 @@
     body.nb-editing { overflow: hidden; }
     .nb-title { font-size: 17px; }
     .nb-toolbar button { min-width: 36px; height: 36px; }
+    .nb-toolbar .nb-tb-caret { min-width: 24px; }
+    .nb-palette-item { padding: 9px 8px; font-size: 13px; }
     .nb-editor { font-size: 16px; }
     .nb-side input[type="search"], .nb-link-modal input[type="search"] { font-size: 16px; }
     .nchip { font-size: 12px; line-height: 22px; padding: 0 8px; }
@@ -1041,9 +1065,16 @@ const I18N_KO = {
   nb_tb_h1: '제목 1', nb_tb_h2: '제목 2', nb_tb_h3: '제목 3',
   nb_tb_bullet: '글머리 기호 목록', nb_tb_ordered: '번호 목록', nb_tb_task: '할 일 목록',
   nb_tb_bold: '굵게', nb_tb_italic: '기울임', nb_tb_underline: '밑줄', nb_tb_strike: '취소선',
-  nb_tb_font: '글꼴', nb_tb_font_default: '기본 글꼴', nb_tb_font_serif: '명조', nb_tb_font_mono: '고정폭',
+  nb_tb_font: '글꼴', nb_tb_font_default: '기본 글꼴', nb_tb_font_serif: '명조 (기기 글꼴)', nb_tb_font_mono: '고정폭',
+  nb_font_noto_sans: '본고딕', nb_font_noto_serif: '본명조', nb_font_gowun: '고운돋움',
+  nb_font_pen: '손글씨 펜', nb_font_black: '검은고딕 (제목용)',
   nb_tb_size: '글자 크기', nb_tb_size_default: '기본 크기',
   nb_tb_color: '글자 색', nb_tb_highlight: '형광펜',
+  nb_tb_color_apply: '글자 색 칠하기: {name}', nb_tb_highlight_apply: '형광펜 긋기: {name} (다시 누르면 지움)',
+  nb_tb_color_menu: '글자 색 고르기', nb_tb_highlight_menu: '형광펜 색 고르기',
+  nb_color_default: '기본 색', nb_hl_none: '형광펜 지우기', nb_color_custom: '다른 색 고르기',
+  nb_c_red: '빨강', nb_c_orange: '주황', nb_c_yellow: '노랑', nb_c_green: '초록', nb_c_blue: '파랑',
+  nb_c_purple: '보라', nb_c_pink: '분홍', nb_c_brown: '갈색', nb_c_gray: '회색',
   nb_tb_link: '링크', nb_tb_table: '표 넣기', nb_tb_code: '코드 블록',
   nb_tb_undo: '실행 취소', nb_tb_redo: '다시 실행', nb_tb_up: '블록을 위로', nb_tb_down: '블록을 아래로',
   nb_tb_image: '사진 넣기', nb_tb_camera: '사진 찍기', nb_tb_audio: '음성 녹음',
@@ -1158,9 +1189,16 @@ const I18N_EN = {
   nb_tb_h1: 'Heading 1', nb_tb_h2: 'Heading 2', nb_tb_h3: 'Heading 3',
   nb_tb_bullet: 'Bulleted list', nb_tb_ordered: 'Numbered list', nb_tb_task: 'Task list',
   nb_tb_bold: 'Bold', nb_tb_italic: 'Italic', nb_tb_underline: 'Underline', nb_tb_strike: 'Strikethrough',
-  nb_tb_font: 'Font', nb_tb_font_default: 'Default font', nb_tb_font_serif: 'Serif', nb_tb_font_mono: 'Monospace',
+  nb_tb_font: 'Font', nb_tb_font_default: 'Default font', nb_tb_font_serif: 'Serif (system font)', nb_tb_font_mono: 'Monospace',
+  nb_font_noto_sans: 'Noto Sans KR', nb_font_noto_serif: 'Noto Serif KR', nb_font_gowun: 'Gowun Dodum',
+  nb_font_pen: 'Nanum Pen Script', nb_font_black: 'Black Han Sans (headings)',
   nb_tb_size: 'Text size', nb_tb_size_default: 'Default size',
   nb_tb_color: 'Text color', nb_tb_highlight: 'Highlight',
+  nb_tb_color_apply: 'Apply text color: {name}', nb_tb_highlight_apply: 'Highlight: {name} (press again to remove)',
+  nb_tb_color_menu: 'Choose text color', nb_tb_highlight_menu: 'Choose highlight color',
+  nb_color_default: 'Default color', nb_hl_none: 'Remove highlight', nb_color_custom: 'Pick another color',
+  nb_c_red: 'Red', nb_c_orange: 'Orange', nb_c_yellow: 'Yellow', nb_c_green: 'Green', nb_c_blue: 'Blue',
+  nb_c_purple: 'Purple', nb_c_pink: 'Pink', nb_c_brown: 'Brown', nb_c_gray: 'Gray',
   nb_tb_link: 'Link', nb_tb_table: 'Insert table', nb_tb_code: 'Code block',
   nb_tb_undo: 'Undo', nb_tb_redo: 'Redo', nb_tb_up: 'Move block up', nb_tb_down: 'Move block down',
   nb_tb_image: 'Insert photo', nb_tb_camera: 'Take photo', nb_tb_audio: 'Record audio',
@@ -1440,7 +1478,7 @@ function renderSessionsIfVisible() {
 function setView(v) {
   if (!VIEWS.includes(v)) v = 'browse';
   // 노트 탭을 떠날 때 편집 중인 내용을 먼저 저장한다. 편집기는 부수지 않고 숨기기만 한다.
-  if (state.view === 'notes' && v !== 'notes') nbFlush();
+  if (state.view === 'notes' && v !== 'notes') { nbFlush(); nbClosePalette(false); }
   state.view = v;
   localStorage.setItem('cs:view', v);
   renderView();
@@ -3842,6 +3880,7 @@ function ensureNotesPane() {
 }
 
 function nbEnterNotesView() {
+  nbLoadWebFonts();   // 노트를 쓰지 않는 사용자에게는 글꼴 파일을 받지 않는다
   ensureNotesPane();
   nbRenderPaneState();
   renderNotesList();
@@ -3986,7 +4025,7 @@ const NB_TOOLS = [
   { k: 'strike',    text: 'S', cmd: 'toggleStrike',    active: ['strike'],    style: 'text-decoration:line-through' },
   '|',
   { k: 'font', type: 'font' }, { k: 'size', type: 'size' },
-  { k: 'color', type: 'color' }, { k: 'highlight', type: 'highlight' },
+  { k: 'color', type: 'color' }, { k: 'highlight', type: 'highlight', active: ['highlight'] },
   '|',
   { k: 'link',  text: '🔗',  action: () => nbToolLink(), active: ['link'] },
   { k: 'table', text: '▦',   cmd: 'insertTable', args: [3, 3, true] },
@@ -4002,16 +4041,149 @@ const NB_TOOLS = [
   { k: 'audio',  text: '🎙', action: () => nbRecStart() },
 ];
 
+// 글꼴. 값이 문서 JSON의 fontFamily에 그대로 저장되므로 한 번 내보낸 값은 바꾸지 않는다
+// (바꾸면 이미 쓴 노트의 글꼴 선택 표시와 읽기 전용 표시가 어긋난다). 웹 글꼴은 노트 탭을 열 때만 받고,
+// 받지 못하면 뒤의 일반 글꼴로 보인다. 'serif'와 'monospace'는 처음 버전부터 있던 기기 글꼴 값이다.
+const NB_FONTS = [
+  ['', 'nb_tb_font_default'],
+  ["'Noto Sans KR', sans-serif", 'nb_font_noto_sans'],
+  ["'Noto Serif KR', serif", 'nb_font_noto_serif'],
+  ["'Gowun Dodum', sans-serif", 'nb_font_gowun'],
+  ["'Nanum Pen Script', cursive", 'nb_font_pen'],
+  ["'Black Han Sans', sans-serif", 'nb_font_black'],
+  ['serif', 'nb_tb_font_serif'],
+  ['monospace', 'nb_tb_font_mono'],
+];
+const NB_SIZES = [['', 'nb_tb_size_default'], ['12px', '12'], ['14px', '14'], ['18px', '18'], ['24px', '24'], ['32px', '32']];
+const NB_FONT_CSS = 'https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum' +
+  '&family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@400;700&family=Noto+Serif+KR:wght@400;700&display=swap';
+function nbLoadWebFonts() {
+  if (document.getElementById('nb-webfonts')) return;
+  document.head.appendChild(nbEl('link', { id: 'nb-webfonts', rel: 'stylesheet', href: NB_FONT_CSS }));
+}
+
+// 이름 붙은 색. 글자색은 흰 바탕에서 읽히는 진한 색, 형광펜은 글자가 비치는 옅은 색만 둔다.
+const NB_TEXT_COLORS = [
+  ['#d0021b', 'nb_c_red'], ['#e8590c', 'nb_c_orange'], ['#2b8a3e', 'nb_c_green'], ['#1c6ed6', 'nb_c_blue'],
+  ['#5f3dc4', 'nb_c_purple'], ['#c2255c', 'nb_c_pink'], ['#8d5a2b', 'nb_c_brown'], ['#6b6b6b', 'nb_c_gray'],
+];
+const NB_HL_COLORS = [
+  ['#fff59d', 'nb_c_yellow'], ['#c3f0b0', 'nb_c_green'], ['#bde3ff', 'nb_c_blue'], ['#ffc9de', 'nb_c_pink'],
+  ['#ffd8a8', 'nb_c_orange'], ['#e5d4ff', 'nb_c_purple'], ['#e9ecef', 'nb_c_gray'],
+];
+// 마지막으로 고른 색은 이 브라우저에만 기억한다 (편의 기능이라 저장이 막혀도 기본색으로 동작한다).
+const NB_COLOR_KEY = { color: 'cs:nbColor', highlight: 'cs:nbHighlight' };
+function nbLastColor(kind) {
+  const def = kind === 'color' ? NB_TEXT_COLORS[0][0] : NB_HL_COLORS[0][0];
+  try { const v = localStorage.getItem(NB_COLOR_KEY[kind]); return /^#[0-9a-f]{6}$/i.test(v || '') ? v : def; }
+  catch (_) { return def; }
+}
+function nbSetLastColor(kind, hex) {
+  try { localStorage.setItem(NB_COLOR_KEY[kind], hex); } catch (_) {}
+  nbPaintColorTool(kind);
+}
+function nbColorName(kind, hex) {
+  const hit = (kind === 'color' ? NB_TEXT_COLORS : NB_HL_COLORS).find(([v]) => v.toLowerCase() === hex.toLowerCase());
+  return hit ? t(hit[1]) : hex;
+}
+// 주 버튼의 막대 색과 설명을 마지막 색에 맞춘다.
+function nbPaintColorTool(kind, root) {
+  const tb = root || document.getElementById('nb-toolbar');
+  const b = tb && tb.querySelector(`[data-tool="${kind}"]`);
+  if (!b) return;
+  const hex = nbLastColor(kind);
+  const bar = b.querySelector('.nb-tb-bar');
+  if (bar) bar.style.backgroundColor = hex;
+  const lbl = t(kind === 'color' ? 'nb_tb_color_apply' : 'nb_tb_highlight_apply').replace('{name}', nbColorName(kind, hex));
+  b.title = lbl; b.setAttribute('aria-label', lbl);
+}
+function nbApplyColor(kind, hex) {
+  nbSetLastColor(kind, hex);
+  // 목록에서 고른 형광펜은 같은 색이 이미 칠해져 있어도 지우지 않도록 set을 쓴다 (주 버튼만 토글)
+  if (kind === 'color') nbRun('setColor', hex); else nbRun('setHighlight', { color: hex });
+}
+
+// 색 목록. 편집기 선택 영역을 잃지 않게 항목은 mousedown 기본 동작을 막는다.
+let _nbPal = null;
+function nbClosePalette(focusBack) {
+  const p = _nbPal;
+  if (!p) return;
+  _nbPal = null;
+  p.box.remove();
+  p.caret.setAttribute('aria-expanded', 'false');
+  document.removeEventListener('mousedown', p.onDoc, true);
+  document.removeEventListener('keydown', p.onKey, true);
+  window.removeEventListener('resize', p.onResize);
+  if (focusBack) p.caret.focus();
+}
+function nbOpenPalette(kind, caret) {
+  const same = _nbPal && _nbPal.kind === kind;
+  nbClosePalette(same);
+  if (same) return;
+  const isText = kind === 'color';
+  const box = nbEl('div', { class: 'nb-palette', attrs: { role: 'menu', 'aria-label': t(isText ? 'nb_tb_color_menu' : 'nb_tb_highlight_menu') } });
+  const item = (kids, onPick, wide) => {
+    const b = nbEl('button', { type: 'button', class: 'nb-palette-item' + (wide ? ' nb-palette-wide' : ''),
+                               attrs: { role: 'menuitem' } }, kids);
+    b.addEventListener('mousedown', (e) => e.preventDefault());
+    b.addEventListener('click', () => { onPick(); nbClosePalette(false); });
+    return b;
+  };
+  const sw = (hex) => {
+    const s = nbEl('span', { class: 'nb-palette-sw', text: '가', attrs: { 'aria-hidden': 'true' } });
+    if (isText) s.style.color = hex || '#1f1f1f'; else if (hex) s.style.backgroundColor = hex;
+    return s;
+  };
+  box.appendChild(isText
+    ? item([sw(''), t('nb_color_default')], () => nbRun('unsetColor'), true)
+    : item([sw(''), t('nb_hl_none')], () => nbRun('unsetHighlight'), true));
+  for (const [hex, key] of (isText ? NB_TEXT_COLORS : NB_HL_COLORS))
+    box.appendChild(item([sw(hex), t(key)], () => nbApplyColor(kind, hex)));
+  // 직접 고르기: label로 감싼 네이티브 색 입력이라 사파리에서도 탭 한 번으로 열린다
+  const inp = nbEl('input', { type: 'color', value: nbLastColor(kind), attrs: { 'aria-label': t('nb_color_custom') } });
+  inp.addEventListener('change', () => { nbApplyColor(kind, inp.value); nbClosePalette(false); });
+  box.appendChild(nbEl('label', { class: 'nb-palette-item nb-palette-wide', attrs: { role: 'menuitem' } },
+                       [inp, t('nb_color_custom')]));
+  document.body.appendChild(box);
+  const place = () => {
+    const r = caret.getBoundingClientRect();
+    const w = box.offsetWidth, h = box.offsetHeight;
+    box.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + 'px';
+    box.style.top = (r.bottom + h + 8 > window.innerHeight ? Math.max(8, r.top - h - 4) : r.bottom + 4) + 'px';
+  };
+  place();
+  const items = [...box.querySelectorAll('.nb-palette-item')];
+  const onDoc = (e) => { if (!box.contains(e.target) && !caret.contains(e.target)) nbClosePalette(false); };
+  const onKey = (e) => {
+    if (e.key === 'Escape') { e.preventDefault(); nbClosePalette(true); return; }
+    if (!['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+    const cur = items.indexOf(document.activeElement.closest ? document.activeElement.closest('.nb-palette-item') : null);
+    if (cur < 0) return;
+    e.preventDefault();
+    const step = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : -1;
+    items[(cur + step + items.length) % items.length].focus();
+  };
+  const onResize = () => nbClosePalette(false);
+  document.addEventListener('mousedown', onDoc, true);
+  document.addEventListener('keydown', onKey, true);
+  window.addEventListener('resize', onResize);
+  _nbPal = { kind, box, caret, onDoc, onKey, onResize };
+  caret.setAttribute('aria-expanded', 'true');
+  items[0].focus();
+}
+
 function nbBuildToolbar(tb) {
   for (const tool of NB_TOOLS) {
     if (tool === '|') { tb.appendChild(nbEl('span', { class: 'nb-tb-sep', attrs: { 'aria-hidden': 'true' } })); continue; }
     const label = t('nb_tb_' + tool.k);
     if (tool.type === 'font' || tool.type === 'size') {
-      const opts = tool.type === 'font'
-        ? [['', t('nb_tb_font_default')], ['serif', t('nb_tb_font_serif')], ['monospace', t('nb_tb_font_mono')]]
-        : [['', t('nb_tb_size_default')], ['12px', '12'], ['14px', '14'], ['18px', '18'], ['24px', '24'], ['32px', '32']];
+      const opts = tool.type === 'font' ? NB_FONTS : NB_SIZES;
       const s = nbEl('select', { title: label, attrs: { 'aria-label': label, 'data-tool': tool.k } });
-      for (const [v, txt] of opts) s.appendChild(nbEl('option', { value: v, text: txt }));
+      for (const [v, key] of opts) {
+        const o = nbEl('option', { value: v, text: /^nb_/.test(key) ? t(key) : key });
+        if (tool.type === 'font' && v) o.style.fontFamily = v;   // 지원하는 브라우저에서는 목록이 미리보기가 된다
+        s.appendChild(o);
+      }
       s.addEventListener('change', () => {
         const v = s.value;
         if (tool.type === 'font') { if (v) nbRun('setFontFamily', v); else nbRun('unsetFontFamily'); }
@@ -4021,13 +4193,26 @@ function nbBuildToolbar(tb) {
       continue;
     }
     if (tool.type === 'color' || tool.type === 'highlight') {
-      const inp = nbEl('input', { type: 'color', value: tool.type === 'color' ? '#d0021b' : '#fff59d',
-                                  title: label, attrs: { 'aria-label': label, 'data-tool': tool.k } });
-      inp.addEventListener('change', () => {
-        if (tool.type === 'color') nbRun('setColor', inp.value);
-        else                       nbRun('toggleHighlight', inp.value);
+      const kind = tool.type;
+      const main = nbEl('button', { type: 'button', attrs: { 'data-tool': tool.k } }, [
+        nbEl('span', { class: 'nb-tb-glyph', attrs: { 'aria-hidden': 'true' } }, [
+          nbEl('span', { text: kind === 'color' ? '가' : '🖍' }),
+          nbEl('span', { class: 'nb-tb-bar' }),
+        ]),
+      ]);
+      if (tool.active) main.setAttribute('aria-pressed', 'false');
+      main.addEventListener('mousedown', (e) => e.preventDefault());
+      main.addEventListener('click', () => {
+        if (kind === 'color') nbRun('setColor', nbLastColor(kind));
+        else                  nbRun('toggleHighlight', nbLastColor(kind));
       });
-      tb.appendChild(inp);
+      const menuLabel = t(kind === 'color' ? 'nb_tb_color_menu' : 'nb_tb_highlight_menu');
+      const caret = nbEl('button', { type: 'button', class: 'nb-tb-caret', text: '▾', title: menuLabel,
+                                     attrs: { 'aria-label': menuLabel, 'aria-haspopup': 'menu', 'aria-expanded': 'false',
+                                              'data-tool': tool.k + '-menu' } });
+      caret.addEventListener('mousedown', (e) => e.preventDefault());
+      caret.addEventListener('click', () => nbOpenPalette(kind, caret));
+      tb.appendChild(nbEl('span', { class: 'nb-tb-split' }, [main, caret]));
       continue;
     }
     const b = nbEl('button', { type: 'button', text: tool.text, title: label,
@@ -4038,6 +4223,8 @@ function nbBuildToolbar(tb) {
     b.addEventListener('click', () => { if (tool.action) tool.action(); else nbRun(tool.cmd, ...(tool.args || [])); });
     tb.appendChild(b);
   }
+  nbPaintColorTool('color', tb);
+  nbPaintColorTool('highlight', tb);
   const tools = [...tb.querySelectorAll('[data-tool]')];
   tools.forEach((el, i) => { el.tabIndex = i === 0 ? 0 : -1; });
   tb.addEventListener('focusin', (e) => {
@@ -4078,7 +4265,18 @@ function nbRefreshToolbar() {
   if (!tb) return;
   const ed = _nb.mode === 'rich' ? _nb.editor : null;
   tb.classList.toggle('hidden', !ed);
-  if (!ed) return;
+  if (!ed) { nbClosePalette(false); return; }
+  // 글꼴과 크기 목록이 커서 위치의 값을 보여 주게 한다 (사용자가 목록을 조작 중이면 건드리지 않는다)
+  for (const [k, list, attr] of [['font', NB_FONTS, 'fontFamily'], ['size', NB_SIZES, 'fontSize']]) {
+    const sel = tb.querySelector(`[data-tool="${k}"]`);
+    if (!sel || document.activeElement === sel || typeof ed.isActive !== 'function') continue;
+    let v = '';
+    for (const [val] of list) {
+      if (!val) continue;
+      try { if (ed.isActive('textStyle', { [attr]: val })) { v = val; break; } } catch (_) {}
+    }
+    sel.value = v;
+  }
   for (const tool of NB_TOOLS) {
     if (tool === '|') continue;
     const el = tb.querySelector(`[data-tool="${tool.k}"]`);
@@ -4642,7 +4840,7 @@ window.addEventListener('popstate', async (e) => {
 // 스타일은 색과 크기 몇 가지를 형식 검사한 뒤에만 붙인다. 외부 이미지 주소는 불러오지 않는다.
 const NB_SAFE_COLOR = /^(#[0-9a-f]{3,8}|rgba?\(\s*[\d.\s,%]+\))$/i;
 const NB_SAFE_SIZE  = /^\d{1,3}(\.\d+)?(px|pt|em|rem|%)$/;
-const NB_SAFE_FONTS = new Set(['serif', 'sans-serif', 'monospace']);
+const NB_SAFE_FONTS = new Set(['sans-serif', ...NB_FONTS.map(([v]) => v).filter(Boolean)]);
 function nbRenderReadOnly(host, doc) {
   host.replaceChildren();
   const root = nbEl('div', { class: 'nb-ro' });

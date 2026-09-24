@@ -839,3 +839,31 @@ test('CSV와 ICS는 보존된 별점과 빠른 메모를 계속 내보낸다', (
   assert.match(indexHtml, /'MustSee','Rating','Notes','LinkedNoteTitles','LinkedNoteText'/);
   assert.match(indexHtml, /n\.rating \|\| ''[\s\S]*n\.note \|\| ''/);
 });
+
+test('노트 글꼴과 색 목록은 두 언어 문구와 읽기 전용 허용 목록을 모두 갖춘다', () => {
+  const block = (name) => {
+    const start = indexHtml.indexOf(`const ${name} = [`);
+    assert.ok(start >= 0, `${name} must exist`);
+    return indexHtml.slice(start, indexHtml.indexOf('];', start));
+  };
+  const ko = indexHtml.slice(indexHtml.indexOf('const I18N_KO'), indexHtml.indexOf('const I18N_EN'));
+  const en = indexHtml.slice(indexHtml.indexOf('const I18N_EN'), indexHtml.indexOf('};', indexHtml.indexOf('const I18N_EN')));
+  for (const name of ['NB_FONTS', 'NB_TEXT_COLORS', 'NB_HL_COLORS']) {
+    const keys = [...block(name).matchAll(/'(nb_[a-z_]+)'/g)].map((m) => m[1]);
+    assert.ok(keys.length >= 5, `${name} has entries`);
+    for (const k of keys) {
+      assert.match(ko, new RegExp(`\\b${k}:`), `KO ${k}`);
+      assert.match(en, new RegExp(`\\b${k}:`), `EN ${k}`);
+    }
+  }
+  // 처음 버전의 기기 글꼴 값은 이미 저장된 노트가 있으므로 목록에서 빠지면 안 된다
+  const fonts = block('NB_FONTS');
+  assert.match(fonts, /\['serif',/);
+  assert.match(fonts, /\['monospace',/);
+  assert.match(indexHtml, /NB_SAFE_FONTS = new Set\(\['sans-serif', \.\.\.NB_FONTS/);
+  for (const k of ['nb_tb_color_apply', 'nb_tb_highlight_apply', 'nb_tb_color_menu', 'nb_tb_highlight_menu',
+                   'nb_color_default', 'nb_hl_none', 'nb_color_custom']) {
+    assert.match(ko, new RegExp(`\\b${k}:`), `KO ${k}`);
+    assert.match(en, new RegExp(`\\b${k}:`), `EN ${k}`);
+  }
+});

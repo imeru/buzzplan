@@ -323,6 +323,12 @@ Firestore: users/<uid>/confs/<confId>/richNotes/<noteId>
   편집기 DOM을 재생성하지 않고 둘러보기와 내 일정만 dirty로 표시한다
 - 문서 노트 편집기는 `assets/vendor/buzzplan-editor.mjs`를 `import()`로 지연 로드한다. 로드 실패 시
   안전한 DOM 기반 읽기 전용 폴백을 보여 주고 나머지 앱은 계속 동작해야 한다
+- **노트 글꼴과 색**: `NB_FONTS`의 값 문자열은 문서 JSON의 `fontFamily`에 그대로 저장되므로 한 번 배포한
+  값은 고치거나 빼지 않는다(추가만 한다). 읽기 전용 허용 목록 `NB_SAFE_FONTS`는 이 목록에서 만든다.
+  웹 글꼴은 `nbLoadWebFonts()`가 노트 탭 진입 때 Google Fonts에서 받고, 실패하면 뒤의 일반 글꼴로 보인다.
+  글자색과 형광펜은 주 버튼(마지막 색 적용, 형광펜은 토글) + ▾ 색 목록(`nbOpenPalette`)이다.
+  목록에서 고른 형광펜은 `setHighlight`로 칠해 같은 색을 다시 골라도 지워지지 않는다.
+  마지막 색은 localStorage `cs:nbColor`, `cs:nbHighlight`에 둔다(동기화 대상 아님)
 - 동기화 계층: `startSync`/`stopSync`/`schedulePush`/`applyRemoteItems`/`touch`/`reportSyncError`
 - 문서 노트 동기화 계층: `startRichNotesSync`/`stopRichSync`/`rnPushOne`/`rnResolveConflict`.
   기존 items 동기화와 상태나 업로드 게이트를 섞지 않는다
