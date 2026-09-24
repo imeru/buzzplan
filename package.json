@@ -1,0 +1,34 @@
+{
+  "name": "buzzplan-editor-build",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "빌드 전용 package.json. index.html 앱 자체는 여전히 빌드리스 정적 페이지다. 이 패키지는 assets/src/editor의 리치 텍스트 메모 에디터만 assets/vendor/buzzplan-editor.mjs 단일 ESM 번들로 컴파일한다.",
+  "scripts": {
+    "build": "node scripts/build-editor.mjs",
+    "build:dev": "node scripts/build-editor.mjs --dev",
+    "syntax-check": "node scripts/syntax-check.mjs",
+    "test": "node --test assets/src/editor/__tests__/*.test.mjs tests/*.test.mjs",
+    "check": "npm run syntax-check && npm run build && npm test"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@tiptap/core": "3.31.3",
+    "@tiptap/pm": "3.31.3",
+    "@tiptap/starter-kit": "3.31.3",
+    "@tiptap/extension-list": "3.31.3",
+    "@tiptap/extension-task-list": "3.31.3",
+    "@tiptap/extension-task-item": "3.31.3",
+    "@tiptap/extension-text-style": "3.31.3",
+    "@tiptap/extension-color": "3.31.3",
+    "@tiptap/extension-font-family": "3.31.3",
+    "@tiptap/extension-highlight": "3.31.3",
+    "@tiptap/extension-table": "3.31.3"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "jsdom": "25.0.1"
+  }
+}

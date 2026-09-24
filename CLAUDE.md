@@ -37,6 +37,8 @@
    서드파티 스토리지 차단으로 로그인이 소실된다 (실기기에서 확인된 함정)
 7. **프로그램북 PDF는 커밋 금지** (`*.pdf`는 .gitignore). 소스 PDF는 로컬 보관
 8. 파괴적 작업(파일·데이터 삭제, git 강제 푸시, 과금 발생, 아키텍처 전환)은 사용자 확인 후 진행
+9. **문서형 노트는 기존 빠른 메모와 별도 계층이다.** richNotes 코드에서 `touch(key)`를 호출하거나
+   기존 `state.notes`와 Firestore 부모 문서에 문서 노트 필드를 섞지 않는다
 
 ## 3. 파일 지도
 
@@ -63,6 +65,10 @@ map-editor.html     회장 지도 저작 도구 (내부용, 앱에서 링크하�
                     venue JSON은 data/<id>.json에 직접 쓴다. 자세한 계약은 13장 참조
 assets/             로고. 헤더는 buzzplan-bee.png(+@2x), buzzplan-logo.png(+@2x)도 참조됨
 assets/maps/        회장 도면 이미지. venue.maps[].image가 여기를 가리킨다 (커밋 대상)
+assets/src/editor/  Tiptap 기반 문서 노트 편집기 소스와 Node 회귀 테스트
+assets/vendor/buzzplan-editor.mjs  index.html이 지연 로드하는 생성 ESM 번들 (커밋 대상)
+scripts/            편집기 번들 빌드와 구문 검사 스크립트
+package.json, package-lock.json  편집기 빌드 의존성과 고정 버전. 앱 런타임은 여전히 빌드리스
 README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기와 중복 보유하므로 함께 갱신할 것
 ```
 
@@ -247,6 +253,54 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
   push하면 꼭 듣기 플래그가 지워진다. 캐시가 갱신되면 해소된다. 앞으로 항목 필드를 늘릴 때도 같은 성질이 따라온다
 - 확장: 무료 쿼터(읽기 5만/쓰기 2만/일)로 수백 명 커버. 초과 시 Blaze 전환만 하면 됨 (구조 불변)
 
+### 문서형 노트 동기화 계약
+
+기존 빠른 메모와 별개로 문서 노트는 다음 두 저장소를 쓴다.
+
+```text
+로컬 IndexedDB: buzzplan-notebook v2
+  notes: [owner, confId, noteId]
+  media: [owner, mediaId]
+  meta: 장치와 게스트 이전 기록
+  recordings: [owner, draftId] 중단 녹음 복구 조각
+
+Firestore: users/<uid>/confs/<confId>/richNotes/<noteId>
+```
+
+- `owner`는 로그인하지 않았을 때 `guest`, 로그인했을 때 Firebase uid다. 목록을 읽기 전에 전역
+  owner를 바꾸지 않는다. 로그아웃 직후 재로그인처럼 전환이 겹칠 수 있으므로
+  `_nbOwnerSwitchQueue`와 `_nbOwnerSwitchSeq`로 직렬화하고 마지막 요청만 반영한다
+- 서버 노트는 `v`, `title`, `body`, `plainText`, `paperRefs`, `mediaIds`, `writeId`,
+  `parentWriteId`, `deleted`, `createdAt`, `updatedAt` 11개 필드를 모두 가진다. `body`는 Tiptap
+  JSON 문자열이며 HTML을 저장하지 않는다
+- **richNotes에서도 서버본 확인 전 업로드 금지다.** 캐시 스냅샷을 서버 확인 근거로 쓰지 않고,
+  컬렉션의 서버 읽기나 서버 스냅샷을 확인한 뒤에만 dirty 노트를 올린다
+- 갱신은 Firestore transaction에서 서버 `writeId == 로컬 parentWriteId`일 때만 수행한다.
+  다르면 서버본을 유지하고 로컬본을 새 noteId의 충돌 사본으로 만든다. 어느 쪽도 덮어쓰지 않는다
+- 삭제는 `deleted: true` tombstone이다. Firestore 규칙도 hard delete를 금지한다. 복원은 새 writeId로
+  tombstone을 갱신한다
+- 게스트 노트를 uid 파티션으로 옮길 때 같은 noteId의 계정 노트가 있으면 덮어쓰지 않는다.
+  내용이 다르면 게스트 내용을 충돌 사본으로 보존하고, 게스트 원본은 자동 삭제하지 않는다
+- 원격 노트 적용과 발표 연결 변경은 `touch(key)`를 호출하지 않는다. `touch(key)`는 발표 선택,
+  별점, 빠른 메모, 꼭 듣기 전용이다
+- 이미지와 음성 Blob은 IndexedDB `media`에만 저장한다. Firestore에는 `mediaIds`와 본문 노드만
+  올라간다. 파일이 없는 기기에서는 자리 표시자를 그리되 노드를 보존한다. 사이트 데이터 삭제 시
+  로컬 첨부는 복구되지 않는다
+- `navigator.storage.estimate()`로 첨부 쓰기 전 여유 공간을 확인하고, 영구 저장이 거부되거나
+  공간이 부족하면 사용자에게 알린다. API가 없는 브라우저에서는 기능을 막지 않는다
+- 문서에서 빠진 media는 생성일이 아니라 `orphanedAt`부터 7일을 센 뒤 삭제한다. 어느 노트든 다시
+  참조하면 유예를 취소하고, 휴지통 노트의 `mediaIds`도 살아 있는 참조로 본다. 정리는 owner 경계를 넘지 않는다
+- 이미지 입력은 재인코딩해 EXIF와 GPS를 제거하고 긴 변 1600px, 결과 2MiB 이하로 제한한다.
+  음성은 브라우저 지원 형식 중 mp4, webm opus, ogg opus 순으로 고르고 30분 또는 20MiB에서 멈춘다
+- MediaRecorder 조각은 약 5초마다 `recordings`에 누적 저장한다. 정상 종료와 취소 시 draft를 지우고,
+  비정상 종료로 남은 draft는 같은 owner와 학회에서 원래 노트가 살아 있을 때만 음성 첨부로 복구한다.
+  녹음 시작 때부터 lifecycle promise를 만들고 owner 전환은 그 완료를 기다린다. `stop` 이벤트가 누락되면
+  5초 fallback으로 같은 recorder만 종료하며, 이전 recorder의 늦은 이벤트는 현재 녹음을 건드리면 안 된다
+- Firebase Storage는 현재 범위가 아니다. Blaze 요금제와 결제를 사용자가 승인한 뒤 별도 단계에서
+  추가하며, 그 전에는 SDK나 `storage.rules`를 만들지 않는다
+- 동기화 진단 패널에는 richNotes의 서버 확인, 로컬 수, dirty 수, 충돌 수를 기존 `liveLine` 방식으로
+  같은 시점에 갱신한다. 오류는 조용히 삼키지 않고 기존 동기화 오류 UI에 표면화한다
+
 ## 8. index.html 주요 구조 (JS)
 
 - `bootApp()` : conferences.json + data fetch → initState → renderAll → 자동 스크롤 + startNowTimer
@@ -258,7 +312,13 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
 - `paperTime(session, paper, idx, total)` : 발표 시간. 우선순위 paper.start/end > paper_no 시간형 >
   poster/Panel/Special은 세션 공유 > 15분 슬라이스
 - `renderSessions()` 둘러보기 탭 / `renderItinerary()` 내 일정 탭 (리스트·시간표 토글, hop 힌트)
+- `nbEnterNotesView()`와 `nbOpenNote()` : 노트 목록과 편집기 진입. 노트 화면에서는 시각 상태 갱신이
+  편집기 DOM을 재생성하지 않고 둘러보기와 내 일정만 dirty로 표시한다
+- 문서 노트 편집기는 `assets/vendor/buzzplan-editor.mjs`를 `import()`로 지연 로드한다. 로드 실패 시
+  안전한 DOM 기반 읽기 전용 폴백을 보여 주고 나머지 앱은 계속 동작해야 한다
 - 동기화 계층: `startSync`/`stopSync`/`schedulePush`/`applyRemoteItems`/`touch`/`reportSyncError`
+- 문서 노트 동기화 계층: `startRichNotesSync`/`stopRichSync`/`rnPushOne`/`rnResolveConflict`.
+  기존 items 동기화와 상태나 업로드 게이트를 섞지 않는다
 - **꼭 듣기(⭐)**: `isMust`/`toggleMust`/`clearMustOnDeselect`. 상태는 notes 항목의 `must` 불리언이라
   별점과 축이 다르다 (별점은 듣고 난 뒤 평가, 꼭 듣기는 듣기 전 우선순위).
   켜면 자동으로 선택에 담기고, 선택을 해제하면 함께 꺼진다. 토글 핸들러는 전체 재렌더 대신
@@ -309,6 +369,11 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
 # 1. JS 구문 검사 (index.html 수정 후 항상)
 python3 -c "import re; html=open('index.html').read(); s=re.findall(r'<script>(.*?)</script>', html, re.S); open('/tmp/app.js','w').write('\n'.join(s))" && node --check /tmp/app.js
 
+# 문서 노트 편집기 소스 수정 후: 구문 검사, 번들 재생성, 회귀 테스트
+npm ci
+npm run check
+# assets/vendor/buzzplan-editor.mjs도 생성 결과이므로 소스와 함께 커밋한다
+
 # 2. 데이터 검증 (데이터·파서 수정 후)
 python3 build.py <pdf> --parser <parser> --id tmp --name t --dry-run   # 카운트·orphan·결번·분포 리포트
 
@@ -343,8 +408,11 @@ https://imeru.github.io/buzzplan/?conf=<학회id>&debug=sync
 작업을 "끝났다"고 보고하기 전에 전부 확인한다:
 
 - [ ] index.html 수정 시: JS 구문 검사 통과
+- [ ] 편집기 소스 수정 시: `npm run check` 통과 + vendor 번들 갱신
 - [ ] 신규 사용자 노출 문자열: I18N_KO/EN 양쪽 + (정적이면) applyStaticLang 반영
-- [ ] 선택, 별점, 메모, 꼭 듣기 변경 경로를 추가하거나 수정했으면: touch(key) 포함 여부 확인
+- [ ] 선택, 별점, 빠른 메모, 꼭 듣기 변경 경로를 추가하거나 수정했으면: touch(key) 포함 여부 확인
+- [ ] richNotes 변경 시: 서버 확인 전 push 금지, 충돌 사본, tombstone, owner 분리 회귀 확인
+- [ ] 로컬 미디어 변경 시: 다른 기기의 미해결 노드를 삭제하지 않는지 확인
 - [ ] 데이터 변경 시: validate_v2 통과 + 학회 표(5장) 숫자 갱신
 - [ ] 로컬 서버에서 해당 화면 로드 확인 (최소한 게스트 모드)
 - [ ] push했으면: Pages 빌드 "built" 확인 후 배포본에서 변경 존재 확인

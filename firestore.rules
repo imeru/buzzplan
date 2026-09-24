@@ -1,16 +1,74 @@
 rules_version = '2';
 
 // BuzzPlan Firestore 보안 규칙
-// 배포: Firebase Console → Firestore Database → 규칙 탭에 붙여넣고 "게시"
+// 배포: Firebase Console -> Firestore Database -> 규칙 탭에 붙여넣고 "게시"
 //
-// 원칙: 로그인한 사용자는 자기 데이터(users/<본인uid>/**)만 읽고 쓸 수 있다.
-// 수백 명이 사용해도 서로의 일정·메모는 완전히 격리된다.
-// (문서 크기는 Firestore 자체 한도 1MiB가 상한 — 학회 하나의 선택+메모는 수십 KB 수준)
+// 기존 일정과 빠른 메모는 users/{uid}/confs/{confId} 문서에 남는다.
+// 문서형 노트는 그 아래 richNotes 하위 컬렉션을 써서, 구버전 앱이 부모 문서를
+// 통째로 갱신해도 노트가 지워지지 않게 한다.
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{uid}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
     }
+
+    function hasRichNoteShape(d) {
+      return d.keys().hasAll([
+          'v', 'title', 'body', 'plainText', 'paperRefs', 'mediaIds',
+          'writeId', 'parentWriteId', 'deleted', 'createdAt', 'updatedAt'
+        ])
+        && d.keys().hasOnly([
+          'v', 'title', 'body', 'plainText', 'paperRefs', 'mediaIds',
+          'writeId', 'parentWriteId', 'deleted', 'createdAt', 'updatedAt'
+        ])
+        && d.v is int
+        && d.v == 1
+        && d.title is string
+        && d.title.size() <= 200
+        && d.body is string
+        && d.body.toUtf8().size() <= 614400
+        && d.plainText is string
+        && d.plainText.size() <= 4096
+        && d.paperRefs is list
+        && d.paperRefs.size() <= 100
+        && d.mediaIds is list
+        && d.mediaIds.size() <= 50
+        && d.writeId is string
+        && d.writeId.size() > 0
+        && d.writeId.size() <= 100
+        && (d.parentWriteId == null ||
+            (d.parentWriteId is string && d.parentWriteId.size() <= 100))
+        && d.deleted is bool
+        && d.createdAt is timestamp
+        && d.updatedAt is timestamp;
+    }
+
+    // 기존 앱의 일정, 별점, 빠른 메모, 꼭 듣기 동기화 계약을 유지한다.
+    match /users/{uid}/confs/{confId} {
+      allow read, create, update, delete: if isOwner(uid);
+
+      match /richNotes/{noteId} {
+        allow read: if isOwner(uid);
+
+        allow create: if isOwner(uid)
+          && hasRichNoteShape(request.resource.data)
+          && request.resource.data.parentWriteId == null
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time;
+
+        allow update: if isOwner(uid)
+          && hasRichNoteShape(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.updatedAt == request.time
+          && request.resource.data.writeId != resource.data.writeId
+          && request.resource.data.parentWriteId == resource.data.writeId;
+
+        // 앱은 복원 가능한 tombstone(deleted=true)을 사용한다. 실제 삭제는 writeId
+        // 연쇄를 끊으므로 허용하지 않는다.
+        allow delete: if false;
+      }
+    }
+
     // 그 밖의 모든 경로는 접근 불가
     match /{document=**} {
       allow read, write: if false;

@@ -375,7 +375,8 @@
 
   /* 원격 동기화 변경 알림 토스트. #to-top 버튼 위쪽에 겹치지 않게 배치. */
   .sync-toast {
-    position: fixed; right: 20px; bottom: 80px; z-index: 60;
+    /* 모바일 노트 편집기(z 900)와 모달(z 1000) 위에서도 보여야 한다 */
+    position: fixed; right: 20px; bottom: 80px; z-index: 1100;
     max-width: 280px; background: #1f1f1f; color: #fff;
     padding: 10px 14px; border-radius: 8px; font-size: 12px; line-height: 1.4;
     box-shadow: 0 4px 12px rgba(0,0,0,0.25);
@@ -600,6 +601,153 @@
     .slot .pick .ptitle { font-size: 13px; }
     .slot .pick .pauthors { font-size: 12px; }
   }
+
+  /* ====== 노트 탭 (리치 노트) ======
+     노트 탭에서는 필터 사이드바가 의미가 없으므로 숨기고 본문을 한 칸으로 쓴다.
+     데스크톱은 목록 | 편집기 2단, 모바일은 목록만 보이다가 노트를 열면 편집기가 화면 전체를 덮는다. */
+  .layout.notes-mode { grid-template-columns: 1fr; }
+  .layout.notes-mode > #filter-panel { display: none; }
+  .nb-wrap { display: grid; grid-template-columns: 300px 1fr; gap: 12px; align-items: start; }
+  .nb-side {
+    background: #fff; border: 1px solid #e3e3e3; border-radius: 6px; padding: 10px;
+    position: sticky; top: 10px; max-height: calc(100vh - 20px);
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .nb-side input[type="search"] { width: 100%; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+  .nb-side-controls { display: flex; gap: 6px; }
+  .nb-side select { flex: 1 1 0; min-width: 0; padding: 4px; font-size: 12px; border: 1px solid #ccc; border-radius: 4px; background: #fff; }
+  .nb-new-btn {
+    background: #1f1f1f; color: #fff; border: none; border-radius: 4px; padding: 7px 10px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .nb-new-btn:disabled { background: #bbb; cursor: not-allowed; }
+  .nb-paper-filter {
+    font-size: 11px; background: #fff4cf; border-radius: 4px; padding: 4px 6px;
+    display: flex; gap: 6px; align-items: center;
+  }
+  .nb-paper-filter span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nb-paper-filter button { background: none; border: none; cursor: pointer; font-size: 12px; color: #666; }
+  .nb-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1 1 auto; min-height: 80px; }
+  .nb-item {
+    display: block; width: 100%; text-align: left; background: none; border: none;
+    border-bottom: 1px solid #f0f0f0; padding: 8px 6px; cursor: pointer; font: inherit; color: inherit;
+    border-radius: 4px;
+  }
+  .nb-item:hover { background: #f6f8fb; }
+  .nb-item[aria-current="true"] { background: #e8f0fb; box-shadow: inset 3px 0 0 #4a90e2; }
+  .nb-item-title { display: block; font-weight: 600; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nb-item-meta  { display: block; font-size: 10px; color: #888; margin-top: 2px; }
+  .nb-item-snip  { display: block; font-size: 11px; color: #666; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nb-list-empty { color: #999; font-size: 12px; font-style: italic; padding: 8px 4px; }
+  .nb-main {
+    background: #fff; border: 1px solid #e3e3e3; border-radius: 6px; min-height: 60vh;
+    display: flex; flex-direction: column; min-width: 0;
+  }
+  .nb-placeholder { padding: 40px 20px; color: #999; text-align: center; font-size: 13px; }
+  .nb-placeholder.err { color: #b32424; }
+  .nb-shell { display: flex; flex-direction: column; min-height: 60vh; }
+  .nb-head { display: flex; gap: 8px; align-items: center; padding: 10px 12px; border-bottom: 1px solid #eee; flex-wrap: wrap; }
+  .nb-title {
+    flex: 1 1 200px; min-width: 0; font-size: 18px; font-weight: 700; font-family: inherit;
+    border: 1px solid transparent; border-radius: 4px; padding: 4px 6px;
+  }
+  .nb-title:hover { border-color: #e3e3e3; }
+  .nb-title:focus { outline: none; border-color: #4a90e2; }
+  .nb-btn { background: #fff; border: 1px solid #ccc; border-radius: 4px; padding: 5px 10px; font-size: 12px; cursor: pointer; }
+  .nb-btn:hover { background: #f0f0f0; }
+  .nb-status { font-size: 11px; color: #888; }
+  .nb-status.err { color: #b32424; font-weight: 600; }
+  .nb-local-badge { font-size: 10px; background: #eee; color: #555; border-radius: 8px; padding: 1px 6px; cursor: help; }
+  .nb-refs {
+    padding: 6px 12px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+    font-size: 11px; color: #666; border-bottom: 1px solid #f3f3f3;
+  }
+  .nb-ref {
+    background: #eaf2fb; color: #0f2a4d; border: 1px solid #cfe0f5; border-radius: 12px;
+    padding: 2px 8px; font-size: 11px; cursor: pointer; max-width: 320px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .nb-ref:disabled { cursor: default; opacity: 0.7; }
+  .nb-toolbar {
+    display: flex; flex-wrap: wrap; gap: 3px; padding: 6px 10px; border-bottom: 1px solid #eee;
+    background: #fafafa; position: sticky; top: 0; z-index: 2;
+  }
+  .nb-toolbar button {
+    min-width: 30px; height: 30px; background: #fff; border: 1px solid #ddd; border-radius: 4px;
+    cursor: pointer; font-size: 12px; padding: 0 6px; color: #1f1f1f;
+  }
+  .nb-toolbar button[aria-pressed="true"] { background: #1f1f1f; color: #fff; border-color: #1f1f1f; }
+  .nb-toolbar button:disabled { opacity: 0.4; cursor: default; }
+  .nb-toolbar select { height: 30px; font-size: 12px; border: 1px solid #ddd; border-radius: 4px; background: #fff; max-width: 110px; }
+  .nb-toolbar input[type="color"] { width: 30px; height: 30px; padding: 1px; border: 1px solid #ddd; border-radius: 4px; background: #fff; cursor: pointer; }
+  .nb-tb-sep { width: 1px; background: #ddd; margin: 3px; }
+  .nb-banner {
+    padding: 8px 12px; font-size: 12px; background: #fff8e0; color: #8a6d00;
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  }
+  .nb-banner.err { background: #fde2e2; color: #b32424; }
+  .nb-editor {
+    flex: 1 1 auto; padding: 14px 16px; min-height: 300px; font-size: 15px; line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+  .nb-editor [contenteditable] { outline: none; min-height: 280px; }
+  .nb-editor img { max-width: 100%; height: auto; }
+  .nb-editor table { border-collapse: collapse; margin: 8px 0; }
+  .nb-editor td, .nb-editor th { border: 1px solid #ccc; padding: 4px 6px; vertical-align: top; }
+  .nb-editor pre { background: #f4f4f4; padding: 8px 10px; border-radius: 4px; overflow-x: auto; }
+  .nb-editor.drop-over { background: #f2f7ff; outline: 2px dashed #4a90e2; outline-offset: -6px; }
+  .nb-ro-media {
+    display: inline-block; padding: 8px 10px; background: #f0f0f0; border: 1px dashed #bbb;
+    border-radius: 4px; font-size: 12px; color: #666; margin: 4px 0;
+  }
+  .nb-rec {
+    display: flex; gap: 8px; align-items: center; padding: 8px 12px;
+    border-top: 1px solid #eee; background: #fff5f5; flex-wrap: wrap;
+  }
+  .nb-rec-time { font-family: monospace; font-weight: 700; color: #d0021b; }
+  /* 둘러보기와 내 일정의 노트 칩. 행 전체를 다시 그리지 않고 제자리에서 숫자만 갱신한다. */
+  .nchip {
+    background: none; border: 1px solid #d8d8d8; border-radius: 10px; padding: 0 6px;
+    font-size: 10px; line-height: 16px; cursor: pointer; color: #555; margin-left: 4px;
+    vertical-align: 1px; font-family: inherit;
+  }
+  .nchip:hover { background: #f0f4fa; border-color: #9bb8e0; }
+  .nchip-count { background: #eaf2fb; border-color: #cfe0f5; color: #0f2a4d; font-weight: 600; }
+  /* 노트 저장소를 열지 못한 브라우저: 이미 그려진 칩도 숨긴다 (누르면 오류만 나므로) */
+  body.nb-off .nchip, body.nb-off .tt-nc { display: none !important; }
+  .pick-notes { margin-top: 4px; display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+  .pick-notes .nchip { margin-left: 0; }
+  .tt-nc { font-size: 10px; margin-left: 4px; }
+  .paper.nb-flash { animation: nb-flash 2.2s ease-out; }
+  @keyframes nb-flash { 0% { background: #cfe3ff; } 100% { background: transparent; } }
+  .nb-link-modal { max-width: 560px; }
+  .nb-link-modal input[type="search"] { width: 100%; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+  .nb-link-list { max-height: 50vh; overflow-y: auto; border: 1px solid #eee; border-radius: 4px; margin-top: 8px; }
+  .nb-link-row {
+    display: flex; gap: 8px; padding: 8px; border-bottom: 1px solid #f3f3f3;
+    cursor: pointer; font-size: 13px; align-items: flex-start;
+  }
+  .nb-link-row:last-child { border-bottom: none; }
+  .nb-link-row input { margin-top: 3px; flex-shrink: 0; }
+  .nb-link-row small { display: block; color: #888; font-size: 11px; }
+  .nb-link-foot { display: flex; gap: 8px; justify-content: flex-end; align-items: center; margin-top: 10px; }
+  .nb-link-count { margin-right: auto; font-size: 12px; color: #666; }
+  @media (max-width: 720px) {
+    .nb-wrap { grid-template-columns: 1fr; }
+    .nb-side { position: static; max-height: none; }
+    .nb-wrap:not(.editing) .nb-main { display: none; }
+    .nb-wrap.editing .nb-side { display: none; }
+    .nb-wrap.editing .nb-main {
+      position: fixed; inset: 0; z-index: 900; border-radius: 0; border: none;
+      overflow-y: auto; min-height: 0;
+    }
+    body.nb-editing { overflow: hidden; }
+    .nb-title { font-size: 17px; }
+    .nb-toolbar button { min-width: 36px; height: 36px; }
+    .nb-editor { font-size: 16px; }
+    .nb-side input[type="search"], .nb-link-modal input[type="search"] { font-size: 16px; }
+    .nchip { font-size: 12px; line-height: 22px; padding: 0 8px; }
+  }
 </style>
 </head>
 <body>
@@ -682,7 +830,26 @@
         <li><strong>📊 CSV</strong> — Excel로 노트 정리.</li>
       </ul>
 
-      <h4 class="help-h">④ 자잘한 팁</h4>
+      <h4 class="help-h">④ 📝 노트</h4>
+      <p class="help-p">
+        <strong>노트</strong> 탭에서 제목, 목록, 표, 글자 색 같은 서식을 갖춘 문서형 노트를 씁니다.
+        노트 하나를 여러 발표에 연결할 수 있고, 연결해도 내 일정은 바뀌지 않습니다.
+        발표 옆의 <strong>＋📝</strong>를 누르면 그 발표에 연결된 노트가 바로 만들어지고,
+        <strong>📝 숫자</strong>를 누르면 연결된 노트가 열립니다. 노트의 발표 이름을 누르면 둘러보기의 그 발표로 돌아갑니다.
+        내 일정의 짧은 메모는 그대로 쓸 수 있고, <strong>📄 문서 노트로</strong>를 누르면 메모를 복사한 노트가 생깁니다 (원래 메모는 남습니다).
+      </p>
+      <p class="help-p">
+        로그인하면 노트의 글은 계정에 동기화됩니다. 로그인 전에 만든 노트는 로그인할 때 계정으로 복사되고
+        원본은 이 기기에 남습니다. 두 기기에서 같은 노트를 동시에 고치면 이 기기의 내용을
+        "충돌 사본" 노트로 따로 보관합니다. 지운 노트는 목록의 <strong>휴지통</strong>에서 복원할 수 있습니다.
+      </p>
+      <p class="help-note">
+        ⚠️ 노트에 넣은 <strong>사진과 음성 녹음은 이 기기의 브라우저에만 저장</strong>되고 다른 기기로 동기화되지 않습니다.
+        다른 기기에서는 자리 표시만 보입니다. 브라우저의 사이트 데이터(쿠키와 저장소)를 지우거나 사생활 보호 창을 닫으면
+        사진과 음성, 그리고 로그인하지 않고 쓴 노트가 사라집니다.
+      </p>
+
+      <h4 class="help-h">⑤ 자잘한 팁</h4>
       <ul class="help-ul">
         <li><strong>🔴 지금</strong> 버튼 — 현재(없으면 다음) 발표로 자동 스크롤.</li>
         <li>세션 헤더를 누르면 발표 목록 <strong>접기/펴기</strong>, "모두 접기"도 있음.</li>
@@ -697,8 +864,8 @@
 
 <div class="layout">
 
-  <!-- LEFT: filters -->
-  <div class="panel">
+  <!-- LEFT: filters (노트 탭에서는 숨긴다) -->
+  <div class="panel" id="filter-panel">
     <h2>필터</h2>
     <div class="filter-group">
       <input type="text" id="search" placeholder="🔍 제목·저자·키워드 검색">
@@ -740,14 +907,15 @@
     </div>
   </div>
 
-  <!-- MAIN: tabbed (둘러보기 | 내 일정) -->
+  <!-- MAIN: tabbed (둘러보기 | 내 일정 | 노트) -->
   <div class="main">
-    <div class="view-tabs" id="view-tabs">
-      <button class="view-tab" data-view="browse">📋 둘러보기</button>
-      <button class="view-tab" data-view="itinerary">📅 내 일정 <span class="badge" id="view-badge">0</span></button>
+    <div class="view-tabs" id="view-tabs" role="tablist" aria-label="보기 전환">
+      <button class="view-tab" data-view="browse" id="tab-browse" role="tab" aria-controls="view-browse">📋 둘러보기</button>
+      <button class="view-tab" data-view="itinerary" id="tab-itinerary" role="tab" aria-controls="view-itinerary">📅 내 일정 <span class="badge" id="view-badge">0</span></button>
+      <button class="view-tab" data-view="notes" id="tab-notes" role="tab" aria-controls="view-notes">📝 노트 <span class="badge" id="notes-badge">0</span></button>
     </div>
 
-    <div id="view-browse">
+    <div id="view-browse" role="tabpanel" aria-labelledby="tab-browse">
       <div class="browse-controls" id="browse-controls">
         <button id="btn-now" class="now-btn">🔴 지금</button>
         <label class="collapse-toggle">
@@ -762,9 +930,12 @@
       <div id="session-list"></div>
     </div>
 
-    <div id="view-itinerary" class="panel" style="display:none;">
+    <div id="view-itinerary" class="panel" style="display:none;" role="tabpanel" aria-labelledby="tab-itinerary">
       <div id="itinerary"></div>
     </div>
+
+    <!-- 노트 탭. 내용은 처음 들어올 때 ensureNotesPane()이 만든다 (문자열을 t()로 쓰려고). -->
+    <div id="view-notes" style="display:none;" role="tabpanel" aria-labelledby="tab-notes"></div>
   </div>
 
 </div>
@@ -830,6 +1001,84 @@ const I18N_KO = {
   login_fail: '로그인 실패: ',
   sync_error: '⚠️ 동기화 오류',
   sync_perm_error: '동기화 권한 오류입니다.\n\nFirebase 콘솔 → Firestore Database → 규칙 탭에\n레포의 firestore.rules 내용을 붙여넣고 "게시"해야 합니다.\n(기본 규칙은 모든 접근을 거부합니다)',
+  // ----- 노트 탭 -----
+  tabs_label: '보기 전환',
+  nb_new: '＋ 새 노트', nb_search_ph: '노트 검색', nb_list_label: '노트 목록',
+  nb_filter_label: '보기', nb_filter_all: '전체', nb_filter_linked: '발표 연결됨',
+  nb_filter_unlinked: '연결 없음', nb_filter_trash: '휴지통',
+  nb_sort_label: '정렬', nb_sort_updated: '최근 수정순', nb_sort_paper: '발표 시간순', nb_sort_created: '만든 순', nb_sort_title: '제목순',
+  nb_filter_paper: '이 발표의 노트: {title}', nb_filter_paper_clear: '발표 필터 해제',
+  nb_empty_list: '노트가 없습니다. 새 노트를 만들어 보세요.', nb_empty_trash: '휴지통이 비어 있습니다.',
+  nb_no_match: '조건에 맞는 노트가 없습니다.', nb_untitled: '제목 없음',
+  nb_title_ph: '노트 제목', nb_pick_hint: '왼쪽 목록에서 노트를 고르거나 새 노트를 만드세요.',
+  nb_loading: '노트를 불러오는 중입니다. 잠시 후 다시 시도하세요.',
+  nb_back: '← 목록', nb_back_title: '편집기를 닫고 목록으로',
+  nb_link: '🔗 발표 연결', nb_delete: '🗑 삭제', nb_restore: '↩ 복원',
+  nb_delete_confirm: '이 노트를 휴지통으로 옮길까요? 휴지통에서 복원할 수 있습니다.',
+  nb_deleted_banner: '휴지통에 있는 노트입니다. 복원하면 다시 편집할 수 있습니다.',
+  nb_moved_trash: '노트를 휴지통으로 옮겼습니다', nb_restored: '노트를 복원했습니다',
+  nb_linked_label: '연결된 발표:', nb_linked_none: '연결된 발표 없음',
+  nb_jump: '둘러보기에서 이 발표 보기', nb_paper_missing: '이 학회 데이터에 없는 발표',
+  nb_refs_count: '발표 {n}개',
+  nb_link_title: '🔗 발표 연결',
+  nb_link_hint: '이 노트와 연결할 발표를 고르세요. 내 일정에 담은 발표와 이미 연결된 발표가 보입니다. 연결해도 내 일정은 바뀌지 않습니다.',
+  nb_link_search: '발표 거르기',
+  nb_link_empty: '내 일정에 담은 발표가 없습니다. 둘러보기에서 발표를 선택하거나, 발표 옆의 ＋📝 버튼으로 노트를 만드세요.',
+  nb_link_save: '연결 저장', nb_link_selected: '{n}개 선택', nb_cancel: '취소', nb_close: '닫기',
+  nb_too_many_refs: '노트 하나에 발표는 최대 100개까지 연결할 수 있습니다.',
+  nb_too_many_media: '노트 하나에 사진과 음성은 합쳐서 최대 50개까지 넣을 수 있습니다.',
+  nb_too_big: '노트 본문이 600KiB를 넘어 동기화하지 못합니다. 이 기기에는 저장되어 있으니 내용을 줄여 주세요.',
+  nb_title_too_long: '제목은 200자까지 쓸 수 있습니다.',
+  nb_status_saving: '저장 중...', nb_status_guest: '이 기기에 저장됨',
+  nb_status_guest_title: '로그인하면 노트의 글이 계정에 동기화됩니다. 사진과 음성은 이 기기에만 남습니다.',
+  nb_status_pending: '동기화 대기 중', nb_status_synced: '계정에 동기화됨',
+  nb_status_error: '⚠️ 동기화 실패, 다시 시도합니다', nb_status_toobig: '⚠️ 너무 커서 동기화하지 못함',
+  nb_status_offline: '⚠️ 서버에 연결하지 못해 동기화를 보류 중',
+  nb_idb_fail: '이 브라우저에서는 노트 저장소(IndexedDB)를 열 수 없습니다. 사생활 보호 모드이거나 저장소가 차단되었을 수 있습니다.',
+  nb_save_fail: '⚠️ 노트를 이 기기에 저장하지 못했습니다: ',
+  nb_storage_low: '⚠️ 이 기기의 저장 공간이 부족합니다. 중요한 첨부파일의 원본을 따로 보관하고 브라우저 저장 공간을 확보해 주세요.',
+  nb_storage_full: '저장 공간이 부족해 첨부파일을 저장할 수 없습니다.',
+  nb_storage_volatile: '브라우저가 첨부파일의 영구 저장을 허용하지 않았습니다. 브라우저 데이터를 정리하면 사진과 녹음이 사라질 수 있습니다.',
+  nb_sync_fail: '⚠️ 노트를 동기화하지 못했습니다. 잠시 뒤 다시 시도합니다: ',
+  nb_editor_fail: '편집기를 불러오지 못해 읽기 전용으로 보여 줍니다. 네트워크를 확인하고 새로고침하세요.',
+  nb_editor_loading: '편집기를 불러오는 중...', nb_editor_ph: '여기에 노트를 쓰세요', nb_editor_label: '노트 본문',
+  nb_remote_changed: '다른 기기에서 이 노트가 바뀌었습니다. 지금 고치면 이 기기의 내용은 충돌 사본으로 따로 보관됩니다.',
+  nb_reload: '다시 불러오기',
+  nb_conflict: '다른 기기의 변경과 겹쳐, 이 기기의 내용을 "{title}" 노트로 따로 보관했습니다.',
+  nb_conflict_suffix: ' (충돌 사본)',
+  nb_undelete_remote: '다른 기기에서 고친 노트라 삭제를 취소했습니다.',
+  nb_remote_applied: '다른 기기의 노트 변경 {n}건을 반영했습니다',
+  nb_guest_copied: '로그인 전에 만든 노트 {n}개를 계정으로 복사했습니다 (원본은 이 기기에 남아 있습니다)',
+  nb_created: '문서 노트를 만들었습니다',
+  nb_chip_count: '이 발표에 연결된 노트 {n}개', nb_chip_new: '이 발표로 새 노트 만들기',
+  nb_promote: '📄 문서 노트로', nb_promote_title: '이 메모를 서식 있는 문서 노트로 복사합니다. 원래 메모는 그대로 남습니다.',
+  nb_tb_label: '서식 도구',
+  nb_tb_h1: '제목 1', nb_tb_h2: '제목 2', nb_tb_h3: '제목 3',
+  nb_tb_bullet: '글머리 기호 목록', nb_tb_ordered: '번호 목록', nb_tb_task: '할 일 목록',
+  nb_tb_bold: '굵게', nb_tb_italic: '기울임', nb_tb_underline: '밑줄', nb_tb_strike: '취소선',
+  nb_tb_font: '글꼴', nb_tb_font_default: '기본 글꼴', nb_tb_font_serif: '명조', nb_tb_font_mono: '고정폭',
+  nb_tb_size: '글자 크기', nb_tb_size_default: '기본 크기',
+  nb_tb_color: '글자 색', nb_tb_highlight: '형광펜',
+  nb_tb_link: '링크', nb_tb_table: '표 넣기', nb_tb_code: '코드 블록',
+  nb_tb_undo: '실행 취소', nb_tb_redo: '다시 실행', nb_tb_up: '블록을 위로', nb_tb_down: '블록을 아래로',
+  nb_tb_image: '사진 넣기', nb_tb_camera: '사진 찍기', nb_tb_audio: '음성 녹음',
+  nb_link_prompt: '링크 주소 (http, https, mailto). 비우면 링크를 지웁니다.',
+  nb_link_bad: '쓸 수 없는 링크 주소입니다. http, https, mailto만 허용합니다.',
+  nb_img_bad_type: '사진 파일(PNG, JPEG, WebP, GIF, BMP, AVIF)만 넣을 수 있습니다.',
+  nb_img_fail: '사진을 처리하지 못했습니다: ', nb_img_too_big: '사진을 2MiB 이하로 줄이지 못했습니다.',
+  nb_img_alt: '첨부 사진', nb_audio_label: '음성 녹음',
+  nb_local_only: '📱 이 기기 전용',
+  nb_local_only_title: '사진과 음성은 이 기기의 브라우저에만 저장되고 다른 기기로 동기화되지 않습니다. 브라우저 데이터를 지우면 사라집니다.',
+  nb_media_notice: '사진과 음성은 이 기기에만 저장됩니다. 다른 기기에서는 자리 표시만 보입니다.',
+  nb_media_missing: '이 기기에 없는 첨부 (다른 기기에서 넣은 것)',
+  nb_rec_recording: '🔴 녹음 중', nb_rec_paused: '⏸ 일시정지됨',
+  nb_rec_pause: '⏸ 일시정지', nb_rec_resume: '▶ 계속', nb_rec_stop: '⏹ 멈추고 넣기', nb_rec_cancel: '✕ 취소',
+  nb_rec_unsupported: '이 브라우저는 음성 녹음을 지원하지 않습니다.',
+  nb_rec_denied: '마이크 권한이 거부되었습니다. 브라우저 설정에서 이 사이트의 마이크를 허용해 주세요.',
+  nb_rec_nomic: '마이크를 찾지 못했습니다.', nb_rec_fail: '녹음하지 못했습니다: ',
+  nb_rec_cap: '녹음 한도(30분 또는 20MiB)에 도달해 자동으로 멈췄습니다.',
+  nb_rec_busy: '녹음을 먼저 멈추거나 취소하세요.', nb_rec_empty: '녹음된 내용이 없습니다.',
+  nb_rec_recovered: '이전에 중단된 음성 녹음을 복구해 현재 노트에 넣었습니다.',
 };
 const I18N_EN = {
   status_current: 'Now', status_upcoming: 'Next', status_past: 'Ended',
@@ -866,6 +1115,84 @@ const I18N_EN = {
   login_fail: 'Sign-in failed: ',
   sync_error: '⚠️ Sync error',
   sync_perm_error: 'Sync permission error.\n\nDeploy the firestore.rules from the repo in\nFirebase Console → Firestore Database → Rules.\n(The default rules deny all access)',
+  // ----- Notes tab -----
+  tabs_label: 'Views',
+  nb_new: '+ New note', nb_search_ph: 'Search notes', nb_list_label: 'Notes',
+  nb_filter_label: 'Show', nb_filter_all: 'All', nb_filter_linked: 'Linked to talks',
+  nb_filter_unlinked: 'Not linked', nb_filter_trash: 'Trash',
+  nb_sort_label: 'Sort', nb_sort_updated: 'Recently edited', nb_sort_paper: 'Talk time', nb_sort_created: 'Recently created', nb_sort_title: 'Title',
+  nb_filter_paper: 'Notes for: {title}', nb_filter_paper_clear: 'Clear talk filter',
+  nb_empty_list: 'No notes yet. Create one.', nb_empty_trash: 'The trash is empty.',
+  nb_no_match: 'No notes match.', nb_untitled: 'Untitled',
+  nb_title_ph: 'Note title', nb_pick_hint: 'Pick a note on the left or create a new one.',
+  nb_loading: 'Notes are still loading. Try again in a moment.',
+  nb_back: '← Notes', nb_back_title: 'Close the editor and return to the list',
+  nb_link: '🔗 Link talks', nb_delete: '🗑 Delete', nb_restore: '↩ Restore',
+  nb_delete_confirm: 'Move this note to the trash? You can restore it from the trash.',
+  nb_deleted_banner: 'This note is in the trash. Restore it to edit.',
+  nb_moved_trash: 'Moved the note to the trash', nb_restored: 'Restored the note',
+  nb_linked_label: 'Linked talks:', nb_linked_none: 'No linked talks',
+  nb_jump: 'Show this talk in Browse', nb_paper_missing: 'not in this conference data',
+  nb_refs_count: '{n} talk(s)',
+  nb_link_title: '🔗 Link talks',
+  nb_link_hint: 'Choose talks to link to this note. Talks in your schedule and talks already linked are listed. Linking does not change your schedule.',
+  nb_link_search: 'Filter talks',
+  nb_link_empty: 'Your schedule is empty. Select talks in Browse, or use the +📝 button next to a talk to create a note for it.',
+  nb_link_save: 'Save links', nb_link_selected: '{n} selected', nb_cancel: 'Cancel', nb_close: 'Close',
+  nb_too_many_refs: 'A note can link at most 100 talks.',
+  nb_too_many_media: 'A note can hold at most 50 photos and recordings combined.',
+  nb_too_big: 'The note body is over 600 KiB and cannot be synced. It is saved on this device; please shorten it.',
+  nb_title_too_long: 'Titles can be up to 200 characters.',
+  nb_status_saving: 'Saving...', nb_status_guest: 'Saved on this device',
+  nb_status_guest_title: 'Sign in to sync note text to your account. Photos and recordings stay on this device.',
+  nb_status_pending: 'Waiting to sync', nb_status_synced: 'Synced to account',
+  nb_status_error: '⚠️ Sync failed, will retry', nb_status_toobig: '⚠️ Too large to sync',
+  nb_status_offline: '⚠️ Server unreachable, sync on hold',
+  nb_idb_fail: 'This browser cannot open note storage (IndexedDB). Private browsing or blocked site storage may be the cause.',
+  nb_save_fail: '⚠️ Could not save the note on this device: ',
+  nb_storage_low: '⚠️ This device is low on storage. Keep originals of important attachments and free browser storage.',
+  nb_storage_full: 'There is not enough storage to save the attachment.',
+  nb_storage_volatile: 'The browser did not grant persistent storage. Photos and recordings may disappear if browser data is cleared.',
+  nb_sync_fail: '⚠️ Could not sync notes. Will retry shortly: ',
+  nb_editor_fail: 'The editor could not be loaded, so the note is shown read-only. Check your network and reload.',
+  nb_editor_loading: 'Loading the editor...', nb_editor_ph: 'Write your note here', nb_editor_label: 'Note body',
+  nb_remote_changed: 'This note changed on another device. If you edit now, this device\'s version will be kept as a conflict copy.',
+  nb_reload: 'Reload',
+  nb_conflict: 'This note was also changed elsewhere, so this device\'s version was kept as "{title}".',
+  nb_conflict_suffix: ' (conflict copy)',
+  nb_undelete_remote: 'The note was edited on another device, so the deletion was undone.',
+  nb_remote_applied: 'Applied {n} note change(s) from another device',
+  nb_guest_copied: 'Copied {n} note(s) made before signing in to your account (the originals stay on this device)',
+  nb_created: 'Created a document note',
+  nb_chip_count: '{n} note(s) linked to this talk', nb_chip_new: 'New note for this talk',
+  nb_promote: '📄 To document note', nb_promote_title: 'Copy this memo into a formatted document note. The memo itself stays.',
+  nb_tb_label: 'Formatting',
+  nb_tb_h1: 'Heading 1', nb_tb_h2: 'Heading 2', nb_tb_h3: 'Heading 3',
+  nb_tb_bullet: 'Bulleted list', nb_tb_ordered: 'Numbered list', nb_tb_task: 'Task list',
+  nb_tb_bold: 'Bold', nb_tb_italic: 'Italic', nb_tb_underline: 'Underline', nb_tb_strike: 'Strikethrough',
+  nb_tb_font: 'Font', nb_tb_font_default: 'Default font', nb_tb_font_serif: 'Serif', nb_tb_font_mono: 'Monospace',
+  nb_tb_size: 'Text size', nb_tb_size_default: 'Default size',
+  nb_tb_color: 'Text color', nb_tb_highlight: 'Highlight',
+  nb_tb_link: 'Link', nb_tb_table: 'Insert table', nb_tb_code: 'Code block',
+  nb_tb_undo: 'Undo', nb_tb_redo: 'Redo', nb_tb_up: 'Move block up', nb_tb_down: 'Move block down',
+  nb_tb_image: 'Insert photo', nb_tb_camera: 'Take photo', nb_tb_audio: 'Record audio',
+  nb_link_prompt: 'Link address (http, https, mailto). Leave empty to remove the link.',
+  nb_link_bad: 'That link address is not allowed. Only http, https and mailto are accepted.',
+  nb_img_bad_type: 'Only photo files (PNG, JPEG, WebP, GIF, BMP, AVIF) can be inserted.',
+  nb_img_fail: 'Could not process the photo: ', nb_img_too_big: 'Could not shrink the photo to 2 MiB or less.',
+  nb_img_alt: 'Attached photo', nb_audio_label: 'Audio recording',
+  nb_local_only: '📱 This device only',
+  nb_local_only_title: 'Photos and recordings are stored only in this browser and are not synced. Clearing browser data deletes them.',
+  nb_media_notice: 'Photos and recordings are stored only on this device. Other devices show a placeholder.',
+  nb_media_missing: 'Attachment not on this device (added elsewhere)',
+  nb_rec_recording: '🔴 Recording', nb_rec_paused: '⏸ Paused',
+  nb_rec_pause: '⏸ Pause', nb_rec_resume: '▶ Resume', nb_rec_stop: '⏹ Stop and insert', nb_rec_cancel: '✕ Cancel',
+  nb_rec_unsupported: 'This browser does not support audio recording.',
+  nb_rec_denied: 'Microphone permission was denied. Allow the microphone for this site in your browser settings.',
+  nb_rec_nomic: 'No microphone was found.', nb_rec_fail: 'Could not record: ',
+  nb_rec_cap: 'Recording stopped automatically at the limit (30 minutes or 20 MiB).',
+  nb_rec_busy: 'Stop or cancel the recording first.', nb_rec_empty: 'Nothing was recorded.',
+  nb_rec_recovered: 'Recovered an interrupted audio recording and inserted it into the current note.',
 };
 function t(key) { return (EN ? I18N_EN : I18N_KO)[key] ?? key; }
 // ====== Walking time matrix (minutes), simple building/floor model ======
@@ -1065,6 +1392,7 @@ function refreshBuildingKeyStrategy(d) {
 function allBuildingsOf(d) { return new Set(d.sessions.map(buildingKeyOf)); }
 
 let state = null;
+const VIEWS = ['browse', 'itinerary', 'notes'];
 function initState() {
   refreshBuildingKeyStrategy(DATA);
   state = {
@@ -1081,8 +1409,8 @@ function initState() {
   dayFilter: 'all',
   tracks:    allTracksOf(DATA),
   buildings: allBuildingsOf(DATA),
-  // Active view tab: 'browse' or 'itinerary'. Persists across reloads.
-  view: localStorage.getItem('cs:view') || 'browse',
+  // Active view tab: 'browse' | 'itinerary' | 'notes'. Persists across reloads.
+  view: VIEWS.includes(localStorage.getItem('cs:view')) ? localStorage.getItem('cs:view') : 'browse',
   // Itinerary sub-view: 'list' (cards + hop hints) or 'grid' (timetable: rooms × time)
   itineraryView: localStorage.getItem('cs:itinview') || 'list',
   // 지난 세션 접기 (기본 on). localStorage 영속.
@@ -1122,22 +1450,37 @@ function renderSessionsIfVisible() {
 }
 
 function setView(v) {
+  if (!VIEWS.includes(v)) v = 'browse';
+  // 노트 탭을 떠날 때 편집 중인 내용을 먼저 저장한다. 편집기는 부수지 않고 숨기기만 한다.
+  if (state.view === 'notes' && v !== 'notes') nbFlush();
   state.view = v;
   localStorage.setItem('cs:view', v);
   renderView();
   if (v === 'itinerary' && _itineraryDirty) { renderItinerary(); _itineraryDirty = false; }
   if (v === 'browse'    && _browseDirty)    { renderSessions();  _browseDirty    = false; }
+  if (v === 'notes') nbEnterNotesView();
 }
 
 function renderView() {
-  const onBrowse = state.view === 'browse';
-  document.getElementById('view-browse').style.display    = onBrowse ? '' : 'none';
-  document.getElementById('view-itinerary').style.display = onBrowse ? 'none' : '';
+  const v = state.view;
+  const show = (id, on) => { const el = document.getElementById(id); if (el) el.style.display = on ? '' : 'none'; };
+  show('view-browse',    v === 'browse');
+  show('view-itinerary', v === 'itinerary');
+  show('view-notes',     v === 'notes');
+  // 노트 탭에서는 필터 사이드바가 쓸모없으므로 숨기고 본문을 넓힌다 (CSS .notes-mode)
+  const layout = document.querySelector('.layout');
+  if (layout) layout.classList.toggle('notes-mode', v === 'notes');
   document.querySelectorAll('.view-tab').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.view === state.view);
+    const on = btn.dataset.view === v;
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-selected', String(on));
+    btn.tabIndex = on ? 0 : -1;
   });
   document.getElementById('view-badge').textContent = state.selected.size;
   document.getElementById('view-badge').dataset.count = state.selected.size;
+  nbUpdateBadge();
+  // 모바일 전체 화면 편집기가 떠 있는 동안만 뒤쪽 스크롤을 잠근다
+  document.body.classList.toggle('nb-editing', v === 'notes' && !!_nb.openId);
 }
 
 function saveSelection() {
@@ -1337,15 +1680,16 @@ function scheduleNextTick() {
 function nowTick() {
   const sig = statusSignature();
   if (sig !== _lastStatusSig) {
-    const ae = document.activeElement;
-    if (ae && ae.classList && ae.classList.contains('note-input')) {
+    // 노트 탭에서는 숨은 두 탭을 dirty로만 표시하므로 입력 중이어도 미룰 이유가 없다.
+    if (state.view !== 'notes' && isUserEditing()) {
       // 메모 입력 중 — 5초 후 재시도 (포커스 손실 방지)
       _nowTimer = setTimeout(nowTick, 5000);
       return;
     }
     _lastStatusSig = sig;
-    if (state.view === 'browse') { renderSessions();  markItineraryDirty(); }
-    else                          { renderItinerary(); markBrowseDirty(); }
+    if (state.view === 'browse')         { renderSessions();  markItineraryDirty(); }
+    else if (state.view === 'itinerary') { renderItinerary(); markBrowseDirty(); }
+    else                                 { markBrowseDirty(); markItineraryDirty(); }   // 노트 편집기는 건드리지 않는다
     renderNowControls();
   }
   scheduleNextTick();
@@ -1671,7 +2015,7 @@ function renderSessions() {
         <input type="checkbox" data-key="${key}" ${state.selected.has(key)?'checked':''}>
         <div class="paper-body">
           <div class="paper-title">${timeBadge} ${hi(p.title)}${noteBadge}</div>
-          <div class="paper-authors">${hi(p.authors)} <span class="paper-no">· #${hi(p.paper_no)}${p.is_sponsored?` <span class="spon" title="${t('sponsored')}">◆</span>`:''}</span></div>
+          <div class="paper-authors">${hi(p.authors)} <span class="paper-no">· #${hi(p.paper_no)}${p.is_sponsored?` <span class="spon" title="${t('sponsored')}">◆</span>`:''}</span>${nbPaperChipsHtml(key)}</div>
         </div>
         <button class="must-btn${must?' on':''}" data-key="${key}"
                 title="${must?t('must_off'):t('must_on')}"
@@ -1873,6 +2217,7 @@ function renderItinerary() {
           <span class="star clear-star" data-key="${it.key}" data-val="0" title="${t('clear_rating')}" style="color:#ccc;font-size:13px;margin-left:6px;">✕</span>
         </div>
         <textarea class="note-input" data-key="${it.key}" placeholder="${t('note_ph')}" rows="1">${escapeHtml(n.note)}</textarea>
+        <div class="pick-notes">${nbPaperChipsHtml(it.key)}${nbPromoteBtnHtml(it.key)}</div>
       </div>`;
     };
 
@@ -2153,7 +2498,7 @@ function renderTimetable(byDay) {
         style="grid-column:${colIdx+2}; grid-row:${rowStart+2} / span ${rowSpan};"
         title="${escapeHtml(tooltip)}">
         <div class="tt-pno">${n.must?'<span class="tt-must">⭐</span>':''}#${escapeHtml(it.p.paper_no)} <span class="tt-author">${escapeHtml(firstAuthorLabel(it.p.authors))}</span></div>
-        <div class="tt-meta">${it.pt.start}–${it.pt.end}${n.rating?` <span class="tt-rate">${'★'.repeat(n.rating)}</span>`:''}</div>
+        <div class="tt-meta">${it.pt.start}–${it.pt.end}${n.rating?` <span class="tt-rate">${'★'.repeat(n.rating)}</span>`:''}${nbTimetableGlyphHtml(it.key)}</div>
       </div>`;
     }
 
@@ -2239,10 +2584,17 @@ function renderAll() {
   renderView();
   renderNowControls();
   _browseDirty = _itineraryDirty = false;  // 전체 재렌더 후 dirty 클리어
+  // 노트 탭은 목록만 다시 그린다. 편집기는 여기서 절대 건드리지 않는다 (입력 중 내용 보호).
+  if (state.view === 'notes') renderNotesList();
 }
 
 function escapeHtml(s) {
   return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+// 속성값 안에 넣을 때 쓴다. escapeHtml은 따옴표를 바꾸지 않아 속성 문맥에서는 안전하지 않다.
+function escapeAttr(s) {
+  return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
 // 자연 정렬 비교자: "1", "2", ..., "9", "10", "11" 순. 문자열 사전순이 아닌 숫자 인식.
@@ -2370,22 +2722,15 @@ function updateLoginButtonUI() {
 async function doSignIn() {
   if (typeof firebase === 'undefined') return;
   const provider = new firebase.auth.GoogleAuthProvider();
-  // 모바일 포함 항상 팝업 우선. redirect는 호스팅 도메인(imeru.github.io)과
+  // 모바일 포함 popup만 쓴다. redirect는 호스팅 도메인(imeru.github.io)과
   // authDomain(buzzplan.firebaseapp.com)이 달라 모바일 브라우저의 서드파티
   // 스토리지 차단(Safari ITP, Chrome 파티셔닝)에 걸리면 돌아와도 로그인이
-  // 소실된다 — Firebase 공식 권장도 이 환경에선 popup이다.
-  // 클릭 핸들러(사용자 제스처) 안이므로 모바일에서도 팝업이 열린다.
+  // 소실된다. 클릭 핸들러(사용자 제스처) 안이므로 모바일에서도 팝업이 열린다.
   try {
     await firebase.auth().signInWithPopup(provider);
   } catch (e) {
     const code = e && e.code;
     if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return;
-    if (code === 'auth/popup-blocked') {
-      // 팝업이 차단된 드문 경우에만 redirect 폴백 (데스크톱 구형 설정 등)
-      try { await firebase.auth().signInWithRedirect(provider); }
-      catch (e2) { alert(t('login_fail') + e2.message); }
-      return;
-    }
     alert(t('login_fail') + (e.message || code || e));
   }
 }
@@ -2465,8 +2810,8 @@ function applyRemoteItems(items) {
 
 // nowTick과 같은 패턴: 메모 입력 중이면 포커스를 뺏지 않도록 잠시 후 재시도.
 function rerenderAfterRemoteChange() {
-  const ae = document.activeElement;
-  if (ae && ae.classList && ae.classList.contains('note-input')) {
+  // 노트 탭에서 renderAll은 숨은 탭과 노트 목록만 다시 그리므로 리치 노트 입력을 방해하지 않는다.
+  if (state.view !== 'notes' && isUserEditing()) {
     setTimeout(rerenderAfterRemoteChange, 3000);
     return;
   }
@@ -2778,6 +3123,7 @@ async function runSyncDiag() {
                     ? ' (검사 ' + ((Date.now() - diagT0) / 1000).toFixed(1) + 's 경과)' : ''));
   L.push('conference  ' + currentConfId);
   liveLine(localStateLine);
+  liveLine(richLocalLine);
   if (typeof firebase === 'undefined') {
     L.push('firebase    SDK 미로드 (차단 또는 오프라인)'); flush(); return;
   }
@@ -2788,6 +3134,8 @@ async function runSyncDiag() {
   liveLine(flagsLine);
   liveLine(readStateLine);
   liveLine(readLogLine);
+  liveLine(richSyncLine);
+  liveLine(richReadLogLine);
   flush('server      읽는 중...');
   const base = firebase.firestore().collection('users').doc(u.uid).collection('confs');
   // 이 읽기는 본 동기화와 별개로 지금 발행하는 서버 읽기다. 소요 시간을 함께 적어,
@@ -2801,6 +3149,18 @@ async function runSyncDiag() {
            ' 내용있음=' + filled(items) + ' (이 읽기 ' + (Date.now() - t0) + 'ms)');
   } catch (e) {
     L.push('this conf   서버 읽기 실패(' + (Date.now() - t0) + 'ms): ' +
+           ((e && (e.code || e.message)) || e));
+  }
+  // 리치 노트 하위 컬렉션도 패널이 직접 한 번 읽는다. 위 rich sync 줄의 read가 pending인데
+  // 이쪽이 금방 끝나면 본 읽기가 멈춘 것이다 (선택/메모 동기화와 같은 판정법).
+  const tr = Date.now();
+  try {
+    const rs = await base.doc(currentConfId).collection('richNotes').get({ source: 'server' });
+    let del = 0;
+    rs.forEach((d) => { if ((d.data() || {}).deleted) del++; });
+    L.push('richNotes   server docs=' + rs.size + ' deleted=' + del + ' (이 읽기 ' + (Date.now() - tr) + 'ms)');
+  } catch (e) {
+    L.push('richNotes   서버 읽기 실패(' + (Date.now() - tr) + 'ms): ' +
            ((e && (e.code || e.message)) || e));
   }
   flush('account     스캔 중...');
@@ -2826,7 +3186,7 @@ async function runSyncDiag() {
   // 사파리처럼 서버 읽기가 늦게 끝나는 환경에서는 한 번 찍은 값이 "아직 진행 중"일 뿐이다.
   // 서버본을 받기 전까지 자동으로 다시 검사해 지연과 영구 실패를 구분한다. 횟수는
   // 재시도 예산 전체(12+2+8+5+8+10+8 = 53초)를 덮도록 2.5초 간격 24회로 둔다.
-  if (!_serverSeen && _diagAuto < 24) { _diagAuto++; setTimeout(runSyncDiag, 2500); }
+  if ((!_serverSeen || (rnActive && !_rnServerSeen)) && _diagAuto < 24) { _diagAuto++; setTimeout(runSyncDiag, 2500); }
 }
 
 function stopSync() {
@@ -2855,6 +3215,2395 @@ function reportSyncError(e) {
     _syncErrorShown = true;
     alert(t('sync_perm_error'));
   }
+}
+
+// ====== 노트 (리치 노트) ======
+// 발표와 느슨하게 연결되는 문서형 노트. 기존 빠른 메모(state.notes, touch 계약)와는 저장소도
+// 동기화 경로도 완전히 나눈다. 이 절의 코드는 state.selected와 state.notes를 읽기만 하고
+// touch()를 절대 부르지 않는다. 부르면 선택/메모 문서가 쓸데없이 push된다.
+//
+// 저장:  IndexedDB 'buzzplan-notebook' v2
+//        notes { pk: "<owner>|<confId>|<id>", oc: "<owner>|<confId>", owner, confId, ...노트 필드 }
+//        media { pk: "<owner>|<mediaId>", owner, id, blob, kind, mime, size, width, height, durationMs, orphanedAt }
+//        meta  { k, v }
+//        recordings { pk: "<owner>|<draftId>", owner, id, confId, noteId, chunks, mime, bytes, durationMs }
+//        owner는 'guest' 또는 로그인 uid. 파티션을 나눠 두어 로그아웃해도 계정 노트가 게스트 화면에 섞이지 않는다.
+// 노트 필드: id, v, title, body(ProseMirror JSON 문자열), plainText, paperRefs[{key,title}], mediaIds,
+//        writeId, parentWriteId, deleted, createdAt, updatedAt (ms), 그리고 로컬 전용 dirty, baseBody.
+//        parentWriteId는 "이 로컬 사본이 기반으로 삼은 서버 writeId"다. 서버에 한 번도 없으면 null.
+// 동기화: users/{uid}/confs/{confId}/richNotes/{noteId} 문서 하나가 노트 하나 (아래 리치 노트 동기화 절).
+//        사진과 음성의 블롭은 동기화하지 않는다. 문서에는 mediaId만 들어간다.
+const NB_DB_NAME = 'buzzplan-notebook';
+const NB_DB_VERSION = 2;
+const NOTE_SCHEMA_V = 1;
+const NB_LIMITS = { bodyBytes: 600 * 1024, title: 200, refs: 100, media: 50, plainText: 4096, refTitle: 300 };
+const NB_AUTOSAVE_MS = 600;
+const RN_PUSH_DEBOUNCE_MS = 1500;
+const RN_RETRY_MS = 15000;
+const IMG_MAX_EDGE = 1600;
+const IMG_MAX_BYTES = 2 * 1024 * 1024;
+const IMG_INPUT_MAX_BYTES = 60 * 1024 * 1024;
+const RASTER_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/bmp', 'image/avif'];
+const REC_MAX_MS = 30 * 60 * 1000;
+const REC_MAX_BYTES = 20 * 1024 * 1024;
+const REC_STOP_FALLBACK_MS = 5000;
+const REC_TYPES = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/ogg;codecs=opus'];
+const NB_MEDIA_GRACE_MS = 7 * 24 * 60 * 60 * 1000;
+const NB_STORAGE_WARN_BYTES = 100 * 1024 * 1024;
+const NB_STORAGE_WARN_RATIO = 0.9;
+
+let _nbOwner    = 'guest';     // 지금 보고 있는 파티션 ('guest' 또는 uid)
+let _nbNotes    = new Map();   // id -> 노트 레코드 (현재 owner + 현재 학회)
+let _nbByPaper  = new Map();   // "sid#pno" -> [노트 id]  (지우지 않은 노트만)
+let _nbLoaded   = false;
+let _nbLoadGen  = 0;           // 파티션 전환 중 늦게 도착한 목록 응답을 버린다
+let _nbOwnerSwitchSeq = 0;     // 마지막으로 요청된 owner만 적용한다
+let _nbOwnerSwitchQueue = Promise.resolve(); // 로그아웃과 재로그인 전환을 직렬화한다
+let _nbDbError  = '';          // IndexedDB를 열지 못했으면 이유
+let _nbPersisted = 'unknown';  // navigator.storage.persist() 결과 (진단용)
+let _nbPersistAsked = false;
+let _nbEditorMod = null, _nbEditorLoad = null, _nbEditorState = 'idle';
+let _nbPaneBuilt = false;
+// 열린 노트와 편집기. openGen은 열기와 닫기마다 올라가 늦게 끝난 비동기 작업(편집기 로드, 사진 처리)을 버린다.
+// baseWriteId는 편집기 내용이 기반으로 삼은 서버 writeId다. 다른 기기가 바꾼 뒤(stale) 이 편집기에서
+// 저장하면 옛 기반으로 push되어 트랜잭션이 어긋남을 잡고 충돌 사본을 만든다 (조용히 덮어쓰지 않는다).
+const _nb = { openId: null, editor: null, mode: 'none', saveTimer: null, composing: false, composeWaits: 0,
+              lastSaved: { title: '', body: '' }, baseWriteId: null, stale: false, openGen: 0 };
+const _nbUi = { q: '', filter: 'all', sort: 'updated', paperKey: null };
+
+function nbNewId() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  const b = new Uint8Array(16);
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) crypto.getRandomValues(b);
+  else for (let i = 0; i < 16; i++) b[i] = Math.floor(Math.random() * 256);
+  return [...b].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+
+// Firestore Timestamp, {seconds,nanoseconds}, Date, ms 숫자를 모두 ms로 바꾼다.
+function nbMs(v) {
+  if (typeof v === 'number' && isFinite(v)) return v;
+  if (v && typeof v.toMillis === 'function') { try { return v.toMillis(); } catch (_) { return 0; } }
+  if (v && typeof v.seconds === 'number') return v.seconds * 1000 + Math.floor((v.nanoseconds || 0) / 1e6);
+  if (v instanceof Date) return v.getTime();
+  return 0;
+}
+function nbCleanRefs(refs) {
+  const out = [], seen = new Set();
+  for (const r of (Array.isArray(refs) ? refs : [])) {
+    if (!r || typeof r.key !== 'string' || !r.key || seen.has(r.key)) continue;
+    seen.add(r.key);
+    out.push({ key: r.key.slice(0, 300), title: String(r.title ?? '').slice(0, NB_LIMITS.refTitle) });
+  }
+  return out;
+}
+function nbCleanIds(ids) {
+  return [...new Set((Array.isArray(ids) ? ids : []).filter(x => typeof x === 'string' && x).map(x => x.slice(0, 100)))];
+}
+function nbBytes(s) {
+  try { return new TextEncoder().encode(String(s)).length; } catch (_) { return String(s).length * 3; }
+}
+function nbParseBody(body) {
+  try { const d = JSON.parse(body); return d && typeof d === 'object' ? d : null; } catch (_) { return null; }
+}
+function nbDefaultDoc() { return { type: 'doc', content: [{ type: 'paragraph' }] }; }
+function nbEmptyDoc() {
+  const e = _nbEditorMod && _nbEditorMod.emptyDocument;
+  try {
+    const d = typeof e === 'function' ? e() : e;
+    if (d && typeof d === 'object') return JSON.parse(JSON.stringify(d));
+  } catch (_) { /* 번들의 기본 문서를 못 쓰면 아래 최소 문서 */ }
+  return nbDefaultDoc();
+}
+// 빠른 메모(평문)를 문서 JSON으로. 줄마다 문단 하나.
+function nbTextToDoc(text) {
+  const lines = String(text || '').replace(/\r\n?/g, '\n').split('\n');
+  return { type: 'doc', content: lines.map(l => l
+    ? { type: 'paragraph', content: [{ type: 'text', text: l }] }
+    : { type: 'paragraph' }) };
+}
+const NB_BLOCK_TYPES = new Set(['paragraph', 'heading', 'codeBlock', 'tableRow', 'listItem', 'taskItem']);
+// 문서 JSON에서 평문을 뽑는다 (검색, CSV, 편집기 없는 경로용). 깊이와 노드 수에 상한을 둔다.
+function nbDocText(doc) {
+  const out = [];
+  let budget = 50000;
+  const walk = (n, depth) => {
+    if (!n || typeof n !== 'object' || depth > 80 || --budget < 0) return;
+    if (n.type === 'text') { out.push(String(n.text || '')); return; }
+    if (n.type === 'hardBreak') { out.push('\n'); return; }
+    for (const c of (Array.isArray(n.content) ? n.content : [])) walk(c, depth + 1);
+    if (n.type === 'tableCell' || n.type === 'tableHeader') out.push('\t');
+    if (NB_BLOCK_TYPES.has(n.type)) out.push('\n');
+  };
+  walk(doc, 0);
+  return out.join('').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+function nbCollectMediaIds(doc) {
+  const ids = new Set();
+  let budget = 50000;
+  const walk = (n, depth) => {
+    if (!n || typeof n !== 'object' || depth > 80 || --budget < 0) return;
+    const a = n.attrs;
+    if (a && typeof a.mediaId === 'string' && a.mediaId) ids.add(a.mediaId);
+    for (const c of (Array.isArray(n.content) ? n.content : [])) walk(c, depth + 1);
+  };
+  walk(doc, 0);
+  return [...ids];
+}
+
+// 어디서 온 값이든(IndexedDB, 서버, 새로 만든 것) 같은 모양과 안전한 기본값으로 맞춘다.
+function nbNormalize(o, owner, confId) {
+  o = o || {};
+  return {
+    id: String(o.id || nbNewId()),
+    owner: owner ?? o.owner ?? 'guest',
+    confId: confId ?? o.confId ?? currentConfId,
+    v: NOTE_SCHEMA_V,
+    title: String(o.title ?? '').slice(0, NB_LIMITS.title),
+    body: typeof o.body === 'string' && o.body ? o.body : JSON.stringify(nbDefaultDoc()),
+    plainText: String(o.plainText ?? '').slice(0, NB_LIMITS.plainText),
+    paperRefs: nbCleanRefs(o.paperRefs),
+    mediaIds: nbCleanIds(o.mediaIds),
+    writeId: o.writeId ? String(o.writeId) : null,
+    parentWriteId: o.parentWriteId ? String(o.parentWriteId) : null,
+    deleted: !!o.deleted,
+    createdAt: nbMs(o.createdAt) || Date.now(),
+    updatedAt: nbMs(o.updatedAt) || Date.now(),
+    dirty: !!o.dirty,
+    baseBody: typeof o.baseBody === 'string' ? o.baseBody : null,
+  };
+}
+
+// ----- IndexedDB -----
+let _nbDbPromise = null;
+function nbOpenDb() {
+  if (_nbDbPromise) return _nbDbPromise;
+  _nbDbPromise = new Promise((resolve, reject) => {
+    if (typeof indexedDB === 'undefined') { reject(new Error('IndexedDB unavailable')); return; }
+    let req;
+    try { req = indexedDB.open(NB_DB_NAME, NB_DB_VERSION); } catch (e) { reject(e); return; }
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains('notes')) {
+        const s = db.createObjectStore('notes', { keyPath: 'pk' });
+        s.createIndex('oc', 'oc', { unique: false });
+        s.createIndex('owner', 'owner', { unique: false });
+      }
+      if (!db.objectStoreNames.contains('media')) {
+        const s = db.createObjectStore('media', { keyPath: 'pk' });
+        s.createIndex('owner', 'owner', { unique: false });
+      }
+      if (!db.objectStoreNames.contains('meta')) db.createObjectStore('meta', { keyPath: 'k' });
+      if (!db.objectStoreNames.contains('recordings')) {
+        const s = db.createObjectStore('recordings', { keyPath: 'pk' });
+        s.createIndex('owner', 'owner', { unique: false });
+      }
+    };
+    req.onsuccess = () => {
+      const db = req.result;
+      db.onversionchange = () => db.close();   // 다른 탭이 새 버전으로 올릴 때 막지 않는다
+      resolve(db);
+    };
+    req.onerror = () => reject(req.error || new Error('IndexedDB open failed'));
+  });
+  return _nbDbPromise;
+}
+// 트랜잭션 하나에 요청 하나. 결과는 트랜잭션이 커밋된 뒤에 돌려준다 (쓰기가 실제로 끝났음을 보장).
+async function idbRun(storeName, mode, fn) {
+  const db = await nbOpenDb();
+  return new Promise((resolve, reject) => {
+    let result, tx;
+    try { tx = db.transaction(storeName, mode); } catch (e) { reject(e); return; }
+    tx.oncomplete = () => resolve(result);
+    tx.onerror = () => reject(tx.error || new Error('IndexedDB transaction failed'));
+    tx.onabort = () => reject(tx.error || new Error('IndexedDB transaction aborted'));
+    try {
+      const r = fn(tx.objectStore(storeName));
+      if (r) r.onsuccess = () => { result = r.result; };
+    } catch (e) { try { tx.abort(); } catch (_) {} reject(e); }
+  });
+}
+const NoteStore = {
+  pk(owner, confId, id) { return owner + '|' + confId + '|' + id; },
+  async list(owner, confId) {
+    return (await idbRun('notes', 'readonly', s => s.index('oc').getAll(owner + '|' + confId))) || [];
+  },
+  async listOwner(owner) {
+    return (await idbRun('notes', 'readonly', s => s.index('owner').getAll(owner))) || [];
+  },
+  async put(rec) {
+    const row = { ...rec, pk: NoteStore.pk(rec.owner, rec.confId, rec.id), oc: rec.owner + '|' + rec.confId };
+    await idbRun('notes', 'readwrite', s => s.put(row));
+    return row;
+  },
+};
+const MetaStore = {
+  async get(k) { const r = await idbRun('meta', 'readonly', s => s.get(k)); return r ? r.v : null; },
+  async put(k, v) { await idbRun('meta', 'readwrite', s => s.put({ k, v })); },
+};
+const RecordingStore = {
+  pk(owner, id) { return owner + '|' + id; },
+  async put(row) {
+    await idbRun('recordings', 'readwrite', s => s.put({ ...row, pk: RecordingStore.pk(row.owner, row.id) }));
+  },
+  async list(owner) {
+    return (await idbRun('recordings', 'readonly', s => s.index('owner').getAll(owner))) || [];
+  },
+  async remove(owner, id) {
+    await idbRun('recordings', 'readwrite', s => s.delete(RecordingStore.pk(owner, id)));
+  },
+};
+
+// ----- 사진과 음성 저장소 -----
+// 지금은 이 기기의 IndexedDB뿐이다 (remote: false). 나중에 원격 저장소를 붙일 때는 같은 모양
+// (put/get/copy)으로 구현해 바꿔 끼우면 된다. 노트 문서에는 mediaId만 들어가므로 저장소를
+// 바꿔도 노트 스키마는 그대로다. Firebase Storage는 쓰지 않는다 (과금과 규칙 배포가 따로 필요).
+const MediaBackend = {
+  kind: 'local-idb',
+  remote: false,
+  pk(owner, id) { return owner + '|' + id; },
+  async put(owner, id, blob, meta) {
+    const m = meta || {};
+    const row = {
+      pk: MediaBackend.pk(owner, id), owner, id, blob,
+      kind: m.kind || '', mime: blob.type || m.mime || '', size: blob.size,
+      width: m.width || 0, height: m.height || 0, durationMs: m.durationMs || 0,
+      createdAt: Date.now(), orphanedAt: 0,
+    };
+    await idbRun('media', 'readwrite', s => s.put(row));
+    return row;
+  },
+  async get(owner, id) {
+    return (await idbRun('media', 'readonly', s => s.get(MediaBackend.pk(owner, id)))) || null;
+  },
+  async list(owner) {
+    return (await idbRun('media', 'readonly', s => s.index('owner').getAll(owner))) || [];
+  },
+  async save(row) {
+    await idbRun('media', 'readwrite', s => s.put(row));
+  },
+  async remove(owner, id) {
+    await idbRun('media', 'readwrite', s => s.delete(MediaBackend.pk(owner, id)));
+  },
+  // 게스트 노트를 계정으로 복사할 때 첨부도 함께 복사한다. 이미 있으면 건드리지 않는다.
+  async copy(fromOwner, toOwner, id) {
+    if (await MediaBackend.get(toOwner, id)) return false;
+    const src = await MediaBackend.get(fromOwner, id);
+    if (!src) return false;
+    await idbRun('media', 'readwrite', s => s.put({ ...src, pk: MediaBackend.pk(toOwner, id), owner: toOwner }));
+    return true;
+  },
+};
+
+// 블롭을 화면에 보이려면 object URL이 필요하다. 참조 수를 세어 마지막 사용자가 놓을 때 revoke하고,
+// 노트를 닫으면 남은 것을 전부 revoke한다 (메모리 누수 방지).
+const nbMediaUrls = {
+  map: new Map(),   // mediaId -> { url, refs }
+  async acquire(id) {
+    const key = String(id || '');
+    if (!key) return null;
+    const hit = nbMediaUrls.map.get(key);
+    if (hit) { hit.refs++; return hit.url; }
+    let rec = null;
+    try { rec = await MediaBackend.get(_nbOwner, key); } catch (e) { console.warn('첨부 읽기 실패:', e); }
+    if (!rec || !rec.blob) return null;   // 다른 기기에서 넣은 첨부. 노드는 그대로 두고 자리 표시만 한다
+    const again = nbMediaUrls.map.get(key);
+    if (again) { again.refs++; return again.url; }
+    const url = URL.createObjectURL(rec.blob);
+    nbMediaUrls.map.set(key, { url, refs: 1 });
+    return url;
+  },
+  release(id) {
+    const key = String(id || '');
+    const hit = nbMediaUrls.map.get(key);
+    if (!hit) return;
+    if (--hit.refs <= 0) { URL.revokeObjectURL(hit.url); nbMediaUrls.map.delete(key); }
+  },
+  clear() {
+    for (const { url } of nbMediaUrls.map.values()) URL.revokeObjectURL(url);
+    nbMediaUrls.map.clear();
+  },
+};
+// 편집기 번들의 resolveMedia 계약: (mediaId, { kind }) => { url, revoke } | null.
+// 번들의 노드 뷰가 사라질 때 revoke를 부르므로 참조 수가 맞는다. 이 기기에 블롭이 없으면 null을
+// 돌려주고, 번들은 노드를 문서에 그대로 둔 채 자리 표시만 그린다 (다른 기기에서 넣은 첨부).
+async function nbResolveMedia(mediaId) {
+  const id = String(mediaId || '');
+  const url = await nbMediaUrls.acquire(id);
+  if (!url) return null;
+  let done = false;
+  return { url, revoke: () => { if (!done) { done = true; nbMediaUrls.release(id); } } };
+}
+
+// 저장소 영구 보존 요청 (최선 노력). 브라우저에 따라 권한 창을 띄우므로 사용자 동작(노트 만들기,
+// 첨부 넣기) 안에서만 부른다.
+async function nbStorageEstimate(extraBytes = 0, warn = false) {
+  try {
+    if (!navigator.storage || typeof navigator.storage.estimate !== 'function') return true;
+    const e = await navigator.storage.estimate();
+    const usage = Number(e.usage) || 0, quota = Number(e.quota) || 0;
+    if (!quota) return true;
+    const free = Math.max(0, quota - usage);
+    const low = free < extraBytes + NB_STORAGE_WARN_BYTES || (usage + extraBytes) / quota >= NB_STORAGE_WARN_RATIO;
+    if (low && warn) nbToastOnce('storage-low', t('nb_storage_low'));
+    return free >= extraBytes;
+  } catch (_) { return true; }
+}
+function nbRequestPersist() {
+  if (_nbPersistAsked) return;
+  _nbPersistAsked = true;
+  nbStorageEstimate(0, true);
+  try {
+    if (!navigator.storage || typeof navigator.storage.persist !== 'function') { _nbPersisted = 'unsupported'; return; }
+    navigator.storage.persisted()
+      .then(p => p ? true : navigator.storage.persist())
+      .then(ok => {
+        _nbPersisted = ok ? 'granted' : 'denied';
+        if (!ok) nbToastOnce('storage-volatile', t('nb_storage_volatile'));
+      })
+      .catch(() => { _nbPersisted = 'error'; });
+  } catch (_) { _nbPersisted = 'error'; }
+}
+let _nbMediaCleanupTimer = null;
+function nbScheduleMediaCleanup() {
+  clearTimeout(_nbMediaCleanupTimer);
+  _nbMediaCleanupTimer = setTimeout(() => nbCleanupMedia().catch((e) => console.warn('첨부 정리 실패:', e)), 5000);
+}
+async function nbCleanupMedia(owner = _nbOwner) {
+  const lastKey = 'mediacleanup|' + owner;
+  const last = Number(await MetaStore.get(lastKey)) || 0;
+  if (Date.now() - last < 24 * 60 * 60 * 1000) return 0;
+  const notes = await NoteStore.listOwner(owner);
+  const live = new Set();
+  for (const n of notes) for (const id of nbCleanIds(n.mediaIds)) live.add(id);
+  const rows = await MediaBackend.list(owner);
+  const now = Date.now();
+  let removed = 0;
+  for (const row of rows) {
+    if (live.has(row.id)) {
+      // 실행 취소로 다시 참조되거나 휴지통 노트가 보존하면 유예 시계를 취소한다.
+      if (row.orphanedAt) await MediaBackend.save({ ...row, orphanedAt: 0 });
+      continue;
+    }
+    // 생성일이 아니라 참조가 처음 끊긴 시점부터 7일을 센다. 오래된 사진을 방금 문서에서
+    // 지웠다고 다음 정리에서 즉시 삭제하면 실행 취소 유예가 사라진다.
+    const orphanedAt = Number(row.orphanedAt) || now;
+    if (!row.orphanedAt) {
+      await MediaBackend.save({ ...row, orphanedAt });
+      continue;
+    }
+    if (now - orphanedAt < NB_MEDIA_GRACE_MS) continue;
+    await MediaBackend.remove(owner, row.id);
+    removed++;
+  }
+  await MetaStore.put(lastKey, now);
+  return removed;
+}
+
+// 저장소 오류는 삼키지 않는다. 열기 실패는 노트 기능 전체를 끄고, 쓰기 실패는 토스트로 알린다.
+let _nbStorageToastAt = 0;
+function nbReportStorageError(e, onSave) {
+  console.warn('노트 저장소 오류:', e);
+  const msg = String((e && (e.name || e.message)) || e);
+  if (!onSave) { _nbDbError = msg; document.body.classList.add('nb-off'); }
+  if (Date.now() - _nbStorageToastAt > 8000) {
+    _nbStorageToastAt = Date.now();
+    showToast(onSave ? t('nb_save_fail') + msg : t('nb_idb_fail'), 7000);
+  }
+  nbRenderPaneState();
+}
+const _nbToastSeen = new Set();
+function nbToastOnce(key, msg) {
+  if (_nbToastSeen.has(key)) return;
+  _nbToastSeen.add(key);
+  showToast(msg, 6000);
+}
+
+// ----- 메모리 색인과 칩 -----
+function nbRebuildIndex() {
+  _nbByPaper = new Map();
+  for (const n of _nbNotes.values()) {
+    if (n.deleted) continue;
+    for (const r of n.paperRefs) {
+      if (!_nbByPaper.has(r.key)) _nbByPaper.set(r.key, []);
+      _nbByPaper.get(r.key).push(n.id);
+    }
+  }
+}
+function nbNotesForPaper(key) {
+  return (_nbByPaper.get(key) || []).map(id => _nbNotes.get(id)).filter(n => n && !n.deleted);
+}
+function nbCountForPaper(key) { return (_nbByPaper.get(key) || []).length; }
+function nbLiveCount() { let c = 0; for (const n of _nbNotes.values()) if (!n.deleted) c++; return c; }
+function nbOpenRec() { return _nb.openId ? (_nbNotes.get(_nb.openId) || null) : null; }
+
+// 둘러보기와 내 일정의 발표 행에 붙는 칩. 키는 속성에 들어가므로 escapeAttr를 쓴다.
+function nbPaperChipsHtml(key) {
+  if (_nbDbError) return '';
+  const n = nbCountForPaper(key), k = escapeAttr(key);
+  const cnt = escapeAttr(t('nb_chip_count').replace('{n}', String(n)));
+  const nw  = escapeAttr(t('nb_chip_new'));
+  return `<button type="button" class="nchip nchip-count${n ? '' : ' hidden'}" data-nkey="${k}" data-nact="open" title="${cnt}" aria-label="${cnt}">📝 <span class="nchip-n">${n}</span></button>` +
+         `<button type="button" class="nchip nchip-new" data-nkey="${k}" data-nact="new" title="${nw}" aria-label="${nw}">＋📝</button>`;
+}
+function nbPromoteBtnHtml(key) {
+  if (_nbDbError) return '';
+  return `<button type="button" class="nchip nb-promote" data-nkey="${escapeAttr(key)}" data-nact="promote" title="${escapeAttr(t('nb_promote_title'))}">${escapeHtml(t('nb_promote'))}</button>`;
+}
+function nbTimetableGlyphHtml(key) {
+  if (_nbDbError) return '';
+  const n = nbCountForPaper(key);
+  return `<span class="tt-nc${n ? '' : ' hidden'}" data-nkey="${escapeAttr(key)}" title="${escapeAttr(t('nb_chip_count').replace('{n}', String(n)))}">📝${n}</span>`;
+}
+// 노트가 바뀔 때 행 전체를 다시 그리지 않고 숫자만 제자리에서 고친다 (스크롤과 메모 포커스 보존).
+function nbUpdateChipsInPlace() {
+  document.querySelectorAll('.nchip-count[data-nkey]').forEach((b) => {
+    const n = nbCountForPaper(b.dataset.nkey);
+    b.classList.toggle('hidden', !n);
+    const s = b.querySelector('.nchip-n');
+    if (s) s.textContent = String(n);
+    const lbl = t('nb_chip_count').replace('{n}', String(n));
+    b.title = lbl; b.setAttribute('aria-label', lbl);
+  });
+  document.querySelectorAll('.tt-nc[data-nkey]').forEach((el) => {
+    const n = nbCountForPaper(el.dataset.nkey);
+    el.classList.toggle('hidden', !n);
+    el.textContent = '📝' + n;
+  });
+}
+function nbUpdateBadge() {
+  const el = document.getElementById('notes-badge');
+  if (!el) return;
+  const n = nbLiveCount();
+  el.textContent = n; el.dataset.count = n;
+}
+function nbAfterNotesChanged() {
+  nbUpdateBadge();
+  nbUpdateChipsInPlace();
+  if (state && state.view === 'notes') renderNotesList();
+  nbUpdateStatus();
+}
+
+// ----- 파티션 적재와 전환 -----
+// rows를 다 읽기 전에는 전역 owner와 노트 지도를 바꾸지 않는다. 로그아웃 직후 재로그인처럼
+// 전환 요청이 겹쳐도 마지막 요청만 커밋되어, 늦게 끝난 guest 적재가 uid 파티션을 덮지 못한다.
+async function nbLoadPartition(owner, switchSeq) {
+  const gen = ++_nbLoadGen;
+  const confId = currentConfId;
+  let rows = [];
+  try { rows = await NoteStore.list(owner, confId); }
+  catch (e) {
+    if (gen === _nbLoadGen && switchSeq === _nbOwnerSwitchSeq) nbReportStorageError(e, false);
+    return false;
+  }
+  if (gen !== _nbLoadGen || switchSeq !== _nbOwnerSwitchSeq || confId !== currentConfId) return false;
+  const notes = new Map();
+  const invalid = [];
+  for (const r of rows) {
+    const n = nbNormalize(r, owner, confId);
+    notes.set(n.id, n);
+    if (n.dirty) invalid.push(n);
+  }
+  _nbOwner = owner;
+  _nbNotes = notes;
+  _nbLoaded = true;
+  _rnInvalid.clear();
+  for (const n of invalid) rnCheckValid(n, true);
+  // 복구가 끝나기 전에 서버 동기화가 시작되면, 복구된 음성이 아직 없는 노트가 먼저 올라갈 수 있다.
+  // owner 전환 queue 안에서 기다려 로컬 파티션 적재와 draft 복구를 하나의 단계로 만든다.
+  await nbRecoverRecordingDrafts(owner, confId);
+  if (gen !== _nbLoadGen || switchSeq !== _nbOwnerSwitchSeq || confId !== currentConfId) return false;
+  nbRebuildIndex();
+  nbAfterNotesChanged();
+  nbRenderPaneState();
+  nbScheduleMediaCleanup();
+  return true;
+}
+function nbSwitchOwner(owner) {
+  const switchSeq = ++_nbOwnerSwitchSeq;
+  const run = async () => {
+    if (switchSeq !== _nbOwnerSwitchSeq) return false;
+    if (owner === _nbOwner && _nbLoaded) return true;
+    await nbCloseEditor({ flush: true, force: true });   // 편집 중이던 내용은 원래 owner 파티션에 저장된다
+    if (switchSeq !== _nbOwnerSwitchSeq) return false;
+    _nbLoaded = false;
+    nbRenderPaneState();
+    return nbLoadPartition(owner, switchSeq);
+  };
+  const result = _nbOwnerSwitchQueue.then(run, run);
+  _nbOwnerSwitchQueue = result.catch(() => false);
+  return result;
+}
+function nbInit() {
+  // 새로고침 뒤에는 편집기를 복원하지 않으므로, 이전 문서의 모바일 history 표식을 남기지 않는다.
+  nbClearMobileHistoryState();
+  nbSwitchOwner(_nbOwner);
+  nbStorageEstimate(0, true);
+  nbScheduleMediaCleanup();
+}
+
+// 레코드를 메모리와 IndexedDB에 쓴다. 메모리는 동기로 먼저 바꾸어 UI가 곧바로 따라오게 한다.
+async function nbPersist(rec) {
+  if (rec.owner === _nbOwner && rec.confId === currentConfId) _nbNotes.set(rec.id, rec);
+  try { await NoteStore.put(rec); return true; }
+  catch (e) { nbReportStorageError(e, true); return false; }
+}
+
+// ----- 편집기 번들 (동적 import) -----
+// 번들은 별도로 빌드된다 (assets/vendor/buzzplan-editor.mjs, Tiptap 기반). 계약은
+//   createEditor(element, { content, editable, placeholder, resolveMedia, onUpdate, onSelectionUpdate })
+//   → { getJSON, getText, setJSON, isActive, can, focus, destroy, commands: { toggleBold(), ... , run(name, ...args) } }
+// 없거나 깨져도 앱은 멀쩡해야 하므로 실패하면 읽기 전용 표시로 넘어간다.
+function nbLoadEditorModule() {
+  if (!_nbEditorLoad) {
+    _nbEditorState = 'loading';
+    _nbEditorLoad = import('./assets/vendor/buzzplan-editor.mjs')
+      .then((m) => {
+        const create = m && (typeof m.createEditor === 'function' ? m.createEditor
+                           : typeof m.default === 'function' ? m.default : null);
+        if (!create) throw new Error('createEditor missing');
+        _nbEditorMod = { createEditor: create, emptyDocument: m.emptyDocument, VERSION: m.VERSION };
+        _nbEditorState = 'loaded' + (m.VERSION ? '(' + String(m.VERSION).slice(0, 20) + ')' : '');
+        return _nbEditorMod;
+      })
+      .catch((e) => {
+        console.warn('노트 편집기 로드 실패:', e);
+        _nbEditorState = 'failed(' + String((e && e.message) || e).slice(0, 80) + ')';
+        return null;
+      });
+  }
+  return _nbEditorLoad;
+}
+
+// ----- 노트 탭 화면 -----
+function nbEl(tag, props, kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v === undefined || v === null) continue;
+    if (k === 'class') el.className = v;
+    else if (k === 'text') el.textContent = v;
+    else if (k === 'attrs') { for (const [a, b] of Object.entries(v)) el.setAttribute(a, b); }
+    else if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2), v);
+    else el[k] = v;
+  }
+  for (const c of (kids || [])) if (c) el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  return el;
+}
+
+function ensureNotesPane() {
+  if (_nbPaneBuilt) return;
+  const root = document.getElementById('view-notes');
+  if (!root) return;
+  _nbPaneBuilt = true;
+
+  // 왼쪽: 목록
+  const newBtn = nbEl('button', { type: 'button', class: 'nb-new-btn', id: 'nb-new', text: t('nb_new'),
+                                  onclick: () => nbCreateNote({}) });
+  const search = nbEl('input', { type: 'search', id: 'nb-search', placeholder: t('nb_search_ph'),
+                                 attrs: { 'aria-label': t('nb_search_ph') } });
+  let st = null;
+  search.addEventListener('input', () => {
+    clearTimeout(st);
+    st = setTimeout(() => { _nbUi.q = search.value || ''; renderNotesList(); }, 150);
+  });
+  const mkSelect = (id, label, opts, cur, onChange) => {
+    const s = nbEl('select', { id, title: label, attrs: { 'aria-label': label } });
+    for (const [v, txt] of opts) s.appendChild(nbEl('option', { value: v, text: txt }));
+    s.value = cur;
+    s.addEventListener('change', () => onChange(s.value));
+    return s;
+  };
+  const filterSel = mkSelect('nb-filter', t('nb_filter_label'), [
+    ['all', t('nb_filter_all')], ['linked', t('nb_filter_linked')],
+    ['unlinked', t('nb_filter_unlinked')], ['trash', t('nb_filter_trash')],
+  ], _nbUi.filter, (v) => { _nbUi.filter = v; renderNotesList(); });
+  const sortSel = mkSelect('nb-sort', t('nb_sort_label'), [
+    ['updated', t('nb_sort_updated')], ['paper', t('nb_sort_paper')],
+    ['created', t('nb_sort_created')], ['title', t('nb_sort_title')],
+  ], _nbUi.sort, (v) => { _nbUi.sort = v; renderNotesList(); });
+  const paperFilter = nbEl('div', { class: 'nb-paper-filter hidden', id: 'nb-paper-filter' });
+  const list = nbEl('ul', { class: 'nb-list', id: 'nb-list', attrs: { 'aria-label': t('nb_list_label') } });
+  const side = nbEl('div', { class: 'nb-side' },
+    [newBtn, search, nbEl('div', { class: 'nb-side-controls' }, [filterSel, sortSel]), paperFilter, list]);
+
+  // 오른쪽: 편집기
+  const placeholder = nbEl('div', { class: 'nb-placeholder', id: 'nb-placeholder', text: t('nb_pick_hint') });
+  const back = nbEl('button', { type: 'button', class: 'nb-btn', id: 'nb-close', text: t('nb_back'),
+                                title: t('nb_back_title'), onclick: nbRequestCloseEditor });
+  const title = nbEl('input', { type: 'text', class: 'nb-title', id: 'nb-title', maxLength: NB_LIMITS.title,
+                                placeholder: t('nb_title_ph'), attrs: { 'aria-label': t('nb_title_ph') } });
+  title.addEventListener('input', () => {
+    if (title.value.length >= NB_LIMITS.title) showToast(t('nb_title_too_long'));
+    nbScheduleSave();
+  });
+  title.addEventListener('compositionstart', () => { _nb.composing = true; });
+  title.addEventListener('compositionend', () => { _nb.composing = false; nbScheduleSave(); });
+  const localBadge = nbEl('span', { class: 'nb-local-badge hidden', id: 'nb-local-badge',
+                                    text: t('nb_local_only'), title: t('nb_local_only_title') });
+  const status = nbEl('span', { class: 'nb-status', id: 'nb-status', attrs: { role: 'status', 'aria-live': 'polite' } });
+  const linkBtn = nbEl('button', { type: 'button', class: 'nb-btn', id: 'nb-link-btn', text: t('nb_link'),
+                                   onclick: nbOpenLinkModal });
+  const delBtn = nbEl('button', { type: 'button', class: 'nb-btn', id: 'nb-del', text: t('nb_delete'),
+                                  onclick: nbDeleteOrRestore });
+  const head = nbEl('div', { class: 'nb-head' }, [back, title, localBadge, status, linkBtn, delBtn]);
+  const refs = nbEl('div', { class: 'nb-refs', id: 'nb-refs' });
+  const banner = nbEl('div', { class: 'nb-banner hidden', id: 'nb-banner', attrs: { role: 'status' } });
+  const toolbar = nbEl('div', { class: 'nb-toolbar hidden', id: 'nb-toolbar',
+                                attrs: { role: 'toolbar', 'aria-label': t('nb_tb_label') } });
+  const host = nbEl('div', { class: 'nb-editor', id: 'nb-editor', attrs: { 'aria-label': t('nb_editor_label') } });
+  const rec = nbEl('div', { class: 'nb-rec hidden', id: 'nb-rec', attrs: { role: 'group', 'aria-label': t('nb_tb_audio') } });
+  const fileIn = nbEl('input', { type: 'file', id: 'nb-file', class: 'hidden', accept: RASTER_TYPES.join(','), multiple: true });
+  const camIn  = nbEl('input', { type: 'file', id: 'nb-camera', class: 'hidden', accept: 'image/*', attrs: { capture: 'environment' } });
+  const onPick = (inp) => () => {
+    const files = [...(inp.files || [])];
+    inp.value = '';
+    if (files.length) nbInsertImageFiles(files);
+  };
+  fileIn.addEventListener('change', onPick(fileIn));
+  camIn.addEventListener('change', onPick(camIn));
+  const shell = nbEl('div', { class: 'nb-shell hidden', id: 'nb-shell' },
+    [head, refs, banner, toolbar, host, rec, fileIn, camIn]);
+  const main = nbEl('div', { class: 'nb-main', id: 'nb-main' }, [placeholder, shell]);
+  root.appendChild(nbEl('div', { class: 'nb-wrap', id: 'nb-wrap' }, [side, main]));
+
+  nbBuildToolbar(toolbar);
+  nbWireEditorHost(host);
+  nbRenderPaneState();
+}
+
+function nbEnterNotesView() {
+  ensureNotesPane();
+  nbRenderPaneState();
+  renderNotesList();
+  nbUpdateStatus();
+  document.body.classList.toggle('nb-editing', !!_nb.openId);
+}
+
+// 모바일에서는 편집기가 목록을 덮는 전체 화면이다. 노트를 열 때 history 상태를 하나 쌓아
+// 브라우저 뒤로 가기가 페이지 이탈이 아니라 저장 후 편집기 닫기로 동작하게 한다.
+function nbIsMobileEditor() {
+  return !!(window.matchMedia && window.matchMedia('(max-width: 720px)').matches);
+}
+function nbHistoryState() {
+  return history.state && typeof history.state === 'object' ? { ...history.state } : {};
+}
+function nbEnterMobileHistory(id, fromHistory) {
+  if (fromHistory || !nbIsMobileEditor()) return;
+  const s = nbHistoryState();
+  if (s.buzzplanNote === id) return;
+  s.buzzplanNote = id;
+  if (history.state && history.state.buzzplanNote) history.replaceState(s, '');
+  else history.pushState(s, '');
+}
+function nbClearMobileHistoryState() {
+  if (!history.state || !history.state.buzzplanNote) return;
+  const s = nbHistoryState();
+  delete s.buzzplanNote;
+  history.replaceState(s, '');
+}
+async function nbRequestCloseEditor() {
+  if (nbIsMobileEditor() && history.state && history.state.buzzplanNote === _nb.openId) {
+    history.back();
+    return true;
+  }
+  return nbCloseEditor({ flush: true });
+}
+
+function nbRenderPaneState() {
+  if (!_nbPaneBuilt) return;
+  const ph = document.getElementById('nb-placeholder');
+  const nb = document.getElementById('nb-new');
+  if (ph) {
+    ph.textContent = _nbDbError ? `${t('nb_idb_fail')} (${_nbDbError})` : t('nb_pick_hint');
+    ph.classList.toggle('err', !!_nbDbError);
+    ph.classList.toggle('hidden', !!_nb.openId);
+  }
+  if (nb) nb.disabled = !!_nbDbError;
+}
+
+function nbFmtDate(ms) {
+  try {
+    return new Date(ms).toLocaleString(EN ? 'en-US' : 'ko-KR',
+      { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  } catch (_) { return new Date(ms).toISOString().slice(0, 16).replace('T', ' '); }
+}
+function nbPaperSortKey(rec) {
+  let best = null;
+  for (const ref of rec.paperRefs) {
+    const p = paperByKey(ref.key), s = p && sessionFor(p);
+    if (!p || !s) continue;
+    const pt = timeOfPaper(p);
+    const key = [Number(s.day) || 0, pt ? pt.startMin : timeToMin(s.start), String(s.id || ''), String(p.paper_no || '')];
+    if (!best || key[0] < best[0] || (key[0] === best[0] && key[1] < best[1]) ||
+        (key[0] === best[0] && key[1] === best[1] && natCompare(key[2] + '#' + key[3], best[2] + '#' + best[3]) < 0)) best = key;
+  }
+  return best || [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, '', ''];
+}
+
+// 목록만 다시 그린다. 편집기와 제목 입력은 이 함수 밖에 있으므로 입력 포커스가 날아가지 않는다.
+function renderNotesList() {
+  if (!_nbPaneBuilt) return;
+  const ul = document.getElementById('nb-list');
+  if (!ul) return;
+  const q = (_nbUi.q || '').trim().toLowerCase();
+  const f = _nbUi.filter;
+  let arr = [..._nbNotes.values()].filter(n => (f === 'trash') === !!n.deleted);
+  if (f === 'linked')   arr = arr.filter(n => n.paperRefs.length);
+  if (f === 'unlinked') arr = arr.filter(n => !n.paperRefs.length);
+  if (_nbUi.paperKey)   arr = arr.filter(n => n.paperRefs.some(r => r.key === _nbUi.paperKey));
+  if (q) arr = arr.filter(n =>
+    (n.title + '\n' + n.plainText + '\n' + n.paperRefs.map(r => r.title).join('\n')).toLowerCase().includes(q));
+  if (_nbUi.sort === 'title')        arr.sort((a, b) => natCompare(a.title || '￿', b.title || '￿') || b.updatedAt - a.updatedAt);
+  else if (_nbUi.sort === 'created') arr.sort((a, b) => b.createdAt - a.createdAt);
+  else if (_nbUi.sort === 'paper')   arr.sort((a, b) => {
+    const A = nbPaperSortKey(a), B = nbPaperSortKey(b);
+    return (A[0] - B[0]) || (A[1] - B[1]) || natCompare(A[2] + '#' + A[3], B[2] + '#' + B[3]) || b.updatedAt - a.updatedAt;
+  });
+  else                               arr.sort((a, b) => b.updatedAt - a.updatedAt);
+
+  const pf = document.getElementById('nb-paper-filter');
+  if (pf) {
+    pf.replaceChildren();
+    if (_nbUi.paperKey) {
+      const p = paperByKey(_nbUi.paperKey);
+      pf.appendChild(nbEl('span', { text: t('nb_filter_paper').replace('{title}', p ? p.title : _nbUi.paperKey) }));
+      pf.appendChild(nbEl('button', { type: 'button', text: '✕', title: t('nb_filter_paper_clear'),
+        attrs: { 'aria-label': t('nb_filter_paper_clear') },
+        onclick: () => { _nbUi.paperKey = null; renderNotesList(); } }));
+    }
+    pf.classList.toggle('hidden', !_nbUi.paperKey);
+  }
+
+  ul.replaceChildren();
+  if (!arr.length) {
+    const msg = !_nbLoaded ? t('loading')
+      : (q || _nbUi.paperKey || f === 'linked' || f === 'unlinked') ? t('nb_no_match')
+      : f === 'trash' ? t('nb_empty_trash') : t('nb_empty_list');
+    ul.appendChild(nbEl('li', { class: 'nb-list-empty', text: msg }));
+    return;
+  }
+  for (const n of arr) {
+    const meta = [nbFmtDate(n.updatedAt)];
+    if (n.paperRefs.length) meta.push(t('nb_refs_count').replace('{n}', String(n.paperRefs.length)));
+    if (n.mediaIds.length)  meta.push('📎 ' + n.mediaIds.length);
+    if (n.dirty && rnActive) meta.push(t('nb_status_pending'));
+    const btn = nbEl('button', { type: 'button', class: 'nb-item', onclick: () => nbOpenNote(n.id) }, [
+      nbEl('span', { class: 'nb-item-title', text: n.title || t('nb_untitled') }),
+      nbEl('span', { class: 'nb-item-meta', text: meta.join(', ') }),
+      n.plainText ? nbEl('span', { class: 'nb-item-snip', text: n.plainText.slice(0, 120) }) : null,
+    ]);
+    if (n.id === _nb.openId) btn.setAttribute('aria-current', 'true');
+    ul.appendChild(nbEl('li', {}, [btn]));
+  }
+}
+
+// ----- 서식 도구 -----
+// cmd는 편집기 번들의 editor.commands 이름이고 args는 그 함수의 위치 인자다 (번들 commands.js).
+// 번들 쪽 이름이 바뀌면 이 표만 고치면 된다. active는 isActive(이름, 속성)에 넘기는 값,
+// canCheck는 can(명령)으로 버튼을 비활성화할지.
+const NB_TOOLS = [
+  { k: 'h1', text: 'H1', cmd: 'toggleHeading', args: [1], active: ['heading', { level: 1 }] },
+  { k: 'h2', text: 'H2', cmd: 'toggleHeading', args: [2], active: ['heading', { level: 2 }] },
+  { k: 'h3', text: 'H3', cmd: 'toggleHeading', args: [3], active: ['heading', { level: 3 }] },
+  '|',
+  { k: 'bullet',  text: '•≡', cmd: 'toggleBulletList',  active: ['bulletList'] },
+  { k: 'ordered', text: '1.', cmd: 'toggleOrderedList', active: ['orderedList'] },
+  { k: 'task',    text: '☑',  cmd: 'toggleTaskList',    active: ['taskList'] },
+  '|',
+  { k: 'bold',      text: 'B', cmd: 'toggleBold',      active: ['bold'],      style: 'font-weight:700' },
+  { k: 'italic',    text: 'I', cmd: 'toggleItalic',    active: ['italic'],    style: 'font-style:italic' },
+  { k: 'underline', text: 'U', cmd: 'toggleUnderline', active: ['underline'], style: 'text-decoration:underline' },
+  { k: 'strike',    text: 'S', cmd: 'toggleStrike',    active: ['strike'],    style: 'text-decoration:line-through' },
+  '|',
+  { k: 'font', type: 'font' }, { k: 'size', type: 'size' },
+  { k: 'color', type: 'color' }, { k: 'highlight', type: 'highlight' },
+  '|',
+  { k: 'link',  text: '🔗',  action: () => nbToolLink(), active: ['link'] },
+  { k: 'table', text: '▦',   cmd: 'insertTable', args: [3, 3, true] },
+  { k: 'code',  text: '</>', cmd: 'toggleCodeBlock', active: ['codeBlock'] },
+  '|',
+  { k: 'undo', text: '↶', cmd: 'undo', canCheck: true },
+  { k: 'redo', text: '↷', cmd: 'redo', canCheck: true },
+  { k: 'up',   text: '⬆', cmd: 'moveBlockUp' },
+  { k: 'down', text: '⬇', cmd: 'moveBlockDown' },
+  '|',
+  { k: 'image',  text: '🖼', action: () => { const el = document.getElementById('nb-file');   if (el) el.click(); } },
+  { k: 'camera', text: '📷', action: () => { const el = document.getElementById('nb-camera'); if (el) el.click(); } },
+  { k: 'audio',  text: '🎙', action: () => nbRecStart() },
+];
+
+function nbBuildToolbar(tb) {
+  for (const tool of NB_TOOLS) {
+    if (tool === '|') { tb.appendChild(nbEl('span', { class: 'nb-tb-sep', attrs: { 'aria-hidden': 'true' } })); continue; }
+    const label = t('nb_tb_' + tool.k);
+    if (tool.type === 'font' || tool.type === 'size') {
+      const opts = tool.type === 'font'
+        ? [['', t('nb_tb_font_default')], ['serif', t('nb_tb_font_serif')], ['monospace', t('nb_tb_font_mono')]]
+        : [['', t('nb_tb_size_default')], ['12px', '12'], ['14px', '14'], ['18px', '18'], ['24px', '24'], ['32px', '32']];
+      const s = nbEl('select', { title: label, attrs: { 'aria-label': label, 'data-tool': tool.k } });
+      for (const [v, txt] of opts) s.appendChild(nbEl('option', { value: v, text: txt }));
+      s.addEventListener('change', () => {
+        const v = s.value;
+        if (tool.type === 'font') { if (v) nbRun('setFontFamily', v); else nbRun('unsetFontFamily'); }
+        else                      { if (v) nbRun('setFontSize', v);   else nbRun('unsetFontSize'); }
+      });
+      tb.appendChild(s);
+      continue;
+    }
+    if (tool.type === 'color' || tool.type === 'highlight') {
+      const inp = nbEl('input', { type: 'color', value: tool.type === 'color' ? '#d0021b' : '#fff59d',
+                                  title: label, attrs: { 'aria-label': label, 'data-tool': tool.k } });
+      inp.addEventListener('change', () => {
+        if (tool.type === 'color') nbRun('setColor', inp.value);
+        else                       nbRun('toggleHighlight', inp.value);
+      });
+      tb.appendChild(inp);
+      continue;
+    }
+    const b = nbEl('button', { type: 'button', text: tool.text, title: label,
+                               attrs: { 'aria-label': label, 'data-tool': tool.k } });
+    if (tool.style) b.style.cssText = tool.style;
+    if (tool.active) b.setAttribute('aria-pressed', 'false');
+    b.addEventListener('mousedown', (e) => e.preventDefault());   // 누르는 순간 편집기 선택 영역을 잃지 않게
+    b.addEventListener('click', () => { if (tool.action) tool.action(); else nbRun(tool.cmd, ...(tool.args || [])); });
+    tb.appendChild(b);
+  }
+  const tools = [...tb.querySelectorAll('[data-tool]')];
+  tools.forEach((el, i) => { el.tabIndex = i === 0 ? 0 : -1; });
+  tb.addEventListener('focusin', (e) => {
+    const target = e.target.closest && e.target.closest('[data-tool]');
+    if (!target || !tb.contains(target)) return;
+    for (const el of tools) el.tabIndex = el === target ? 0 : -1;
+  });
+  tb.addEventListener('keydown', (e) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+    const enabled = tools.filter(el => !el.disabled && !el.hidden);
+    const cur = enabled.indexOf(document.activeElement);
+    if (cur < 0 || !enabled.length) return;
+    e.preventDefault();
+    let next = cur;
+    if (e.key === 'Home') next = 0;
+    else if (e.key === 'End') next = enabled.length - 1;
+    else next = (cur + (e.key === 'ArrowRight' ? 1 : -1) + enabled.length) % enabled.length;
+    enabled[next].focus();
+  });
+}
+
+// 번들의 명령 래퍼(editor.commands.X)를 먼저 쓰고, 없으면 탈출구 commands.run(이름, ...인자)로 간다.
+function nbRun(cmd, ...args) {
+  const ed = _nb.editor;
+  const api = ed && ed.commands;
+  if (_nb.mode !== 'rich' || !api) return false;
+  let ok = false;
+  try {
+    if (typeof api[cmd] === 'function')    ok = api[cmd](...args);
+    else if (typeof api.run === 'function') ok = api.run(cmd, ...args);
+  } catch (e) { console.warn('편집 명령 실패:', cmd, e); }
+  nbRefreshToolbar();
+  return ok !== false;
+}
+
+function nbRefreshToolbar() {
+  const tb = document.getElementById('nb-toolbar');
+  if (!tb) return;
+  const ed = _nb.mode === 'rich' ? _nb.editor : null;
+  tb.classList.toggle('hidden', !ed);
+  if (!ed) return;
+  for (const tool of NB_TOOLS) {
+    if (tool === '|') continue;
+    const el = tb.querySelector(`[data-tool="${tool.k}"]`);
+    if (!el) continue;
+    if (tool.active && typeof ed.isActive === 'function') {
+      let on = false;
+      try { on = !!ed.isActive(tool.active[0], tool.active[1]); } catch (_) { /* 번들이 모르는 이름 */ }
+      el.setAttribute('aria-pressed', String(on));
+    }
+    if (tool.canCheck && typeof ed.can === 'function') {
+      let can = true;
+      try { can = ed.can(tool.cmd) !== false; } catch (_) {}
+      el.disabled = !can;
+    }
+  }
+}
+
+function nbSafeHref(v) {
+  try {
+    const u = new URL(String(v));
+    return ['http:', 'https:', 'mailto:'].includes(u.protocol) ? u.href : null;
+  } catch (_) { return null; }
+}
+function nbToolLink() {
+  if (_nb.mode !== 'rich') return;
+  const v = prompt(t('nb_link_prompt'), 'https://');
+  if (v === null) return;
+  const s = v.trim();
+  if (!s || s === 'https://') { nbRun('unsetLink'); return; }
+  const href = nbSafeHref(s);
+  if (!href) { showToast(t('nb_link_bad'), 5000); return; }
+  nbRun('setLink', href);
+}
+
+// 편집기 영역의 붙여넣기와 끌어다 놓기, IME 조합. 번들보다 먼저 받으려고 capture 단계에서 듣는다.
+function nbWireEditorHost(host) {
+  const imageFiles = (lst) => [...(lst || [])].filter(f => f && f.type && f.type.startsWith('image/'));
+  const hasFiles = (e) => !!(e.dataTransfer && [...(e.dataTransfer.types || [])].includes('Files'));
+  host.addEventListener('paste', (e) => {
+    if (_nb.mode !== 'rich') return;
+    const files = imageFiles(e.clipboardData && e.clipboardData.files);
+    if (!files.length) return;
+    e.preventDefault(); e.stopPropagation();
+    nbInsertImageFiles(files);
+  }, true);
+  host.addEventListener('dragover', (e) => {
+    if (_nb.mode !== 'rich' || !hasFiles(e)) return;
+    e.preventDefault();
+    host.classList.add('drop-over');
+  }, true);
+  host.addEventListener('dragleave', () => host.classList.remove('drop-over'), true);
+  host.addEventListener('drop', (e) => {
+    host.classList.remove('drop-over');
+    if (_nb.mode !== 'rich' || !hasFiles(e)) return;
+    e.preventDefault(); e.stopPropagation();
+    const all = [...(e.dataTransfer.files || [])];
+    const imgs = imageFiles(all);
+    if (imgs.length < all.length) showToast(t('nb_img_bad_type'), 5000);
+    if (imgs.length) nbInsertImageFiles(imgs);
+  }, true);
+  host.addEventListener('compositionstart', () => { _nb.composing = true; });
+  host.addEventListener('compositionend', () => { _nb.composing = false; nbScheduleSave(); });
+  let raf = 0;
+  const refresh = () => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => { raf = 0; nbRefreshToolbar(); });
+  };
+  host.addEventListener('keyup', refresh);
+  host.addEventListener('mouseup', refresh);
+  host.addEventListener('focusin', refresh);
+}
+
+// ----- 열기, 닫기, 저장 -----
+async function nbOpenNote(id, { flush = true, fromHistory = false } = {}) {
+  if (nbRecBusy()) { showToast(t('nb_rec_busy')); return false; }
+  ensureNotesPane();
+  if (!(await nbCloseEditor({ flush, keepHistory: true }))) return false;
+  const rec = _nbNotes.get(id);
+  if (!rec) return false;
+  const token = ++_nb.openGen;
+  _nb.openId = id; _nb.mode = 'loading'; _nb.stale = false; _nb.composing = false;
+  _nb.baseWriteId = rec.parentWriteId;
+  _nb.lastSaved = { title: rec.title, body: rec.body };
+  const titleEl = document.getElementById('nb-title');
+  titleEl.value = rec.title;
+  titleEl.readOnly = !!rec.deleted;
+  document.getElementById('nb-shell').classList.remove('hidden');
+  document.getElementById('nb-wrap').classList.add('editing');
+  document.body.classList.toggle('nb-editing', state.view === 'notes');
+  nbEnterMobileHistory(id, fromHistory);
+  nbRenderPaneState();
+  nbRenderRefs(rec);
+  nbRenderHeadButtons(rec);
+  nbUpdateLocalBadge(rec);
+  nbHideBanner();
+  const host = document.getElementById('nb-editor');
+  host.replaceChildren(nbEl('div', { class: 'empty', text: t('nb_editor_loading') }));
+  nbRefreshToolbar();
+  renderNotesList();
+  nbUpdateStatus();
+
+  const doc = nbParseBody(rec.body);
+  const mod = rec.deleted ? null : await nbLoadEditorModule();
+  if (token !== _nb.openGen) return false;
+  let ed = null;
+  if (mod) {
+    try {
+      host.replaceChildren();
+      ed = mod.createEditor(host, {
+        content: doc || nbEmptyDoc(), editable: true, placeholder: t('nb_editor_ph'),
+        resolveMedia: nbResolveMedia,
+        unresolvedMediaText: () => t('nb_media_missing'),
+        onUpdate: () => nbOnEditorUpdate(token),
+        onSelectionUpdate: () => { if (token === _nb.openGen) nbRefreshToolbar(); },
+      });
+      if (ed && typeof ed.then === 'function') ed = await ed;
+    } catch (e) {
+      console.warn('노트 편집기 마운트 실패:', e);
+      _nbEditorState = 'mount-failed(' + String((e && e.message) || e).slice(0, 80) + ')';
+      ed = null;
+    }
+    if (token !== _nb.openGen) {
+      if (ed && typeof ed.destroy === 'function') { try { ed.destroy(); } catch (_) {} }
+      return false;
+    }
+  }
+  if (ed) {
+    _nb.editor = ed; _nb.mode = 'rich';
+    // 저장 비교의 기준을 편집기가 정규화한 JSON으로 잡는다. 저장된 문자열을 그대로 기준으로 두면
+    // 편집기가 기본 속성을 채워 넣은 차이만으로 "바뀌었다"고 판단해, 열었다 닫기만 해도 dirty가
+    // 되고 다른 기기의 변경을 받은 직후에는 거짓 충돌 사본까지 생긴다.
+    try { const j = ed.getJSON(); if (j && typeof j === 'object') _nb.lastSaved.body = JSON.stringify(j); }
+    catch (_) { /* 기준을 못 잡으면 첫 저장이 한 번 더 일어날 뿐이다 */ }
+  } else {
+    // 편집기가 없거나 휴지통 노트: 안전한 읽기 전용 표시. 문서 JSON을 DOM API로만 옮긴다.
+    _nb.mode = 'readonly';
+    nbRenderReadOnly(host, doc);
+    if (rec.deleted) nbShowBanner(t('nb_deleted_banner'), [[t('nb_restore'), nbDeleteOrRestore]]);
+    else             nbShowBanner(t('nb_editor_fail'), null, true);
+  }
+  nbRefreshToolbar();
+  nbUpdateStatus();
+  return true;
+}
+
+async function nbCloseEditor({ flush = true, force = false, keepHistory = false } = {}) {
+  if (nbRecBusy()) {
+    if (!force) { showToast(t('nb_rec_busy')); return false; }
+    // MediaRecorder.stop()과 onstop 사이에는 finishPromise가 아직 이전 녹음의 완료값일 수 있다.
+    // 녹음 시작 때 만든 settledPromise를 먼저 잡아 두고, 최종 dataavailable 처리까지 기다린다.
+    const settled = _nbRec.settledPromise;
+    if (_nbRec.active && !_nbRec.finishing) nbRecCancel();
+    await settled;
+  }
+  if (!_nb.openId) return true;
+  if (flush) await nbFlush();
+  if (!keepHistory) nbClearMobileHistoryState();
+  _nb.openGen++;
+  const ed = _nb.editor;
+  _nb.editor = null; _nb.mode = 'none'; _nb.openId = null; _nb.stale = false; _nb.baseWriteId = null;
+  clearTimeout(_nb.saveTimer); _nb.saveTimer = null; _nb.composing = false;
+  if (ed && typeof ed.destroy === 'function') { try { ed.destroy(); } catch (e) { console.warn('편집기 정리 실패:', e); } }
+  nbMediaUrls.clear();
+  if (_nbPaneBuilt) {
+    document.getElementById('nb-editor').replaceChildren();
+    document.getElementById('nb-shell').classList.add('hidden');
+    document.getElementById('nb-wrap').classList.remove('editing');
+    nbHideBanner();
+    nbRecRenderPanel();
+    nbRenderPaneState();
+    renderNotesList();
+  }
+  document.body.classList.remove('nb-editing');
+  return true;
+}
+
+function nbOnEditorUpdate(token) {
+  if (token !== _nb.openGen) return;
+  nbScheduleSave();
+}
+function nbHasUnsaved() { return _nb.saveTimer !== null || _nb.composing; }
+
+// 입력이 멈추고 600ms 뒤 저장. IME 조합 중에는 미룬다 (조합 중인 한글이 반쯤 저장되는 것을 막는다).
+// compositionend가 오지 않는 모바일 키보드가 있어 약 5초 뒤에는 그대로 저장한다.
+function nbScheduleSave() {
+  if (!_nb.openId) return;
+  clearTimeout(_nb.saveTimer);
+  _nb.saveTimer = setTimeout(() => {
+    _nb.saveTimer = null;
+    if (_nb.composing && _nb.composeWaits < 8) { _nb.composeWaits++; nbScheduleSave(); return; }
+    _nb.composeWaits = 0;
+    nbFlush();
+  }, NB_AUTOSAVE_MS);
+  nbUpdateStatus();
+}
+
+async function nbFlush() {
+  clearTimeout(_nb.saveTimer); _nb.saveTimer = null;
+  const rec = nbOpenRec();
+  if (!rec || rec.deleted) { nbUpdateStatus(); return false; }
+  const titleEl = document.getElementById('nb-title');
+  const title = String(titleEl ? titleEl.value : rec.title).slice(0, NB_LIMITS.title);
+  let body = rec.body, plainText = rec.plainText, mediaIds = rec.mediaIds;
+  if (_nb.mode === 'rich' && _nb.editor) {
+    let json = null;
+    try { json = _nb.editor.getJSON(); } catch (e) { console.warn('노트 내용 읽기 실패:', e); }
+    if (json && typeof json === 'object') {
+      body = JSON.stringify(json);
+      let txt = '';
+      try { txt = typeof _nb.editor.getText === 'function' ? _nb.editor.getText({ blockSeparator: '\n' }) : nbDocText(json); }
+      catch (_) { txt = nbDocText(json); }
+      plainText = String(txt || '').slice(0, NB_LIMITS.plainText);
+      mediaIds = nbCollectMediaIds(json);
+    }
+  }
+  if (title === _nb.lastSaved.title && body === _nb.lastSaved.body) { nbUpdateStatus(); return true; }
+  _nb.lastSaved = { title, body };
+  const next = { ...rec, title, body, plainText, mediaIds,
+                 parentWriteId: _nb.baseWriteId, updatedAt: Date.now(), dirty: true };
+  const saved = await nbPersist(next);
+  rnCheckValid(next);
+  nbRebuildIndex();
+  nbUpdateLocalBadge(next);
+  nbAfterNotesChanged();
+  rnSchedulePush();
+  return saved;
+}
+
+function nbRenderRefs(rec) {
+  const box = document.getElementById('nb-refs');
+  if (!box) return;
+  box.replaceChildren();
+  if (!rec.paperRefs.length) { box.appendChild(nbEl('span', { text: t('nb_linked_none') })); return; }
+  box.appendChild(nbEl('span', { text: t('nb_linked_label') }));
+  for (const r of rec.paperRefs) {
+    const p = paperByKey(r.key);
+    const label = p ? String(p.title || r.key) : (r.title || r.key);
+    const b = nbEl('button', { type: 'button', class: 'nb-ref', text: label,
+      title: p ? `${t('nb_jump')}: ${label}` : `${label} (${t('nb_paper_missing')})` });
+    if (p) b.addEventListener('click', () => nbJumpToPaper(r.key));
+    else b.disabled = true;
+    box.appendChild(b);
+  }
+}
+function nbRenderHeadButtons(rec) {
+  const del = document.getElementById('nb-del'), link = document.getElementById('nb-link-btn');
+  if (del) del.textContent = rec.deleted ? t('nb_restore') : t('nb_delete');
+  if (link) link.disabled = !!rec.deleted;
+}
+function nbUpdateLocalBadge(rec) {
+  const el = document.getElementById('nb-local-badge');
+  if (el) el.classList.toggle('hidden', !(rec && rec.mediaIds && rec.mediaIds.length));
+}
+function nbShowBanner(msg, actions, isErr) {
+  const el = document.getElementById('nb-banner');
+  if (!el) return;
+  el.replaceChildren(nbEl('span', { text: msg }));
+  for (const [label, fn] of (actions || []))
+    el.appendChild(nbEl('button', { type: 'button', class: 'nb-btn', text: label, onclick: fn }));
+  el.classList.toggle('err', !!isErr);
+  el.classList.remove('hidden');
+}
+function nbHideBanner() {
+  const el = document.getElementById('nb-banner');
+  if (el) { el.classList.add('hidden'); el.replaceChildren(); }
+}
+function nbUpdateStatus() {
+  const el = document.getElementById('nb-status');
+  if (!el) return;
+  const rec = nbOpenRec();
+  let key = '';
+  if (rec) {
+    if (_nb.saveTimer)                  key = 'nb_status_saving';
+    else if (_rnInvalid.has(rec.id))    key = 'nb_status_toobig';
+    else if (_nbOwner === 'guest')      key = 'nb_status_guest';
+    // "동기화됨"은 서버가 확인한 writeId가 있고 로컬에 올리지 않은 변경이 없을 때만 쓴다
+    else if (!rec.dirty && rec.writeId) key = 'nb_status_synced';
+    else if (_rnOffline)                key = 'nb_status_offline';
+    else if (_rnLastErr)                key = 'nb_status_error';
+    else                                key = 'nb_status_pending';
+  }
+  el.textContent = key ? t(key) : '';
+  el.title = key === 'nb_status_guest' ? t('nb_status_guest_title')
+           : key === 'nb_status_toobig' ? t(_rnInvalid.get(rec.id))
+           : (key === 'nb_status_error' ? _rnLastErr : '');
+  el.classList.toggle('err', /error|toobig|offline/.test(key));
+}
+
+// 입력 중인가. 빠른 메모 textarea, 노트 제목, 리치 편집기, 그리고 IME 조합을 모두 본다.
+// nowTick과 원격 반영 재렌더가 이 값을 보고 미룬다 (입력 포커스와 조합 중인 글자 보호).
+function isUserEditing() {
+  const ae = document.activeElement;
+  if (!ae) return false;
+  if (ae.classList && ae.classList.contains('note-input')) return true;
+  const shell = document.getElementById('nb-shell');
+  if (!shell || !shell.contains(ae)) return false;
+  // 조합 플래그는 포커스가 편집기 안에 있을 때만 믿는다 (compositionend가 빠지면 영구히 켜져 있게 된다)
+  return _nb.composing || !!(ae.isContentEditable || ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA');
+}
+
+// ----- 만들기, 지우기, 복원 -----
+async function nbCreateNote({ title = '', doc = null, refs = [], open = true } = {}) {
+  if (_nbDbError) { showToast(t('nb_idb_fail'), 6000); return null; }
+  if (!_nbLoaded) { showToast(t('nb_loading')); return null; }
+  nbRequestPersist();
+  const now = Date.now();
+  const d = doc || nbEmptyDoc();
+  const rec = nbNormalize({
+    id: nbNewId(), title: String(title || '').slice(0, NB_LIMITS.title), body: JSON.stringify(d),
+    plainText: nbDocText(d).slice(0, NB_LIMITS.plainText), paperRefs: refs, mediaIds: [],
+    writeId: null, parentWriteId: null, deleted: false, createdAt: now, updatedAt: now, dirty: true, baseBody: null,
+  }, _nbOwner, currentConfId);
+  await nbPersist(rec);   // 실패하면 nbPersist가 토스트로 알린다. 메모리에는 남아 이번 세션 동안은 보인다
+  if (_nbUi.filter === 'trash') {
+    _nbUi.filter = 'all';
+    const s = document.getElementById('nb-filter');
+    if (s) s.value = 'all';
+  }
+  rnCheckValid(rec);
+  nbRebuildIndex();
+  nbAfterNotesChanged();
+  rnSchedulePush();
+  if (open) {
+    if (state.view !== 'notes') setView('notes');
+    await nbOpenNote(rec.id);
+    const ti = document.getElementById('nb-title');
+    if (ti && !title) ti.focus();
+  }
+  return rec;
+}
+
+async function nbDeleteOrRestore() {
+  const rec = nbOpenRec();
+  if (!rec) return;
+  if (!rec.deleted) {
+    if (nbRecBusy()) { showToast(t('nb_rec_busy')); return; }
+    if (!confirm(t('nb_delete_confirm'))) return;
+    await nbFlush();
+    const cur = _nbNotes.get(rec.id) || rec;
+    // 지우기는 tombstone이다. 문서를 없애지 않고 deleted만 켜서 다른 기기로 전파한다.
+    const next = { ...cur, deleted: true, updatedAt: Date.now(), dirty: true, parentWriteId: _nb.baseWriteId };
+    await nbCloseEditor({ flush: false });
+    await nbPersist(next);
+    showToast(t('nb_moved_trash'));
+  } else {
+    const next = { ...rec, deleted: false, updatedAt: Date.now(), dirty: true };
+    await nbPersist(next);
+    showToast(t('nb_restored'));
+    rnCheckValid(next);
+    nbRebuildIndex(); nbAfterNotesChanged(); rnSchedulePush();
+    await nbOpenNote(rec.id);
+    return;
+  }
+  nbRebuildIndex(); nbAfterNotesChanged(); rnSchedulePush();
+}
+
+// ----- 발표와 연결 -----
+function nbRefFor(key) {
+  const p = paperByKey(key);
+  return p ? { key, title: String(p.title || '').slice(0, NB_LIMITS.refTitle) } : null;
+}
+async function nbCreateForPaper(key) {
+  const ref = nbRefFor(key);
+  if (!ref) return;
+  await nbCreateNote({ title: ref.title.slice(0, NB_LIMITS.title), refs: [ref] });
+}
+async function nbOpenForPaper(key) {
+  const lst = nbNotesForPaper(key);
+  if (!lst.length) return nbCreateForPaper(key);
+  setView('notes');
+  if (lst.length === 1) { await nbOpenNote(lst[0].id); return; }
+  _nbUi.paperKey = key;
+  if (_nbUi.filter === 'trash' || _nbUi.filter === 'unlinked') {
+    _nbUi.filter = 'all';
+    const s = document.getElementById('nb-filter');
+    if (s) s.value = 'all';
+  }
+  renderNotesList();
+}
+// 빠른 메모를 복사해 리치 노트를 만든다. 원래 메모(state.notes)는 건드리지 않는다.
+async function nbPromoteQuickNote(key) {
+  const ref = nbRefFor(key);
+  if (!ref) return;
+  let text = getNote(key).note || '';
+  // 250ms 디바운스로 아직 저장되지 않은 입력도 담으려고 화면의 textarea 값을 먼저 본다
+  for (const ta of document.querySelectorAll('.note-input')) if (ta.dataset.key === key) { text = ta.value; break; }
+  const rec = await nbCreateNote({ title: ref.title.slice(0, NB_LIMITS.title), doc: nbTextToDoc(text), refs: [ref] });
+  if (rec) showToast(t('nb_created'));
+}
+
+// 노트에서 연결된 발표로 돌아간다. 필터에 가려 있으면 그 발표가 보이도록 필터를 푼다.
+// 세션 접힘은 화면에서만 펴고 저장하지 않는다 (사용자가 접어 둔 설정을 바꾸지 않는다).
+async function nbJumpToPaper(key) {
+  const p = paperByKey(key);
+  const s = p && sessionFor(p);
+  if (!s) return;
+  await nbFlush();
+  if (window.matchMedia('(max-width: 720px)').matches) {
+    if (!(await nbCloseEditor({ flush: false }))) return;   // 전체 화면 편집기가 둘러보기를 덮는다
+  }
+  setView('browse');
+  const findRow = () => {
+    for (const cb of document.querySelectorAll('#session-list .paper input[data-key]'))
+      if (cb.dataset.key === key) return cb.closest('.paper');
+    return null;
+  };
+  let row = findRow();
+  if (!row) {
+    state.search = ''; searchInput.value = '';
+    state.dayFilter = 'all';
+    state.tracks.add(s.track_title);
+    state.buildings.add(buildingKeyOf(s));
+    state.timeFrom = null; state.timeTo = null;
+    renderAll();
+    row = findRow();
+  }
+  if (!row) return;
+  const sess = row.closest('.session');
+  if (sess) sess.classList.remove('collapsed');
+  row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  row.classList.remove('nb-flash'); void row.offsetWidth; row.classList.add('nb-flash');
+  setTimeout(() => row.classList.remove('nb-flash'), 2300);
+  const cb = row.querySelector('input[type="checkbox"]');
+  if (cb) cb.focus({ preventScroll: true });
+}
+
+// 연결 모달. 연결은 노트의 paperRefs만 바꾼다. state.selected를 바꾸거나 touch를 부르지 않는다.
+let _nbLinkModal = null;
+function nbEnsureLinkModal() {
+  if (_nbLinkModal) return _nbLinkModal;
+  const titleEl = nbEl('strong', { id: 'nb-link-title', text: t('nb_link_title') });
+  const close = nbEl('button', { type: 'button', class: 'modal-close', text: '✕', title: t('nb_close'),
+                                 attrs: { 'aria-label': t('nb_close') } });
+  const hint = nbEl('p', { class: 'help-p', text: t('nb_link_hint') });
+  const search = nbEl('input', { type: 'search', placeholder: t('nb_link_search'), attrs: { 'aria-label': t('nb_link_search') } });
+  const list = nbEl('div', { class: 'nb-link-list', attrs: { role: 'group', 'aria-labelledby': 'nb-link-title' } });
+  const count = nbEl('span', { class: 'nb-link-count', attrs: { 'aria-live': 'polite' } });
+  const cancel = nbEl('button', { type: 'button', class: 'nb-btn', text: t('nb_cancel') });
+  const save = nbEl('button', { type: 'button', class: 'nb-new-btn', text: t('nb_link_save') });
+  const dlg = nbEl('div', { class: 'modal nb-link-modal',
+                            attrs: { role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'nb-link-title' } }, [
+    nbEl('div', { class: 'modal-head' }, [titleEl, close]),
+    nbEl('div', { class: 'modal-body' }, [hint, search, list, nbEl('div', { class: 'nb-link-foot' }, [count, cancel, save])]),
+  ]);
+  const bg = nbEl('div', { class: 'modal-bg', id: 'nb-link-modal' }, [dlg]);
+  bg.style.display = 'none';
+  document.body.appendChild(bg);
+  const m = { bg, search, list, count, save, noteId: null, returnFocus: null };
+  m.hide = () => {
+    bg.style.display = 'none';
+    m.noteId = null;
+    if (m.returnFocus && typeof m.returnFocus.focus === 'function') m.returnFocus.focus();
+  };
+  close.onclick = m.hide;
+  cancel.onclick = m.hide;
+  bg.addEventListener('click', (e) => { if (e.target === bg) m.hide(); });
+  bg.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.stopPropagation(); m.hide(); } });
+  search.addEventListener('input', () => {
+    const q = search.value.trim().toLowerCase();
+    for (const row of list.querySelectorAll('.nb-link-row'))
+      row.classList.toggle('hidden', !!q && !row.dataset.hay.includes(q));
+  });
+  list.addEventListener('change', () => nbLinkUpdateCount(m));
+  save.onclick = () => nbLinkSave(m);
+  _nbLinkModal = m;
+  return m;
+}
+function nbLinkUpdateCount(m) {
+  const n = m.list.querySelectorAll('input[type="checkbox"]:checked').length;
+  m.count.textContent = t('nb_link_selected').replace('{n}', String(n));
+  m.count.style.color = n > NB_LIMITS.refs ? '#b32424' : '';
+}
+function nbOpenLinkModal() {
+  const rec = nbOpenRec();
+  if (!rec || rec.deleted) return;
+  const m = nbEnsureLinkModal();
+  m.noteId = rec.id;
+  m.returnFocus = document.activeElement;
+  const linked = new Set(rec.paperRefs.map(r => r.key));
+  const keys = [...new Set([...state.selected, ...rec.paperRefs.map(r => r.key)])];
+  const rows = keys.map((key) => {
+    const p = paperByKey(key), s = p && sessionFor(p);
+    const ref = rec.paperRefs.find(r => r.key === key);
+    const title = String(p ? p.title : ((ref && ref.title) || key));
+    let sub = t('nb_paper_missing'), sort = [99999, 99999, key];
+    if (p && s) {
+      const pt = timeOfPaper(p);
+      sub = `Day ${s.day} ${pt ? pt.start + '-' + pt.end : s.start}, ${s.building} ${s.room}`;
+      sort = [s.day, pt ? pt.startMin : timeToMin(s.start), s.id];
+    }
+    return { key, title, sub, sort, authors: p ? String(p.authors || '') : '' };
+  }).sort((a, b) => (a.sort[0] - b.sort[0]) || (a.sort[1] - b.sort[1]) || natCompare(a.sort[2], b.sort[2]));
+  m.list.replaceChildren();
+  m.search.value = '';
+  if (!rows.length) m.list.appendChild(nbEl('div', { class: 'empty', text: t('nb_link_empty') }));
+  for (const r of rows) {
+    const cb = nbEl('input', { type: 'checkbox', value: r.key, checked: linked.has(r.key) });
+    const lab = nbEl('label', { class: 'nb-link-row' }, [cb, nbEl('span', {}, [r.title, nbEl('small', { text: r.sub })])]);
+    lab.dataset.hay = (r.title + ' ' + r.authors + ' ' + r.sub).toLowerCase();
+    m.list.appendChild(lab);
+  }
+  nbLinkUpdateCount(m);
+  m.bg.style.display = 'flex';
+  m.search.focus();
+}
+async function nbLinkSave(m) {
+  const rec = m.noteId && _nbNotes.get(m.noteId);
+  if (!rec) { m.hide(); return; }
+  const keys = [...m.list.querySelectorAll('input[type="checkbox"]')].filter(c => c.checked).map(c => c.value);
+  if (keys.length > NB_LIMITS.refs) { showToast(t('nb_too_many_refs'), 5000); return; }
+  const refs = keys.map(k => nbRefFor(k) || rec.paperRefs.find(r => r.key === k)).filter(Boolean);
+  const next = { ...rec, paperRefs: nbCleanRefs(refs), updatedAt: Date.now(), dirty: true,
+                 parentWriteId: rec.id === _nb.openId ? _nb.baseWriteId : rec.parentWriteId };
+  m.hide();
+  await nbPersist(next);
+  rnCheckValid(next);
+  nbRebuildIndex();
+  nbAfterNotesChanged();
+  if (_nb.openId === rec.id) nbRenderRefs(next);
+  rnSchedulePush();
+}
+
+// 칩 클릭은 위임으로 받는다. 행은 재렌더로 계속 새로 만들어진다.
+document.addEventListener('click', (e) => {
+  const b = e.target && e.target.closest && e.target.closest('.nchip[data-nkey]');
+  if (!b) return;
+  e.preventDefault();
+  const key = b.dataset.nkey, act = b.dataset.nact;
+  if (act === 'new')          nbCreateForPaper(key);
+  else if (act === 'open')    nbOpenForPaper(key);
+  else if (act === 'promote') nbPromoteQuickNote(key);
+});
+
+// 탭을 숨기거나 페이지를 떠날 때 편집 중인 내용을 저장한다 (최선 노력: pagehide 뒤 비동기 쓰기는
+// 브라우저가 끝까지 기다려 주지 않을 수 있다. 600ms 자동 저장이 주된 안전장치다).
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') nbFlush(); });
+window.addEventListener('pagehide', () => { nbFlush(); });
+window.addEventListener('online', () => rnSchedulePush(500));
+window.addEventListener('popstate', async (e) => {
+  const id = e.state && e.state.buzzplanNote;
+  if (id && _nbNotes.has(id)) {
+    if (state.view !== 'notes') setView('notes');
+    if (_nb.openId !== id) await nbOpenNote(id, { fromHistory: true });
+    return;
+  }
+  if (_nb.openId && nbIsMobileEditor()) await nbCloseEditor({ flush: true, keepHistory: true });
+});
+
+// ----- 읽기 전용 표시 (편집기 번들이 없거나 휴지통 노트) -----
+// 문서 JSON을 DOM API로만 옮긴다. innerHTML을 쓰지 않고, 링크는 http/https/mailto만,
+// 스타일은 색과 크기 몇 가지를 형식 검사한 뒤에만 붙인다. 외부 이미지 주소는 불러오지 않는다.
+const NB_SAFE_COLOR = /^(#[0-9a-f]{3,8}|rgba?\(\s*[\d.\s,%]+\))$/i;
+const NB_SAFE_SIZE  = /^\d{1,3}(\.\d+)?(px|pt|em|rem|%)$/;
+const NB_SAFE_FONTS = new Set(['serif', 'sans-serif', 'monospace']);
+function nbRenderReadOnly(host, doc) {
+  host.replaceChildren();
+  const root = nbEl('div', { class: 'nb-ro' });
+  let budget = 20000;
+  const wrapMarks = (node, marks) => {
+    let el = node;
+    for (const mk of (Array.isArray(marks) ? marks : [])) {
+      const a = (mk && mk.attrs) || {};
+      let w = null;
+      switch (mk && mk.type) {
+        case 'bold':      w = document.createElement('strong'); break;
+        case 'italic':    w = document.createElement('em'); break;
+        case 'underline': w = document.createElement('u'); break;
+        case 'strike':    w = document.createElement('s'); break;
+        case 'code':      w = document.createElement('code'); break;
+        case 'link': {
+          const href = nbSafeHref(a.href || '');
+          if (href) { w = document.createElement('a'); w.href = href; w.target = '_blank'; w.rel = 'noopener noreferrer nofollow'; }
+          break;
+        }
+        case 'highlight':
+          w = document.createElement('mark');
+          if (NB_SAFE_COLOR.test(String(a.color || ''))) w.style.backgroundColor = a.color;
+          break;
+        case 'textStyle':
+          w = document.createElement('span');
+          if (NB_SAFE_COLOR.test(String(a.color || ''))) w.style.color = a.color;
+          if (NB_SAFE_SIZE.test(String(a.fontSize || ''))) w.style.fontSize = a.fontSize;
+          if (NB_SAFE_FONTS.has(String(a.fontFamily || ''))) w.style.fontFamily = a.fontFamily;
+          break;
+      }
+      if (w) { w.appendChild(el); el = w; }
+    }
+    return el;
+  };
+  const walk = (node, parent, depth) => {
+    if (!node || typeof node !== 'object' || depth > 60 || --budget < 0) return;
+    const type = String(node.type || '');
+    if (type === 'text') { parent.appendChild(wrapMarks(document.createTextNode(String(node.text || '')), node.marks)); return; }
+    const a = node.attrs || {};
+    if (typeof a.mediaId === 'string' && a.mediaId) { parent.appendChild(nbRoMedia(type, a)); return; }
+    let el, target = null;
+    switch (type) {
+      case 'doc':         el = document.createDocumentFragment(); break;
+      case 'paragraph':   el = document.createElement('p'); break;
+      case 'heading':     el = document.createElement('h' + Math.min(6, Math.max(1, parseInt(a.level, 10) || 2))); break;
+      case 'bulletList':
+      case 'taskList':    el = document.createElement('ul'); break;
+      case 'orderedList': el = document.createElement('ol'); if (Number.isInteger(a.start) && a.start > 1) el.start = a.start; break;
+      case 'listItem':    el = document.createElement('li'); break;
+      case 'taskItem': {
+        el = document.createElement('li');
+        const cb = document.createElement('input');
+        cb.type = 'checkbox'; cb.disabled = true; cb.checked = !!a.checked;
+        el.appendChild(cb); el.appendChild(document.createTextNode(' '));
+        break;
+      }
+      case 'blockquote':  el = document.createElement('blockquote'); break;
+      case 'codeBlock':   el = document.createElement('pre'); target = el.appendChild(document.createElement('code')); break;
+      case 'hardBreak':   parent.appendChild(document.createElement('br')); return;
+      case 'horizontalRule': parent.appendChild(document.createElement('hr')); return;
+      case 'table':       el = document.createElement('table'); target = el.appendChild(document.createElement('tbody')); break;
+      case 'tableRow':    el = document.createElement('tr'); break;
+      case 'tableCell':
+      case 'tableHeader':
+        el = document.createElement(type === 'tableHeader' ? 'th' : 'td');
+        if (Number.isInteger(a.colspan) && a.colspan > 1 && a.colspan < 100) el.colSpan = a.colspan;
+        if (Number.isInteger(a.rowspan) && a.rowspan > 1 && a.rowspan < 100) el.rowSpan = a.rowspan;
+        break;
+      case 'image':
+      case 'audio':
+        // mediaId 없는 외부 원본은 불러오지 않는다
+        parent.appendChild(nbEl('span', { class: 'nb-ro-media', text: t('nb_media_missing') }));
+        return;
+      default:            el = document.createElement('div');
+    }
+    const into = target || el;
+    for (const c of (Array.isArray(node.content) ? node.content : [])) walk(c, into, depth + 1);
+    parent.appendChild(el);
+  };
+  if (doc) walk(doc, root, 0);
+  host.appendChild(root);
+}
+function nbRoMedia(type, a) {
+  const id = String(a.mediaId);
+  const isAudio = /audio/i.test(type) || /^audio\//.test(String(a.mime || ''));
+  const box = nbEl('span', { class: 'nb-ro-media', text: (isAudio ? '🎙 ' : '🖼 ') + (isAudio ? t('nb_audio_label') : t('nb_img_alt')) });
+  const token = _nb.openGen;
+  nbMediaUrls.acquire(id).then((url) => {
+    if (token !== _nb.openGen) { if (url) nbMediaUrls.release(id); return; }
+    if (!url) { box.textContent = (isAudio ? '🎙 ' : '🖼 ') + t('nb_media_missing'); return; }
+    const el = isAudio ? nbEl('audio', { controls: true, preload: 'metadata', src: url })
+                       : nbEl('img', { src: url, alt: t('nb_img_alt') });
+    box.replaceWith(el);
+  }).catch(() => { box.textContent = t('nb_media_missing'); });
+  return box;
+}
+
+// ----- 사진 넣기 -----
+// 래스터 이미지만 받는다 (SVG는 스크립트를 품을 수 있어 거부). 캔버스로 다시 인코딩해 메타데이터와
+// 원본 형식을 버리고, 긴 변 1600px, 2MiB 이하로 줄인다. WebP를 먼저 쓰고 안 되면 JPEG.
+// 번들의 insertLocalImage/insertLocalAudio는 넣은 노드를 선택된 상태(NodeSelection)로 남긴다.
+// 그대로 두면 다음 삽입(여러 장을 한 번에 고르거나 사진 뒤에 곧바로 녹음)이 방금 넣은 노드를
+// 덮어써 첨부가 문서에서 사라진다 (jsdom에서 실제 번들로 재현). 커서를 노드 바로 뒤로 옮긴다.
+// 번들이 선택 상태를 공개 API로 주지 않아 내부 editor 속성을 읽는다. 없으면 아무것도 하지 않는다.
+function nbCollapseAfterNode() {
+  const ed = _nb.editor;
+  try {
+    const raw = ed && ed.editor;
+    const sel = raw && raw.state && raw.state.selection;
+    if (!sel || !sel.node) return;
+    // 바로 뒤가 글 블록이면 그 첫머리로, 아니면(표 칸의 끝, 다른 첨부 앞) 빈 문단을 하나 만들어 그 안으로
+    const after = raw.state.doc.resolve(sel.to).nodeAfter;
+    if (after && after.isTextblock) ed.focus(sel.to + 1);
+    else raw.chain().insertContentAt(sel.to, { type: 'paragraph' }).focus(sel.to + 1).run();
+  } catch (e) { console.warn('첨부 뒤 커서 이동 실패:', e); }
+}
+function nbCurrentMediaCount() {
+  if (_nb.mode === 'rich' && _nb.editor) {
+    try { return nbCollectMediaIds(_nb.editor.getJSON()).length; } catch (_) {}
+  }
+  const r = nbOpenRec();
+  return r ? r.mediaIds.length : 0;
+}
+async function nbDecodeImage(file) {
+  if (typeof createImageBitmap === 'function') {
+    for (const opts of [{ imageOrientation: 'from-image' }, undefined]) {
+      try {
+        const bmp = opts ? await createImageBitmap(file, opts) : await createImageBitmap(file);
+        return { src: bmp, w: bmp.width, h: bmp.height, close: () => { if (bmp.close) bmp.close(); } };
+      } catch (_) { /* 옵션을 모르는 브라우저면 옵션 없이 다시 */ }
+    }
+  }
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  try {
+    await new Promise((res, rej) => { img.onload = res; img.onerror = () => rej(new Error('decode failed')); img.src = url; });
+  } catch (e) { URL.revokeObjectURL(url); throw e; }
+  return { src: img, w: img.naturalWidth, h: img.naturalHeight, close: () => URL.revokeObjectURL(url) };
+}
+function nbCanvasBlob(canvas, type, q) {
+  return new Promise((res) => {
+    try { canvas.toBlob((b) => res(b), type, q); } catch (_) { res(null); }
+  });
+}
+async function nbProcessImage(file) {
+  if (file.size > IMG_INPUT_MAX_BYTES) throw new Error(t('nb_img_too_big'));
+  const img = await nbDecodeImage(file);
+  try {
+    if (!img.w || !img.h) throw new Error('empty image');
+    let scale = Math.min(1, IMG_MAX_EDGE / Math.max(img.w, img.h));
+    let type = 'image/webp';
+    for (let round = 0; round < 6; round++) {
+      const w = Math.max(1, Math.round(img.w * scale)), h = Math.max(1, Math.round(img.h * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('canvas unavailable');
+      // JPEG는 투명을 모르므로 흰 바탕을 먼저 깐다
+      const draw = (opaque) => {
+        ctx.clearRect(0, 0, w, h);
+        if (opaque) { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); }
+        ctx.drawImage(img.src, 0, 0, w, h);
+      };
+      draw(type === 'image/jpeg');
+      for (const q of [0.85, 0.75, 0.65, 0.55]) {
+        let blob = await nbCanvasBlob(canvas, type, q);
+        // WebP 인코딩을 못 하는 브라우저는 조용히 PNG를 돌려준다. 그때 JPEG로 바꾼다.
+        if (type === 'image/webp' && (!blob || blob.type !== 'image/webp')) {
+          type = 'image/jpeg';
+          draw(true);
+          blob = await nbCanvasBlob(canvas, type, q);
+        }
+        if (!blob) throw new Error('encode failed');
+        if (blob.size <= IMG_MAX_BYTES) return { blob, width: w, height: h };
+      }
+      scale *= 0.75;
+    }
+    throw new Error(t('nb_img_too_big'));
+  } finally { img.close(); }
+}
+async function nbInsertImageFiles(files) {
+  if (_nb.mode !== 'rich' || !_nb.editor) return;
+  const token = _nb.openGen;
+  for (const f of files) {
+    if (!RASTER_TYPES.includes(f.type)) { showToast(t('nb_img_bad_type'), 5000); continue; }
+    if (nbCurrentMediaCount() >= NB_LIMITS.media) { showToast(t('nb_too_many_media'), 5000); break; }
+    let out;
+    try { out = await nbProcessImage(f); }
+    catch (e) { showToast(t('nb_img_fail') + ((e && e.message) || e), 6000); continue; }
+    const mediaId = nbNewId();
+    try {
+      if (!(await nbStorageEstimate(out.blob.size, true))) { showToast(t('nb_storage_full'), 7000); break; }
+      await MediaBackend.put(_nbOwner, mediaId, out.blob, { kind: 'image', width: out.width, height: out.height });
+    }
+    catch (e) { nbReportStorageError(e, true); break; }
+    nbRequestPersist();
+    // 처리하는 동안 노트를 닫았다. 블롭은 남지만 (삭제하지 않는다) 노트에는 넣지 않는다.
+    if (token !== _nb.openGen || !_nb.editor) return;
+    // localImage 노드 속성은 mediaId, alt, caption, width(CSS 폭)뿐이다. 크기와 형식은 media 저장소에 둔다.
+    let inserted = false;
+    try { inserted = nbRun('insertLocalImage', mediaId, { alt: t('nb_img_alt') }); }
+    catch (e) { console.warn(e); }
+    if (!inserted) { showToast(t('nb_img_fail') + 'insertLocalImage', 6000); continue; }
+    nbCollapseAfterNode();
+    nbToastOnce('media-notice', t('nb_media_notice'));
+    nbUpdateLocalBadge({ mediaIds: [mediaId] });
+  }
+}
+
+// ----- 음성 녹음 -----
+const _nbRec = { active: false, finishing: false, recorder: null, stream: null, chunks: [], bytes: 0, startedAt: 0,
+                 elapsedBefore: 0, paused: false, timer: null, stopTimer: null, cancelled: false, capHit: false,
+                 mime: '', token: 0, draftId: '', noteId: '', owner: '', confId: '', persistTimer: null,
+                 persistedChunks: 0, persistPromise: Promise.resolve(), finishPromise: Promise.resolve(),
+                 settledPromise: Promise.resolve(), resolveSettled: null };
+function nbRecBusy() { return _nbRec.active || _nbRec.finishing; }
+function nbRecPickType() {
+  if (typeof MediaRecorder === 'undefined') return null;
+  for (const tp of REC_TYPES) {
+    try { if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(tp)) return tp; } catch (_) {}
+  }
+  return '';   // 지원 형식을 못 찾으면 브라우저 기본값
+}
+function nbRecElapsed() {
+  const r = _nbRec;
+  return r.elapsedBefore + (r.paused || !r.startedAt ? 0 : Date.now() - r.startedAt);
+}
+function nbFmtDuration(ms) {
+  const s = Math.floor(ms / 1000);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+function nbRecDraftRow(r) {
+  return {
+    owner: r.owner, id: r.draftId, confId: r.confId, noteId: r.noteId,
+    chunks: r.chunks.slice(), mime: r.mime, bytes: r.bytes,
+    durationMs: nbRecElapsed(), updatedAt: Date.now(),
+  };
+}
+function nbRecPersistDraft(force = false) {
+  const r = _nbRec;
+  if (!r.active || !r.draftId || r.cancelled || (!force && r.persistedChunks === r.chunks.length)) return r.persistPromise;
+  clearTimeout(r.persistTimer);
+  const write = async () => {
+    r.persistTimer = null;
+    if (!r.active || r.cancelled || r.persistedChunks === r.chunks.length) return;
+    try {
+      const row = nbRecDraftRow(r);
+      await RecordingStore.put(row);
+      r.persistedChunks = row.chunks.length;
+    } catch (e) { console.warn('녹음 임시 저장 실패:', e); }
+  };
+  if (force) {
+    r.persistPromise = r.persistPromise.then(write, write);
+  } else {
+    r.persistTimer = setTimeout(() => {
+      r.persistPromise = r.persistPromise.then(write, write);
+    }, 250);
+  }
+  return r.persistPromise;
+}
+async function nbRecoverRecordingDrafts(owner, confId) {
+  let rows = [];
+  try { rows = await RecordingStore.list(owner); }
+  catch (e) { console.warn('중단된 녹음 조회 실패:', e); return 0; }
+  let recovered = 0;
+  for (const row of rows) {
+    if (owner !== _nbOwner || confId !== currentConfId) break;
+    if (row.confId !== confId || !Array.isArray(row.chunks) || !row.chunks.length) continue;
+    const rec = _nbNotes.get(row.noteId);
+    if (!rec || rec.deleted) continue;
+    const mediaId = nbNewId();
+    const blob = new Blob(row.chunks, { type: row.mime || 'audio/webm' });
+    try {
+      if (!(await nbStorageEstimate(blob.size, true))) { showToast(t('nb_storage_full'), 7000); break; }
+      await MediaBackend.put(owner, mediaId, blob, { kind: 'audio', durationMs: Number(row.durationMs) || 0 });
+      if (owner !== _nbOwner || confId !== currentConfId) break;
+      // await 사이에 다른 복구나 입력이 같은 노트를 갱신했을 수 있으므로 현재 레코드에 붙인다.
+      const current = _nbNotes.get(row.noteId);
+      if (!current || current.deleted) continue;
+      const doc = nbParseBody(current.body) || nbEmptyDoc();
+      const node = { type: 'localAudio', attrs: { mediaId, title: t('nb_audio_label'), durationSec: Math.round((Number(row.durationMs) || 0) / 1000) } };
+      doc.content = Array.isArray(doc.content) ? [...doc.content, node, { type: 'paragraph' }] : [node, { type: 'paragraph' }];
+      const next = { ...current, body: JSON.stringify(doc), plainText: nbDocText(doc).slice(0, NB_LIMITS.plainText),
+                     mediaIds: nbCollectMediaIds(doc), updatedAt: Date.now(), dirty: true };
+      if (!(await nbPersist(next))) continue;
+      await RecordingStore.remove(owner, row.id);
+      recovered++;
+    } catch (e) { nbReportStorageError(e, true); }
+  }
+  if (recovered) {
+    nbRebuildIndex(); nbAfterNotesChanged(); rnSchedulePush();
+    showToast(t('nb_rec_recovered'), 7000);
+  }
+  return recovered;
+}
+function nbRecRenderPanel() {
+  const box = document.getElementById('nb-rec');
+  if (!box) return;
+  if (!_nbRec.active) { box.classList.add('hidden'); box.replaceChildren(); return; }
+  box.classList.remove('hidden');
+  if (!box.firstChild) {
+    box.appendChild(nbEl('span', { id: 'nb-rec-label' }));
+    box.appendChild(nbEl('span', { class: 'nb-rec-time', id: 'nb-rec-time', attrs: { 'aria-live': 'off' } }));
+    box.appendChild(nbEl('button', { type: 'button', class: 'nb-btn', id: 'nb-rec-pause', onclick: nbRecTogglePause }));
+    box.appendChild(nbEl('button', { type: 'button', class: 'nb-btn', text: t('nb_rec_stop'), onclick: () => nbRecStop(false) }));
+    box.appendChild(nbEl('button', { type: 'button', class: 'nb-btn', text: t('nb_rec_cancel'), onclick: nbRecCancel }));
+  }
+  document.getElementById('nb-rec-label').textContent = _nbRec.paused ? t('nb_rec_paused') : t('nb_rec_recording');
+  document.getElementById('nb-rec-time').textContent = `${nbFmtDuration(nbRecElapsed())} / ${nbFmtDuration(REC_MAX_MS)}`;
+  const pb = document.getElementById('nb-rec-pause');
+  const canPause = !!(_nbRec.recorder && typeof _nbRec.recorder.pause === 'function');
+  pb.textContent = _nbRec.paused ? t('nb_rec_resume') : t('nb_rec_pause');
+  pb.classList.toggle('hidden', !canPause);
+}
+async function nbRecStart() {
+  if (_nb.mode !== 'rich' || !_nb.editor || nbRecBusy()) return;
+  if (typeof MediaRecorder === 'undefined' || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showToast(t('nb_rec_unsupported'), 6000); return;
+  }
+  if (nbCurrentMediaCount() >= NB_LIMITS.media) { showToast(t('nb_too_many_media'), 5000); return; }
+  const token = _nb.openGen;
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+  catch (e) {
+    const n = e && e.name;
+    showToast(n === 'NotAllowedError' || n === 'SecurityError' ? t('nb_rec_denied')
+            : n === 'NotFoundError' || n === 'OverconstrainedError' ? t('nb_rec_nomic')
+            : t('nb_rec_fail') + ((e && (e.message || e.name)) || e), 7000);
+    return;
+  }
+  const stopTracks = () => { try { stream.getTracks().forEach(tr => tr.stop()); } catch (_) {} };
+  if (token !== _nb.openGen || !_nb.editor || nbRecBusy()) { stopTracks(); return; }
+  const type = nbRecPickType();
+  let rec;
+  try { rec = type ? new MediaRecorder(stream, { mimeType: type }) : new MediaRecorder(stream); }
+  catch (e) { stopTracks(); showToast(t('nb_rec_fail') + ((e && e.message) || e), 7000); return; }
+  const r = _nbRec;
+  let resolveSettled;
+  const settledPromise = new Promise(resolve => { resolveSettled = resolve; });
+  Object.assign(r, { active: true, finishing: false, recorder: rec, stream, chunks: [], bytes: 0, startedAt: Date.now(),
+                     elapsedBefore: 0, paused: false, cancelled: false, capHit: false,
+                     mime: rec.mimeType || type || 'audio/webm', token,
+                     draftId: nbNewId(), noteId: _nb.openId, owner: _nbOwner, confId: currentConfId,
+                     persistTimer: null, stopTimer: null, persistedChunks: 0, persistPromise: Promise.resolve(),
+                     finishPromise: Promise.resolve(), settledPromise, resolveSettled });
+  rec.ondataavailable = (ev) => {
+    if (r.recorder !== rec || !ev.data || !ev.data.size) return;
+    r.chunks.push(ev.data);
+    r.bytes += ev.data.size;
+    // 최신 조각까지 하나의 복구 레코드로 주기적으로 덮어쓴다. 탭이 닫혀도 마지막 몇 초만 잃는다.
+    if (r.chunks.length % 5 === 0) nbRecPersistDraft();
+    // 1초 단위 조각이 한도를 넘기지 않도록 여유를 두고 멈춘다
+    if (r.bytes >= REC_MAX_BYTES - 256 * 1024) nbRecStop(true);
+  };
+  rec.onerror = (ev) => {
+    if (r.recorder !== rec) return;
+    showToast(t('nb_rec_fail') + ((ev && ev.error && ev.error.name) || 'error'), 7000);
+    nbRecCancel();
+  };
+  rec.onstop = () => {
+    if (r.recorder !== rec) return;
+    clearTimeout(r.stopTimer); r.stopTimer = null;
+    nbRecFinish(rec);
+  };
+  try { rec.start(1000); }
+  catch (e) {
+    stopTracks();
+    const settle = r.resolveSettled;
+    Object.assign(r, { active: false, recorder: null, stream: null, resolveSettled: null,
+                       settledPromise: Promise.resolve() });
+    if (settle) settle();
+    showToast(t('nb_rec_fail') + ((e && e.message) || e), 7000);
+    return;
+  }
+  r.timer = setInterval(() => {
+    if (nbRecElapsed() >= REC_MAX_MS) nbRecStop(true);
+    nbRecRenderPanel();
+  }, 500);
+  nbRecRenderPanel();
+}
+function nbRecTogglePause() {
+  const r = _nbRec;
+  if (!r.active || !r.recorder) return;
+  try {
+    if (r.paused) { r.recorder.resume(); r.startedAt = Date.now(); r.paused = false; }
+    else          { r.recorder.pause(); r.elapsedBefore += Date.now() - r.startedAt; r.paused = true; }
+  } catch (e) { console.warn('녹음 일시정지 실패:', e); }
+  nbRecRenderPanel();
+}
+function nbRecStop(cap) {
+  const r = _nbRec;
+  if (!r.active) return;
+  if (cap) r.capHit = true;
+  // stop 요청 뒤 onstop을 기다리는 동안의 재호출은 fallback을 앞질러 직접 종료하지 않는다.
+  if (r.stopTimer) return;
+  const rec = r.recorder;
+  try {
+    if (rec && rec.state !== 'inactive') {
+      // 일부 모바일 브라우저는 트랙 중단과 권한 회수 뒤 stop 이벤트를 누락한다. 무기한
+      // owner 전환을 막지 않도록 fallback을 두되, 정상 onstop의 최종 조각을 먼저 기다린다.
+      if (!r.stopTimer) r.stopTimer = setTimeout(() => nbRecFinish(rec), REC_STOP_FALLBACK_MS);
+      rec.stop();
+      return;
+    }
+  } catch (_) {
+    clearTimeout(r.stopTimer); r.stopTimer = null;
+  }
+  nbRecFinish(rec);
+}
+function nbRecCancel() {
+  const r = _nbRec;
+  if (!r.active) return;
+  r.cancelled = true;
+  nbRecStop(false);
+}
+function nbRecFinish(recorder = _nbRec.recorder) {
+  const r = _nbRec;
+  // 이전 MediaRecorder의 늦은 stop 이벤트가 다음 녹음을 종료시키지 못하게 한다.
+  if (recorder && r.recorder !== recorder) return Promise.resolve();
+  if (r.finishing) return r.finishPromise;
+  if (!r.active) return Promise.resolve();
+  r.finishing = true;
+  r.finishPromise = (async () => {
+    clearInterval(r.timer); r.timer = null;
+    clearTimeout(r.stopTimer); r.stopTimer = null;
+    clearTimeout(r.persistTimer); r.persistTimer = null;
+    try { if (r.stream) r.stream.getTracks().forEach(tr => tr.stop()); } catch (_) {}
+    const durationMs = nbRecElapsed();
+    const { chunks, mime, cancelled, capHit, token, draftId, owner } = r;
+    const pendingDraft = r.persistPromise;
+    // 정상 종료에서도 최종 media 저장이나 편집기 삽입이 실패할 수 있다. 마지막 조각까지 draft로
+    // 확정한 뒤에야 런타임 상태를 비우고, 최종 첨부가 노트에 영속화된 뒤에만 draft를 삭제한다.
+    if (!cancelled && chunks.length) await nbRecPersistDraft(true);
+    Object.assign(r, { active: false, recorder: null, stream: null, chunks: [], bytes: 0, paused: false, startedAt: 0,
+                       elapsedBefore: 0, stopTimer: null, draftId: '', noteId: '', owner: '', confId: '', persistedChunks: 0,
+                       persistPromise: Promise.resolve() });
+    nbRecRenderPanel();
+    if (cancelled) {
+      // 이미 시작한 draft put이 remove 뒤에 끝나면 취소한 녹음이 복구본으로 되살아난다.
+      // 해당 녹음의 쓰기 체인을 먼저 소진한 다음 삭제한다.
+      try { await pendingDraft; } catch (_) {}
+      try { await RecordingStore.remove(owner, draftId); } catch (_) {}
+      return;
+    }
+    if (!chunks.length) { try { await RecordingStore.remove(owner, draftId); } catch (_) {} showToast(t('nb_rec_empty')); return; }
+    const blob = new Blob(chunks, { type: mime });
+    const mediaId = nbNewId();
+    try {
+      if (!(await nbStorageEstimate(blob.size, true))) { showToast(t('nb_storage_full'), 7000); return; }
+      await MediaBackend.put(owner, mediaId, blob, { kind: 'audio', durationMs });
+    }
+    catch (e) { nbReportStorageError(e, true); return; }
+    nbRequestPersist();
+    if (token !== _nb.openGen || !_nb.editor) return;
+    // localAudio 노드 속성은 mediaId, title, durationSec이다
+    if (!nbRun('insertLocalAudio', mediaId, { title: t('nb_audio_label'), durationSec: Math.round(durationMs / 1000) })) {
+      showToast(t('nb_rec_fail') + 'insertLocalAudio', 6000);
+      return;
+    }
+    nbCollapseAfterNode();
+    nbToastOnce('media-notice', t('nb_media_notice'));
+    if (capHit) showToast(t('nb_rec_cap'), 6000);
+    nbUpdateLocalBadge({ mediaIds: [mediaId] });
+    // 문서 JSON과 mediaIds가 notes 저장소에 커밋되기 전에는 복구본을 지우지 않는다.
+    if (!(await nbFlush())) return;
+    try { await RecordingStore.remove(owner, draftId); } catch (e) { console.warn('녹음 임시본 삭제 실패:', e); }
+  })().finally(() => {
+    const settle = r.resolveSettled;
+    r.finishing = false;
+    r.finishPromise = Promise.resolve();
+    r.resolveSettled = null;
+    r.settledPromise = Promise.resolve();
+    if (settle) settle();
+  });
+  return r.finishPromise;
+}
+
+// ====== 리치 노트 동기화 (Firestore) ======
+// 경로: users/{uid}/confs/{confId}/richNotes/{noteId}. 선택/메모 문서(confs/{confId})와 별개이고
+// 게이트, 세대 번호, 구독, 타이머도 따로 둔다. 문서 모양은 rnPayload가 정한 11개 필드 그대로다.
+// 쓰기는 노트 하나씩 트랜잭션으로 한다 (낙관적 체인):
+//   서버에 없고 로컬 parentWriteId가 null  → 새로 만든다
+//   서버 writeId == 로컬 parentWriteId      → 새 writeId로 덮는다
+//   그 밖 (다른 기기가 먼저 바꿨다)          → 서버본을 두고, 로컬 내용은 충돌 사본 노트로 따로 보관한다
+// 서버본을 한 번도 못 본 상태에서는 쓰지 않는다 (_rnServerSeen). 원격 반영에서 touch를 부르지 않는다.
+let rnActive       = false;
+let _rnUser        = null;
+let _rnServerSeen  = false;
+let _rnGen         = 0;
+let _rnUnsub       = null;
+let _rnPushTimer   = null;
+let _rnPushing     = false;
+let _rnOffline     = false;
+let _rnLastErr     = '';
+let _rnLastPushAt  = 0;
+let _rnServerCount = null;
+let _rnErrToast    = { at: 0, msg: '' };
+let _rnRead        = { state: 'idle', tries: 0, ms: 0, err: '', startedAt: 0 };
+let _rnReadLog     = [];
+const _rnInvalid   = new Map();   // noteId -> 한도 초과 오류 키 (동기화에서 제외)
+
+function rnNoteRead(o) {
+  _rnRead = o;
+  _rnReadLog.push({ at: Date.now(), state: o.state, tries: o.tries, ms: o.ms });
+  if (_rnReadLog.length > 12) _rnReadLog.shift();
+}
+function rnIsPermErr(e) {
+  return !!(e && (e.code === 'permission-denied' || /permission/i.test(String(e.message || ''))));
+}
+function rnCol(uid) {
+  return firebase.firestore().collection('users').doc(uid)
+    .collection('confs').doc(currentConfId).collection('richNotes');
+}
+
+// 서버 문서. 로컬 전용 필드(owner, confId, dirty, baseBody, pk, oc)는 절대 싣지 않는다.
+function rnPayload(rec, writeId, parentWriteId, createdAt) {
+  const FV = firebase.firestore.FieldValue;
+  return {
+    v: NOTE_SCHEMA_V,
+    title: String(rec.title || '').slice(0, NB_LIMITS.title),
+    body: String(rec.body || ''),
+    plainText: String(rec.plainText || '').slice(0, NB_LIMITS.plainText),
+    paperRefs: nbCleanRefs(rec.paperRefs).map(r => ({ key: r.key, title: r.title })),
+    mediaIds: nbCleanIds(rec.mediaIds),
+    writeId: String(writeId),
+    parentWriteId: parentWriteId ? String(parentWriteId) : null,
+    deleted: !!rec.deleted,
+    createdAt: createdAt || FV.serverTimestamp(),
+    updatedAt: FV.serverTimestamp(),
+  };
+}
+// 서버 문서 → 로컬 레코드. Timestamp는 ms로, parentWriteId는 "이 사본의 기반 = 서버 writeId"로 바꾼다.
+function rnFromServer(id, raw, owner) {
+  const n = nbNormalize({ ...(raw || {}), id }, owner, currentConfId);
+  n.dirty = false;
+  n.parentWriteId = n.writeId;
+  n.baseBody = n.body;
+  return n;
+}
+function rnSameContent(a, b) {
+  return a.title === b.title && a.body === b.body && !!a.deleted === !!b.deleted &&
+         JSON.stringify(nbCleanRefs(a.paperRefs)) === JSON.stringify(nbCleanRefs(b.paperRefs));
+}
+function rnValidate(rec) {
+  if (nbBytes(rec.body) > NB_LIMITS.bodyBytes)        return 'nb_too_big';
+  if (String(rec.title || '').length > NB_LIMITS.title) return 'nb_title_too_long';
+  if (rec.paperRefs.length > NB_LIMITS.refs)          return 'nb_too_many_refs';
+  if (rec.mediaIds.length > NB_LIMITS.media)          return 'nb_too_many_media';
+  return '';
+}
+// 한도를 넘으면 동기화에서 빼고 알린다. 로컬에는 그대로 저장되어 있다 (데이터를 버리지 않는다).
+function rnCheckValid(rec, quiet) {
+  const err = rnValidate(rec);
+  const prev = _rnInvalid.get(rec.id);
+  if (err) { _rnInvalid.set(rec.id, err); if (prev !== err && !quiet) showToast(t(err), 7000); }
+  else _rnInvalid.delete(rec.id);
+  return !err;
+}
+
+function rnSchedulePush(delay) {
+  if (!rnActive || typeof firebase === 'undefined') return;
+  clearTimeout(_rnPushTimer);
+  _rnPushTimer = setTimeout(rnPushNext, delay == null ? RN_PUSH_DEBOUNCE_MS : delay);
+}
+
+function rnReportError(e) {
+  console.warn('노트 동기화 오류:', e);
+  _rnLastErr = String((e && (e.code || e.message)) || e);
+  if (e && e.code === 'unavailable') _rnOffline = true;
+  if (rnIsPermErr(e)) reportSyncError(e);   // 규칙 미배포 안내는 기존 경로를 그대로 쓴다
+  else if (_rnErrToast.msg !== _rnLastErr || Date.now() - _rnErrToast.at > 120000) {
+    _rnErrToast = { at: Date.now(), msg: _rnLastErr };
+    showToast(t('nb_sync_fail') + _rnLastErr, 6000);
+  }
+  nbUpdateStatus();
+}
+
+// 노트 하나를 트랜잭션으로 올린다. 결과: {ok, writeId} 또는 {conflict, server}.
+async function rnPushOne(uid, rec) {
+  const ref = rnCol(uid).doc(rec.id);
+  const newW = nbNewId();
+  return firebase.firestore().runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) {
+      if (rec.parentWriteId == null) {
+        tx.set(ref, rnPayload(rec, newW, null, null));
+        return { ok: true, writeId: newW };
+      }
+      return { conflict: true, server: null };
+    }
+    const S = snap.data() || {};
+    if ((S.writeId || null) === (rec.parentWriteId || null)) {
+      tx.set(ref, rnPayload(rec, newW, rec.parentWriteId, S.createdAt || null));
+      return { ok: true, writeId: newW };
+    }
+    return { conflict: true, server: S };
+  });
+}
+
+async function rnAfterPushOk(pushed, newW) {
+  const cur = _nbNotes.get(pushed.id);
+  if (!cur) return;
+  // 올리는 동안 사용자가 더 고쳤으면 dirty를 남긴다. 그 변경의 기반은 방금 올린 판이다.
+  const next = { ...cur, writeId: newW, parentWriteId: newW, baseBody: pushed.body, dirty: !rnSameContent(cur, pushed) };
+  if (_nb.openId === pushed.id && !_nb.stale) _nb.baseWriteId = newW;
+  await nbPersist(next);
+}
+
+function rnMakeConflictCopy(local, owner) {
+  const suffix = t('nb_conflict_suffix');
+  const now = Date.now();
+  return nbNormalize({
+    ...local, id: nbNewId(),
+    title: (local.title || t('nb_untitled')).slice(0, NB_LIMITS.title - suffix.length) + suffix,
+    writeId: null, parentWriteId: null, dirty: true, baseBody: null, deleted: false, createdAt: now, updatedAt: now,
+  }, owner, currentConfId);
+}
+
+async function rnResolveConflict(id, serverRaw) {
+  // nbFlush는 첫 await 전에 편집기 스냅샷을 메모리에 반영한다. 완료까지 기다리면 그 사이의
+  // autosave가 기존 id로 다시 들어갈 수 있으므로, promise만 잡고 아래의 사본 전환을 먼저 한다.
+  const flushPromise = _nb.openId === id ? nbFlush() : null;
+  const local = _nbNotes.get(id);
+  if (!local) { if (flushPromise) await flushPromise; return; }
+  const owner = _nbOwner;
+  const server = serverRaw ? rnFromServer(id, serverRaw, owner) : null;
+  // 서버에 이미 같은 내용이 있다 (앞선 쓰기가 커밋된 뒤 응답을 잃은 경우). 사본 없이 받아들인다.
+  if (server && rnSameContent(local, server)) {
+    if (flushPromise) await flushPromise;
+    const cur = _nbNotes.get(id) || local;
+    const changed = !rnSameContent(cur, local);
+    const next = changed
+      ? { ...cur, writeId: server.writeId, parentWriteId: server.writeId, baseBody: server.body, dirty: true }
+      : server;
+    if (_nb.openId === id) _nb.baseWriteId = server.writeId;
+    await nbPersist(next);
+    return;
+  }
+  if (local.deleted) {
+    if (flushPromise) await flushPromise;
+    // 지운 쪽에는 보관할 내용이 없다. 서버본을 받아들인다.
+    if (server) {
+      await nbPersist(server);
+      if (!server.deleted) showToast(t('nb_undelete_remote'), 6000);
+    } else {
+      await nbPersist({ ...local, dirty: false, writeId: null, parentWriteId: null });
+    }
+    return;
+  }
+  const copy = rnMakeConflictCopy(local, owner);
+  // IndexedDB 쓰기를 기다리는 동안 편집기가 원래 id를 가리키면, 새 입력의 autosave가 서버본으로
+  // 되돌릴 노트를 다시 dirty로 만들 수 있다. 사본을 메모리에 먼저 넣고 열린 편집기의 대상을
+  // 동기적으로 넘긴 뒤 영속화한다.
+  _nbNotes.set(copy.id, copy);
+  if (_nb.openId === id) {
+    clearTimeout(_nb.saveTimer); _nb.saveTimer = null;
+    _nb.openId = copy.id;
+    nbEnterMobileHistory(copy.id, false);
+    _nb.baseWriteId = null;
+    _nb.stale = false;
+    _nb.lastSaved = { title: copy.title, body: copy.body };
+    const ti = document.getElementById('nb-title');
+    if (ti) ti.value = copy.title;
+    nbHideBanner();
+    nbRenderRefs(copy);
+  }
+  if (flushPromise) await flushPromise;
+  // 대기 중 사본에 autosave가 들어왔을 수 있으므로 최초 copy가 아니라 현재 레코드를 쓴다.
+  const copyToPersist = _nbNotes.get(copy.id) || copy;
+  await nbPersist(copyToPersist);
+  // 원래 노트는 서버본으로 되돌린다. 서버에서 사라졌으면 로컬 tombstone으로 둔다 (내용은 사본에 있다).
+  if (server) await nbPersist(server);
+  else await nbPersist({ ...local, deleted: true, dirty: false, writeId: null, parentWriteId: null });
+  rnCheckValid(copyToPersist);
+  showToast(t('nb_conflict').replace('{title}', copyToPersist.title), 8000);
+}
+
+async function rnPushNext() {
+  _rnPushTimer = null;
+  if (!rnActive || !_rnServerSeen || _rnPushing || !_rnUser || typeof firebase === 'undefined') return;
+  const uid = _rnUser.uid, gen = _rnGen;
+  if (_nbOwner !== uid || !_nbLoaded) return;
+  const cand = [..._nbNotes.values()]
+    .filter(n => n.dirty && !rnValidate(n))
+    .sort((a, b) => a.updatedAt - b.updatedAt)[0];
+  if (!cand) { nbAfterNotesChanged(); return; }
+  const snapshot = { ...cand };
+  _rnPushing = true;
+  let res = null, err = null;
+  try { res = await rnPushOne(uid, snapshot); } catch (e) { err = e; }
+  if (gen !== _rnGen) return;   // 로그아웃이나 계정 전환 뒤에 도착한 응답
+  _rnPushing = false;
+  if (err) {
+    rnReportError(err);
+    if (!rnIsPermErr(err)) rnSchedulePush(RN_RETRY_MS);
+    nbAfterNotesChanged();
+    return;
+  }
+  _rnLastErr = ''; _rnOffline = false; _rnLastPushAt = Date.now();
+  if (res && res.ok) await rnAfterPushOk(snapshot, res.writeId);
+  else               await rnResolveConflict(snapshot.id, res ? res.server : null);
+  if (gen !== _rnGen) return;
+  nbRebuildIndex();
+  nbAfterNotesChanged();
+  rnSchedulePush(0);   // 다음 dirty 노트
+}
+
+// 원격 문서 하나를 반영한다. 반환: 'changed'(로컬을 바꿈) | 'push'(로컬이 더 새로워 올려야 함) | ''.
+function rnApplyRemoteDoc(id, raw) {
+  const S = rnFromServer(id, raw, _nbOwner);
+  const L = _nbNotes.get(id);
+  if (L && (L.dirty || (_nb.openId === id && nbHasUnsaved()))) {
+    // 이 기기에 아직 올리지 않은 변경이 있다. 덮어쓰지 않고 push에 맡긴다. 서버가 앞서 있으면
+    // 트랜잭션이 어긋남을 잡아 충돌 사본을 만든다.
+    if (_nb.openId === id && !L.dirty) nbFlush();
+    return S.writeId !== L.parentWriteId ? 'push' : '';
+  }
+  if (L && L.writeId && L.writeId === S.writeId) return '';
+  _nbNotes.set(id, S);
+  NoteStore.put(S).catch((e) => nbReportStorageError(e, true));
+  if (_nb.openId === id) nbOnOpenNoteRemoteChange(S);
+  return 'changed';
+}
+function rnApplySnapshot(snap) {
+  if (!_rnUser || _nbOwner !== _rnUser.uid) return 0;
+  let changed = 0, needPush = false;
+  snap.forEach((d) => {
+    let raw;
+    try { raw = d.data({ serverTimestamps: 'estimate' }); } catch (_) { raw = d.data(); }
+    const r = rnApplyRemoteDoc(d.id, raw);
+    if (r === 'changed') changed++;
+    else if (r === 'push') needPush = true;
+  });
+  _rnServerCount = snap.size;
+  if (changed) { nbRebuildIndex(); nbAfterNotesChanged(); }
+  if (needPush) rnSchedulePush();
+  return changed;
+}
+// 열어 둔 노트가 다른 기기에서 바뀌었다. 입력 중이면 편집기를 갈아 끼우지 않고 알리기만 한다.
+function nbOnOpenNoteRemoteChange(rec) {
+  const shell = document.getElementById('nb-shell');
+  const ae = document.activeElement;
+  const focused = !!(ae && shell && shell.contains(ae));
+  if ((focused || nbRecBusy()) && _nb.mode === 'rich' && !rec.deleted) {
+    _nb.stale = true;
+    nbShowBanner(t('nb_remote_changed'), [[t('nb_reload'), () => nbOpenNote(rec.id)]]);
+    return;
+  }
+  // 저장 안 된 입력이 없음을 호출부(rnApplyRemoteDoc)가 확인했다. 닫으며 저장하면 옛 내용이
+  // 방금 받은 서버본 위에 dirty로 올라가므로 저장 없이 다시 연다.
+  nbOpenNote(rec.id, { flush: false });
+}
+
+async function rnOnServerSeen(gen) {
+  if (_rnServerSeen) { nbUpdateStatus(); return; }
+  _rnServerSeen = true;
+  nbAfterNotesChanged();
+  await rnCopyGuestNotes(gen);
+  if (gen !== _rnGen) return;
+  rnSchedulePush(300);
+}
+
+// 로그인 전에 만든 게스트 노트를 계정 파티션으로 복사한다. 서버본을 본 뒤에만, 한 번씩만 한다.
+// 게스트 원본은 지우지 않는다. 복사한 뒤 게스트 쪽에서 다시 고쳤으면 다음 로그인 때 그 내용을 다시 옮긴다.
+async function rnCopyGuestNotes(gen) {
+  const uid = _rnUser && _rnUser.uid;
+  if (!uid) return;
+  const metaKey = 'guestcopy|' + uid + '|' + currentConfId;
+  let rows, meta;
+  try {
+    rows = await NoteStore.list('guest', currentConfId);
+    meta = (await MetaStore.get(metaKey)) || { copied: {} };
+  } catch (e) { nbReportStorageError(e, true); return; }
+  if (gen !== _rnGen || _nbOwner !== uid) return;
+  if (!meta.copied || typeof meta.copied !== 'object') meta.copied = {};
+  let n = 0;
+  for (const raw of rows) {
+    const g = nbNormalize(raw, 'guest', currentConfId);
+    if (g.deleted) continue;
+    if ((meta.copied[g.id] || 0) >= g.updatedAt) continue;
+    if (_nb.openId === g.id) continue;   // 열어 둔 노트는 다음 기회에
+    const u = _nbNotes.get(g.id);
+    let next;
+    if (!u) {
+      next = nbNormalize({ ...g, writeId: null, parentWriteId: null, dirty: true, baseBody: null }, uid, currentConfId);
+    } else if (u.deleted) {
+      continue;
+    } else if (rnSameContent(u, g)) {
+      meta.copied[g.id] = g.updatedAt;
+      continue;
+    } else {
+      // 계정 쪽 노트는 서버 변경이나 아직 올리지 않은 로컬 변경을 담을 수 있다. 어떤 경우에도
+      // 게스트 재복사로 덮지 않고, 게스트 내용을 새 노트로 보존해 두 버전 모두 남긴다.
+      next = await rnMakeConflictCopy({ ...g, owner: uid }, uid);
+    }
+    let mediaOk = true;
+    for (const mid of g.mediaIds) {
+      try {
+        const src = await MediaBackend.get('guest', mid);
+        if (src && !(await nbStorageEstimate(Number(src.size) || (src.blob && src.blob.size) || 0, true))) {
+          showToast(t('nb_storage_full'), 7000);
+          mediaOk = false;
+          break;
+        }
+        if (src && !(await MediaBackend.get(uid, mid)) && !(await MediaBackend.copy('guest', uid, mid))) {
+          mediaOk = false;
+          break;
+        }
+      } catch (e) {
+        nbReportStorageError(e, true);
+        mediaOk = false;
+        break;
+      }
+    }
+    // 첨부 하나라도 빠지면 noteId를 성공으로 기록하지 않는다. 다음 로그인 때 다시 시도한다.
+    if (!mediaOk) continue;
+    if (gen !== _rnGen || _nbOwner !== uid) return;
+    if (!(await nbPersist(next))) return;
+    rnCheckValid(next, true);
+    meta.copied[g.id] = g.updatedAt;
+    n++;
+  }
+  if (!n) return;
+  try { await MetaStore.put(metaKey, meta); } catch (e) { nbReportStorageError(e, true); }
+  if (gen !== _rnGen) return;
+  nbRebuildIndex();
+  nbAfterNotesChanged();
+  showToast(t('nb_guest_copied').replace('{n}', String(n)), 7000);
+}
+
+async function startRichSync(user) {
+  if (typeof firebase === 'undefined' || !user) return;
+  rnTeardown();
+  const gen = ++_rnGen;
+  _rnUser = user;
+  rnActive = true;
+  // 계정 파티션으로 바꾼다. 편집 중이던 게스트 노트는 먼저 게스트 쪽에 저장된다.
+  await nbSwitchOwner(user.uid);
+  if (gen !== _rnGen) return;
+  let col;
+  try { col = rnCol(user.uid); } catch (e) { rnReportError(e); return; }
+
+  // 캐시본은 적용하지 않는다. 오프라인 사본은 이미 IndexedDB에 있고, 캐시본 기준으로 판단하면
+  // 선택/메모 동기화에서 겪은 "서버를 못 보고 덮어쓰기"와 같은 사고가 난다.
+  _rnUnsub = col.onSnapshot({ includeMetadataChanges: true }, (snap) => {
+    if (gen !== _rnGen) return;
+    if (snap.metadata.hasPendingWrites) return;
+    if (snap.metadata.fromCache) return;
+    const first = !_rnServerSeen;
+    const changed = rnApplySnapshot(snap);
+    _rnOffline = false;
+    if (_rnRead.state === 'timeout' || _rnRead.state === 'error' || _rnRead.state === 'pending')
+      rnNoteRead({ ..._rnRead, state: 'listener-ok' });
+    if (!first && changed) showToast(t('nb_remote_applied').replace('{n}', String(changed)));
+    rnOnServerSeen(gen);
+  }, (err) => { if (gen === _rnGen) rnReportError(err); });
+
+  // 선택/메모 동기화와 같은 이유로 서버 읽기를 한 번 확실히 하고, 타임아웃과 재시도를 건다.
+  (async () => {
+    for (let i = 0; i < SERVER_READ_BACKOFF.length; i++) {
+      if (gen !== _rnGen || _rnServerSeen) return;
+      if (SERVER_READ_BACKOFF[i]) {
+        await sleepMs(SERVER_READ_BACKOFF[i]);
+        if (gen !== _rnGen || _rnServerSeen) return;
+      }
+      const startedAt = Date.now();
+      rnNoteRead({ state: 'pending', tries: i + 1, ms: 0, err: '', startedAt });
+      try {
+        const snap = await getServerWithTimeout(col, i === 0 ? SERVER_READ_TIMEOUT_MS : SERVER_READ_RETRY_TIMEOUT_MS);
+        if (gen !== _rnGen) return;
+        // 기다리는 사이 리스너가 서버본을 받았고 push까지 했을 수 있다. 늦게 온 이 읽기를 적용하면
+        // 방금 올린 판을 옛 판으로 되돌리므로 버린다. 리스너가 권위 있는 최신본이다.
+        if (_rnServerSeen) {
+          rnNoteRead({ state: 'superseded', tries: i + 1, ms: Date.now() - startedAt, err: '', startedAt });
+          return;
+        }
+        rnNoteRead({ state: 'ok', tries: i + 1, ms: Date.now() - startedAt, err: '', startedAt });
+        _rnOffline = false;
+        rnApplySnapshot(snap);
+        rnOnServerSeen(gen);
+        return;
+      } catch (e) {
+        if (gen !== _rnGen) return;
+        if (_rnServerSeen) {
+          rnNoteRead({ state: 'superseded', tries: i + 1, ms: Date.now() - startedAt, err: '', startedAt });
+          return;
+        }
+        const isTimeout = !!(e && e.code === 'timeout');
+        rnNoteRead({ state: isTimeout ? 'timeout' : 'error', tries: i + 1, ms: Date.now() - startedAt,
+                     err: String((e && (e.code || e.message)) || e), startedAt });
+        if (!isTimeout) { _rnOffline = true; _rnLastErr = String((e && (e.code || e.message)) || e); }
+        nbUpdateStatus();
+        console.warn('노트 동기화: 서버 읽기 ' + (i + 1) + '회 실패', e);
+        if (rnIsPermErr(e)) { rnReportError(e); return; }
+      }
+    }
+    console.warn('노트 동기화: 서버 읽기 ' + SERVER_READ_BACKOFF.length + '회 모두 실패. 리스너 복구를 기다린다');
+  })();
+}
+
+function rnTeardown() {
+  _rnGen++;   // 진행 중인 읽기, 스냅샷, 트랜잭션 응답을 무효화
+  if (_rnUnsub) { try { _rnUnsub(); } catch (_) {} _rnUnsub = null; }
+  clearTimeout(_rnPushTimer); _rnPushTimer = null;
+  rnActive = false; _rnUser = null; _rnServerSeen = false; _rnPushing = false;
+  _rnOffline = false; _rnLastErr = ''; _rnServerCount = null; _rnLastPushAt = 0;
+  _rnRead = { state: 'idle', tries: 0, ms: 0, err: '', startedAt: 0 };
+  _rnReadLog = [];
+}
+function stopRichSync() {
+  rnTeardown();
+  // 로그아웃: 게스트 파티션으로 돌아간다. 전환 큐가 빠른 재로그인 요청과 직렬화하고,
+  // sequence 검사가 늦게 끝난 guest 적재가 uid 파티션을 덮지 못하게 한다.
+  nbSwitchOwner('guest');
+}
+
+// ----- 진단 패널 줄 (?debug=sync). liveLine으로 넣어 네트워크 대기 뒤 일괄 갱신된다 -----
+function richLocalLine() {
+  let live = 0, del = 0, dirty = 0;
+  for (const n of _nbNotes.values()) { if (n.deleted) del++; else live++; if (n.dirty) dirty++; }
+  const owner = _nbOwner === 'guest' ? 'guest' : 'uid:' + _nbOwner.slice(0, 8);
+  return 'rich local  owner=' + owner + ' loaded=' + _nbLoaded + ' notes=' + live + ' deleted=' + del +
+         ' dirty=' + dirty + ' invalid=' + _rnInvalid.size +
+         ' idb=' + (_nbDbError ? 'ERR(' + _nbDbError + ')' : 'ok') +
+         ' editor=' + _nbEditorState + ' persist=' + _nbPersisted;
+}
+function richSyncLine() {
+  const live = _rnRead.state === 'pending' && _rnRead.startedAt ? Date.now() - _rnRead.startedAt : _rnRead.ms;
+  return 'rich sync   active=' + rnActive + ' serverSeen=' + _rnServerSeen + ' offline=' + _rnOffline +
+         ' pushing=' + _rnPushing + ' serverDocs=' + (_rnServerCount === null ? '?' : _rnServerCount) +
+         ' read=' + _rnRead.state + '#' + _rnRead.tries + ' ms=' + live +
+         (_rnRead.state === 'pending' ? ' (진행 중)' : '') +
+         (_rnLastErr ? ' err=' + _rnLastErr : '') +
+         ' lastPush=' + (_rnLastPushAt ? fmtSyncTime(_rnLastPushAt) : '없음');
+}
+function richReadLogLine() {
+  if (!_rnReadLog.length) return 'rich log    (없음)';
+  const t0 = _rnReadLog[0].at;
+  return 'rich log    ' + _rnReadLog.map((e) =>
+    '+' + ((e.at - t0) / 1000).toFixed(1) + 's ' + e.state + '#' + e.tries + (e.ms ? ' ' + e.ms + 'ms' : '')).join(' / ') +
+    ' | now +' + ((Date.now() - t0) / 1000).toFixed(1) + 's';
 }
 
 // ====== Buttons ======
@@ -2900,6 +5649,13 @@ document.getElementById('btn-export-ics').onclick = () => {
     ];
     if (n.rating) descParts.push('Rating: ' + '★'.repeat(n.rating) + '☆'.repeat(5 - n.rating) + ' (' + n.rating + '/5)');
     if (n.note)   descParts.push('Notes: ' + n.note);
+    // 연결된 리치 노트는 제목만 싣는다. 본문은 길고 서식이 있어 캘린더 설명에 맞지 않는다.
+    const linkedTitles = nbNotesForPaper(key).map(x => x.title || t('nb_untitled'));
+    if (linkedTitles.length) {
+      let s = linkedTitles.slice(0, 5).join(', ');
+      if (linkedTitles.length > 5) s += ` (+${linkedTitles.length - 5})`;
+      descParts.push('Linked notes: ' + s.slice(0, 300));
+    }
 
     lines.push('BEGIN:VEVENT');
     lines.push('UID:' + key + '@conf-planner');
@@ -2934,11 +5690,11 @@ function csvCell(v) {
 }
 
 document.getElementById('btn-export-csv').onclick = () => {
-  // Collect candidate keys
-  const keys = new Set([...state.selected, ...state.notes.keys()]);
+  // Collect candidate keys (리치 노트가 연결된 발표도 포함한다)
+  const keys = new Set([...state.selected, ...state.notes.keys(), ..._nbByPaper.keys()]);
   if (keys.size === 0) { alert(t('no_export')); return; }
 
-  const header = ['Day','Date','PaperStart','PaperEnd','SessionStart','SessionEnd','Building','Room','SessionID','Track','PaperNo','Title','Authors','Selected','MustSee','Rating','Notes'];
+  const header = ['Day','Date','PaperStart','PaperEnd','SessionStart','SessionEnd','Building','Room','SessionID','Track','PaperNo','Title','Authors','Selected','MustSee','Rating','Notes','LinkedNoteTitles','LinkedNoteText'];
   const rows = [header.map(csvCell).join(',')];
 
   // Sort by day → paper start time
@@ -2961,6 +5717,11 @@ document.getElementById('btn-export-csv').onclick = () => {
 
   for (const it of items) {
     const n = getNote(it.key);
+    // 리치 노트: 제목은 " | "로, 본문(평문)은 구분선으로 잇는다. Excel 셀 한도(32767자) 아래로 자른다.
+    const linked = nbNotesForPaper(it.key);
+    const linkedTitles = linked.map(x => x.title || t('nb_untitled')).join(' | ');
+    const linkedText = linked.map(x => `[${x.title || t('nb_untitled')}]\n${x.plainText || ''}`)
+                             .join('\n\n---\n\n').slice(0, 32000);
     rows.push([
       it.s.day, it.s.date,
       it.pt.start, it.pt.end,
@@ -2971,6 +5732,8 @@ document.getElementById('btn-export-csv').onclick = () => {
       n.must ? 'Y' : 'N',
       n.rating || '',
       n.note || '',
+      linkedTitles,
+      linkedText,
     ].map(csvCell).join(','));
   }
 
@@ -2999,6 +5762,21 @@ searchInput.addEventListener('input', (e) => {
 // ====== View-tab wiring ======
 document.querySelectorAll('.view-tab').forEach(btn => {
   btn.onclick = () => setView(btn.dataset.view);
+});
+// 탭 목록 키보드 이동 (WAI-ARIA tabs 패턴: 좌우 화살표, Home, End)
+document.getElementById('view-tabs').addEventListener('keydown', (e) => {
+  const tabs = [...document.querySelectorAll('.view-tab')];
+  const i = tabs.indexOf(document.activeElement);
+  if (i < 0) return;
+  let j = null;
+  if (e.key === 'ArrowRight') j = (i + 1) % tabs.length;
+  else if (e.key === 'ArrowLeft') j = (i - 1 + tabs.length) % tabs.length;
+  else if (e.key === 'Home') j = 0;
+  else if (e.key === 'End') j = tabs.length - 1;
+  if (j === null) return;
+  e.preventDefault();
+  setView(tabs[j].dataset.view);
+  tabs[j].focus();
 });
 
 // ====== "지금" 버튼 + 지난 세션 접기 토글 ======
@@ -3301,6 +6079,9 @@ function applyStaticLang() {
   set('.view-tab[data-view="browse"]', el => el.innerHTML = '📋 Browse');
   set('.view-tab[data-view="itinerary"]', el =>
     el.innerHTML = '📅 My schedule <span class="badge" id="view-badge">0</span>');
+  set('.view-tab[data-view="notes"]', el =>
+    el.innerHTML = '📝 Notes <span class="badge" id="notes-badge">0</span>');
+  set('#view-tabs', el => el.setAttribute('aria-label', t('tabs_label')));
   set('#btn-now', el => el.textContent = t('now'));
   set('.collapse-toggle', el => {
     const cb = el.querySelector('input');
@@ -3344,7 +6125,25 @@ function applyStaticLang() {
       <li><strong>📅 ICS</strong> — import into Google Calendar, Apple Calendar, etc. Includes a 5-minute reminder per talk.</li>
       <li><strong>📊 CSV</strong> — organize notes in Excel.</li>
     </ul>
-    <h4 class="help-h">④ Tips</h4>
+    <h4 class="help-h">④ 📝 Notes</h4>
+    <p class="help-p">
+      The <strong>Notes</strong> tab holds document-style notes with headings, lists, tables, text color and more.
+      One note can be linked to several talks, and linking never changes your schedule.
+      Press <strong>+📝</strong> next to a talk to create a note linked to it, or the <strong>📝 count</strong> to open its notes.
+      Clicking a linked talk inside a note takes you back to that talk in Browse.
+      The short memo under each talk in My schedule still works; <strong>📄 To document note</strong> copies it into a new note (the memo stays).
+    </p>
+    <p class="help-p">
+      When you are signed in, note text syncs to your account. Notes written before signing in are copied to your
+      account when you sign in, and the originals stay on this device. If the same note is edited on two devices at
+      once, this device's version is kept as a separate "conflict copy" note. Deleted notes can be restored from the <strong>Trash</strong> filter.
+    </p>
+    <p class="help-note">
+      ⚠️ <strong>Photos and audio recordings in notes are stored only in this browser</strong> and are not synced.
+      Other devices show a placeholder instead. Clearing the site's browser data (cookies and storage) or closing a
+      private window deletes those photos and recordings, and any notes written without signing in.
+    </p>
+    <h4 class="help-h">⑤ Tips</h4>
     <ul class="help-ul">
       <li><strong>🔴 Now</strong> — auto-scrolls to the current (or next) session.</li>
       <li>Click a session header to <strong>fold/unfold</strong> its papers; "Fold all" too.</li>
@@ -3412,6 +6211,8 @@ async function bootApp() {
   renameOldIds();
   initState();
   renderAll();
+  // 노트 저장소(IndexedDB)는 비동기로 연다. 열리면 배지와 노트 칩을 제자리에서 갱신한다.
+  nbInit();
 
   // 학회 당일이면 현재/다음 세션으로 자동 스크롤 (둘러보기 탭일 때)
   if (state.view === 'browse' && conferenceIsToday()) {
@@ -3425,12 +6226,12 @@ async function bootApp() {
   // 계정 동기화: state가 준비된 이후에 등록해야 onAuthStateChanged가 곧바로
   // (캐시된 로그인 상태로) 발화해도 startSync()가 안전하게 currentConfId/state를 쓸 수 있다.
   if (typeof firebase !== 'undefined') {
-    try { await firebase.auth().getRedirectResult(); }
-    catch (e) { alert(t('login_fail') + e.message); }
     firebase.auth().onAuthStateChanged((user) => {
       currentUser = user;
       updateLoginButtonUI();
       if (user) startSync(user); else stopSync();
+      // 리치 노트 동기화는 선택/메모 동기화와 경로도 게이트도 따로다 (richNotes 하위 컬렉션)
+      if (user) startRichSync(user); else stopRichSync();
       // startSync의 서버 읽기가 끝난 뒤의 플래그를 보여 주려고 조금 늦춘다
       if (syncDebugOn()) setTimeout(mountSyncDiag, 400);
     });

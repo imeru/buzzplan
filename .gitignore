@@ -9,3 +9,5 @@ assets/maps/IMG_*.png
 assets/maps/IMG_*.jpg
 assets/maps/IMG_*.jpeg
 assets/maps/IMG_*.HEIC
+# 에디터 번들 빌드용 npm 의존성 (package.json/package-lock.json은 커밋 대상, 트리는 아님)
+node_modules/
