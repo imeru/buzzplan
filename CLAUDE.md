@@ -153,7 +153,8 @@ README.md           사용자용 안내. 학회 표(세션/발표 수)를 여기
 | sarek-2025-winter | 설비공학회 2025 동계 | parser_sarek.py | 34세션/159발표 | 발표별 명시 시간 |
 | sarek-2025-summer | 설비공학회 2025 하계 | parser_sarek_summer.py | 66세션/312발표 | 포스터 누락 (알려진 제한) |
 | sarek-2026-summer | 설비공학회 2026 하계 | parser_sarek_summer.py | 76세션/407발표 | 포스터 67편은 Tier 2로 추가. 재파싱 시 `--day-fix 19:25` 필수. **venue.maps 보유**(알펜시아 1층과 2층, 축척 0.067 m/px) |
-| roomvent-2026 | RoomVent 2026 | parser_roomvent.py | 59세션/269발표 | **default**. tz Europe/Prague. 단일 건물 `CTU`, 방으로만 구분. 발표번호 없어 paper_no는 `<세션ID>-<순번>`. **venue.maps 보유**(1층과 2층, 축척 0.071 m/px) |
+| kses-2026-fall | 한국태양에너지학회 2026 추계 | 웹 프로그램 수집 (Tier 2) | 45세션/236발표 | **default**. 단일 건물 `회장`, room은 홀 이름. 발표별 시간이 원문에 없어 세션 시간을 균등 분할(**추정치**). 기조강연, 만찬, 폐회식, 전시기업 기술발표는 항목 1개로 추가. floor는 모두 1(층 정보 없음) |
+| roomvent-2026 | RoomVent 2026 | parser_roomvent.py | 59세션/269발표 | tz Europe/Prague. 단일 건물 `CTU`, 방으로만 구분. 발표번호 없어 paper_no는 `<세션ID>-<순번>`. **venue.maps 보유**(1층과 2층, 축척 0.071 m/px) |
 
 이 표의 숫자가 바뀌는 작업을 했으면 이 파일과 **README.md의 학회 표**도 같이 갱신한다.
 

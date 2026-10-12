@@ -1,6 +1,12 @@
 {
-  "default": "roomvent-2026",
+  "default": "kses-2026-fall",
   "conferences": [
+    {
+      "id": "kses-2026-fall",
+      "name": "한국태양에너지학회 2026 추계학술발표대회",
+      "start": "2026-10-14",
+      "data": "data/kses-2026-fall.json"
+    },
     {
       "id": "roomvent-2026",
       "name": "RoomVent 2026",
