@@ -1,6 +1,12 @@
 {
-  "default": "kses-2026-fall",
+  "default": "sarek-2026-winter",
   "conferences": [
+    {
+      "id": "sarek-2026-winter",
+      "name": "대한설비공학회 2026 동계학술발표대회",
+      "start": "2026-11-20",
+      "data": "data/sarek-2026-winter.json"
+    },
     {
       "id": "kses-2026-fall",
       "name": "한국태양에너지학회 2026 추계학술발표대회",
