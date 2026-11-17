@@ -15,6 +15,7 @@
         "image": "assets/maps/sarek-2026-winter.png",
         "width_px": 960,
         "height_px": 770,
+        "width_meters": 162,
         "pins": [
           {
             "room": "1",

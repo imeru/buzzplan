@@ -769,11 +769,14 @@
   }
 
   function restoreSaved() {
-    var raw = null;
-    try { raw = localStorage.getItem(storeKey()); } catch (e) { return; }
-    if (!raw) return;
-    var arr;
-    try { arr = JSON.parse(raw); } catch (e) { return; }
+    var raw = null, arr = null;
+    try { raw = localStorage.getItem(storeKey()); } catch (e) { /* 저장소 차단 시 파일본으로 */ }
+    if (raw) { try { arr = JSON.parse(raw); } catch (e) { arr = null; } }
+    // 이 브라우저의 초안이 없으면 data/<id>.json에 이미 들어 있는 지도를 편집 대상으로 연다
+    if (!Array.isArray(arr) || !arr.length) {
+      var v = state.data && state.data.venue;
+      arr = (v && Array.isArray(v.maps)) ? v.maps : null;
+    }
     if (!Array.isArray(arr) || !arr.length) return;
     state.maps = arr.map(fromPlain);
     state.active = 0;
